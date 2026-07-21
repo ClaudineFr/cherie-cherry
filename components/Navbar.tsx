@@ -5,6 +5,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaBars, FaXmark } from "react-icons/fa6";
 
+const links = [
+  { href: "/", label: "Accueil" },
+  { href: "/coffee-shop", label: "Coffee Shop" },
+  { href: "/concept-store", label: "Concept Store" },
+  { href: "/a-propos", label: "À propos" },
+  { href: "/contact", label: "Contact" },
+];
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -34,27 +42,16 @@ export default function Navbar() {
           isOpen ? "flex" : "hidden"
         } absolute left-0 top-full w-full flex-col items-center gap-6 bg-green px-8 py-6 text-sm uppercase tracking-widest sm:static sm:flex sm:w-auto sm:flex-row sm:gap-8 sm:bg-transparent sm:p-0`}
       >
-        <Link href="/" className="transition-opacity hover:opacity-70">
-          Accueil
-        </Link>
-        <Link
-          href="/coffee-shop"
-          className="transition-opacity hover:opacity-70"
-        >
-          Coffee Shop
-        </Link>
-        <Link
-          href="/concept-store"
-          className="transition-opacity hover:opacity-70"
-        >
-          Concept Store
-        </Link>
-        <Link href="/a-propos" className="transition-opacity hover:opacity-70">
-          À propos
-        </Link>
-        <Link href="/contact" className="transition-opacity hover:opacity-70">
-          Contact
-        </Link>
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={() => setIsOpen(false)}
+            className="transition-opacity hover:opacity-70"
+          >
+            {link.label}
+          </Link>
+        ))}
       </div>
     </nav>
   );
