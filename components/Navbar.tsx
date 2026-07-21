@@ -22,6 +22,9 @@ export default function Navbar() {
         >
           Concept Store
         </Link>
+        <Link href="/a-propos" className="transition-opacity hover:opacity-70">
+          À propos
+        </Link>
         <Link href="/contact" className="transition-opacity hover:opacity-70">
           Contact
         </Link>
