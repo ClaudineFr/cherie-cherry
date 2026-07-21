@@ -31,21 +31,25 @@ export default function Home() {
             image={cafeImg}
             title="Café & Matcha"
             description="Cafés de spécialité, matcha latte et douceurs maison."
+            priority={true}
           />
           <CategoryCard
             image={decoImg}
             title="Déco"
             description="Objets et pièces déco chinés pour la maison."
+            priority={true}
           />
           <CategoryCard
             image={papeterieImg}
             title="Papeterie"
             description="Carnets, cartes et petits trésors de bureau."
+            priority={true}
           />
           <CategoryCard
             image={modeImg}
             title="Mode"
             description="Une sélection prêt-à-porter féminine et raffinée."
+            priority={true}
           />
         </div>
       </section>

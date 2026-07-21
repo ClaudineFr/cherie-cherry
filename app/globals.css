@@ -15,6 +15,12 @@
   --font-sans: var(--font-geist-sans); /* texte courant */
 }
 
+/* Taille de police racine : 1rem = 15px au lieu de 16px.
+   Réduit toute la typo du site proportionnellement, d'un seul endroit. */
+html {
+  font-size: 93.75%; /* 15 / 16 */
+}
+
 body {
   background-color: var(--color-cream);
   color: var(--color-ink);

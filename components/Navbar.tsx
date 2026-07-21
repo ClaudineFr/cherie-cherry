@@ -13,6 +13,9 @@ export default function Navbar() {
         <Link href="/boutique" className="transition-opacity hover:opacity-70">
           Boutique
         </Link>
+        <Link href="/contact" className="transition-opacity hover:opacity-70">
+          Contact
+        </Link>
       </div>
     </nav>
   );
