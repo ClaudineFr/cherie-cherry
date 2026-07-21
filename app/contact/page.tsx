@@ -42,6 +42,21 @@ export default function ContactPage() {
         <div className="mt-14">
           <ContactForm />
         </div>
+
+        {/* Carte Google Maps */}
+        <div className="mt-14">
+          <h2 className="mb-4 text-center font-serif text-2xl text-green">
+            Nous trouver
+          </h2>
+          <iframe
+            title="Carte — Chérie Cherry, 7 rue de la République, Carpentras"
+            src="https://www.google.com/maps?q=7+rue+de+la+R%C3%A9publique+84200+Carpentras&output=embed"
+            className="h-80 w-full rounded-2xl border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+        </div>
       </div>
     </main>
   );
