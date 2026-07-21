@@ -15,8 +15,6 @@
   --font-sans: var(--font-geist-sans); /* texte courant */
 }
 
-/* Taille de police racine, responsive : 15px sur mobile, 16px sur grand écran.
-   Toute la typo du site (en rem) s'adapte proportionnellement, d'un seul endroit. */
 html {
   font-size: 93.75%; /* 15 / 16 → mobile & tablette */
 }

@@ -10,8 +10,17 @@ export default function Navbar() {
         <Link href="/" className="transition-opacity hover:opacity-70">
           Accueil
         </Link>
-        <Link href="/boutique" className="transition-opacity hover:opacity-70">
-          Boutique
+        <Link
+          href="/coffee-shop"
+          className="transition-opacity hover:opacity-70"
+        >
+          Coffee Shop
+        </Link>
+        <Link
+          href="/concept-store"
+          className="transition-opacity hover:opacity-70"
+        >
+          Concept Store
         </Link>
         <Link href="/contact" className="transition-opacity hover:opacity-70">
           Contact

@@ -1,8 +1,11 @@
 import CategoryCard from "@/components/CategoryCard";
+import UniverseCard from "@/components/UniverseCard";
 import cafeImg from "@/public/categories/cafe.png";
 import decoImg from "@/public/categories/deco.png";
 import papeterieImg from "@/public/categories/papeterie.png";
 import modeImg from "@/public/categories/mode.png";
+import coffeeShopImg from "@/public/universes/coffee-shop.png";
+import conceptStoreImg from "@/public/universes/concept-store.png";
 
 export default function Home() {
   return (
@@ -19,6 +22,29 @@ export default function Home() {
           Coffee &amp; Matcha Club — un coffee shop et concept store où café,
           déco, papeterie et mode se rencontrent.
         </p>
+      </section>
+
+      {/* Section : nos deux univers */}
+      <section className="mx-auto max-w-5xl px-6 py-20">
+        <h2 className="mb-12 text-center font-serif text-3xl text-green">
+          Nos deux univers
+        </h2>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <UniverseCard
+            href="/coffee-shop"
+            image={coffeeShopImg}
+            eyebrow="Coffee & Matcha Club"
+            title="Le coffee shop"
+            description="Cafés de spécialité, matcha et pâtisseries maison, à savourer sur place."
+          />
+          <UniverseCard
+            href="/concept-store"
+            image={conceptStoreImg}
+            eyebrow="Concept store"
+            title="La boutique"
+            description="Déco, papeterie et prêt-à-porter féminin, chinés avec soin."
+          />
+        </div>
       </section>
 
       {/* Section catégories */}

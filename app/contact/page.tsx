@@ -38,7 +38,7 @@ export default function ContactPage() {
           ))}
         </div>
 
-        {/* Formulaire pleine largeur */}
+        {/* Formulaire */}
         <div className="mt-14">
           <ContactForm />
         </div>
