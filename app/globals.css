@@ -15,10 +15,16 @@
   --font-sans: var(--font-geist-sans); /* texte courant */
 }
 
-/* Taille de police racine : 1rem = 15px au lieu de 16px.
-   Réduit toute la typo du site proportionnellement, d'un seul endroit. */
+/* Taille de police racine, responsive : 15px sur mobile, 16px sur grand écran.
+   Toute la typo du site (en rem) s'adapte proportionnellement, d'un seul endroit. */
 html {
-  font-size: 93.75%; /* 15 / 16 */
+  font-size: 93.75%; /* 15 / 16 → mobile & tablette */
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 100%; /* 16px → à partir des écrans desktop (lg) */
+  }
 }
 
 body {
