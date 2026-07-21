@@ -2,7 +2,7 @@
 
 export type Drink = {
   name: string;
-  description?: string; // optionnel (le "?")
+  description?: string;
   price: string;
 };
 
