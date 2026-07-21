@@ -1,17 +1,16 @@
 import Link from "next/link";
-import React from "react";
 
 export default function Navbar() {
   return (
-    <nav className="flex items-center justify-between border-b border-zinc-200 px-8 py-4">
-      <Link href="/" className="text-xl font-semibold tracking-tight">
-        Chérie Cherry 🍒
+    <nav className="flex items-center justify-between bg-green px-8 py-5 text-cream">
+      <Link href="/" className="font-serif text-2xl tracking-wide">
+        Chérie Cherry
       </Link>
-      <div className="flex gap-6 text-sm text-zinc-600">
-        <Link href="/" className="hover:text-black">
+      <div className="flex gap-8 text-sm uppercase tracking-widest">
+        <Link href="/" className="transition-opacity hover:opacity-70">
           Accueil
         </Link>
-        <Link href="/boutique" className="hover:text-black">
+        <Link href="/boutique" className="transition-opacity hover:opacity-70">
           Boutique
         </Link>
       </div>

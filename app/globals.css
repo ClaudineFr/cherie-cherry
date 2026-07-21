@@ -1,26 +1,21 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* === Design tokens: la charte Chérie Cherry === */
+@theme {
+  /* Couleurs de marque */
+  --color-pink: #f6d9df; /* rose poudré (fonds doux) */
+  --color-pink-soft: #fbeef1; /* rose très clair (fonds de section) */
+  --color-green: #2f4b3f; /* vert forêt (logo, accents forts) */
+  --color-green-deep: #22392f; /* vert plus profond (survols) */
+  --color-cream: #faf6f1; /* crème (fond principal du site) */
+  --color-ink: #2b2321; /* brun-noir doux (texte) */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Polices */
+  --font-serif: var(--font-playfair); /* titres élégants */
+  --font-sans: var(--font-geist-sans); /* texte courant */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-ink);
 }
