@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FaInstagram, FaTiktok } from "react-icons/fa6";
 
 export default function Footer() {
@@ -51,11 +52,30 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Barre copyright séparée */}
-      <div className="border-t border-cream/15 py-4">
-        <p className="text-center text-xs text-cream/50">
-          © 2026 Chérie Cherry. Tous droits réservés.
-        </p>
+      {/* Barre copyright séparée — empilée sur mobile, en ligne sur sm+ */}
+      <div className="border-t border-cream/15 py-4 text-xs text-cream/50">
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-2">
+          <span>© 2026 Chérie Cherry. Tous droits réservés.</span>
+          <span aria-hidden="true" className="hidden sm:inline">
+            ·
+          </span>
+          {/* Liens légaux : côte à côte sous le copyright sur mobile */}
+          <span className="flex items-center gap-2">
+            <Link
+              href="/mentions-legales"
+              className="underline underline-offset-2 transition-opacity hover:opacity-70"
+            >
+              Mentions légales
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link
+              href="/confidentialite"
+              className="underline underline-offset-2 transition-opacity hover:opacity-70"
+            >
+              Confidentialité
+            </Link>
+          </span>
+        </div>
       </div>
     </footer>
   );
