@@ -59,6 +59,13 @@ export default function CoffeeShopPage() {
             ))}
           </ul>
         </div>
+
+        {/* Note pâtisseries */}
+        <p className="mt-6 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
+          🍰&nbsp;Nos pâtisseries et gâteaux sont{" "}
+          <strong>faites maison </strong> et la carte change au fil des saisons
+          et de l&apos;inspiration du jour.
+        </p>
       </div>
     </main>
   );

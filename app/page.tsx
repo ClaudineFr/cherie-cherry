@@ -4,7 +4,7 @@ import cafeImg from "@/public/categories/cafe.png";
 import decoImg from "@/public/categories/deco.png";
 import papeterieImg from "@/public/categories/papeterie.png";
 import modeImg from "@/public/categories/mode.png";
-import coffeeShopImg from "@/public/universes/coffee-shop.png";
+import coffeeShopImg from "@/public/universes/coffee-shop.jpg";
 import conceptStoreImg from "@/public/universes/concept-store.png";
 
 export default function Home() {
