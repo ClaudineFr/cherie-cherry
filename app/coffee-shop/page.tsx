@@ -1,4 +1,4 @@
-import { menu } from "./menu";
+import { menu, servingNote, supplements } from "./menu";
 
 export default function CoffeeShopPage() {
   return (
@@ -13,8 +13,7 @@ export default function CoffeeShopPage() {
             Le coffee shop
           </h1>
           <p className="mx-auto mt-4 max-w-md text-base text-ink/70">
-            Cafés de spécialité, matcha et boissons signature, à déguster sur
-            place.
+            {servingNote}
           </p>
         </div>
 
@@ -49,11 +48,17 @@ export default function CoffeeShopPage() {
           ))}
         </div>
 
-        {/* Note pâtisseries */}
-        <p className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-          🍰&nbsp;Nos pâtisseries sont <strong>faites maison</strong> et la
-          carte change au fil des saisons et de l&apos;inspiration du jour.
-        </p>
+        {/* Encart suppléments */}
+        <div className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
+          <p className="mb-2 uppercase tracking-widest text-green">
+            Suppléments
+          </p>
+          <ul className="flex flex-col gap-1">
+            {supplements.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </main>
   );

@@ -11,29 +11,51 @@ export type MenuCategory = {
   items: Drink[];
 };
 
+export const servingNote =
+  "Toutes nos boissons sont disponibles chaudes ou glacées.";
+
+export const supplements = [
+  "Lait : avoine, amande, sans lactose + 0,50 €",
+  "Sirop : vanille, caramel, noisette, coco + 0,50 €",
+];
+
 export const menu: MenuCategory[] = [
   {
-    category: "Cafés",
+    category: "Coffee",
     items: [
-      { name: "Espresso", description: "Simple ou double", price: "2,00 €" },
-      { name: "Cappuccino", price: "3,80 €" },
-      { name: "Latte macchiato", price: "4,20 €" },
-      { name: "Flat white", price: "4,00 €" },
-      { name: "Café latte", price: "4,00 €" },
-      { name: "Mocha", description: "Café & chocolat", price: "4,50 €" },
+      { name: "Espresso", price: "2,20 €" },
+      { name: "Latte / Cappuccino", price: "4,50 €" },
+      { name: "Latte caramel beurre salé", price: "5,50 €" },
+      {
+        name: "Cold Brew",
+        description: "Café infusé à froid",
+        price: "4,50 €",
+      },
+      {
+        name: "Spanish Latte",
+        description: "Espresso, lait, vanille, lait concentré",
+        price: "5,50 €",
+      },
+      {
+        name: "Café du mois",
+        description: "Création unique aux saveurs de saison à découvrir",
+        price: "5,90 €",
+      },
     ],
   },
   {
-    category: "Matcha & autres",
+    category: "Matcha & more",
     items: [
-      { name: "Matcha latte", description: "Chaud ou glacé", price: "4,80 €" },
+      { name: "Matcha", price: "4,50 €" },
+      { name: "Matcha Latte", price: "5,50 €" },
+      { name: "Matcha Latte Fraise", price: "6,50 €" },
       {
-        name: "Bubble latte",
-        description: "Perles de tapioca",
-        price: "5,50 €",
+        name: "Matcha du mois",
+        description: "Création unique aux saveurs de saison à découvrir",
+        price: "5,90 €",
       },
-      { name: "Chocolat chaud maison", price: "4,00 €" },
-      { name: "Chai latte", price: "4,50 €" },
+      { name: "Ube Latte", price: "4,90 €" },
+      { name: "Eau 50cl", price: "1,50 €" },
     ],
   },
 ];
