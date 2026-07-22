@@ -8,7 +8,7 @@ import ambiance2 from "@/public/gallery/ambiance-2.png";
 
 export type Photo = {
   src: StaticImageData;
-  alt: string; // description courte, utile pour l'accessibilité
+  alt: string;
 };
 
 export const gallery: Photo[] = [
