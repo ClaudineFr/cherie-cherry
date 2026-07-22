@@ -1,5 +1,6 @@
 import CategoryCard from "@/components/CategoryCard";
 import UniverseCard from "@/components/UniverseCard";
+import Gallery from "@/components/Gallery";
 import cafeImg from "@/public/categories/cafe.png";
 import decoImg from "@/public/categories/deco.png";
 import papeterieImg from "@/public/categories/papeterie.png";
@@ -78,6 +79,17 @@ export default function Home() {
             priority={true}
           />
         </div>
+      </section>
+
+      {/* Section galerie / ambiance */}
+      <section className="mx-auto max-w-5xl px-6 py-20">
+        <h2 className="mb-4 text-center font-serif text-3xl text-green">
+          L&apos;ambiance
+        </h2>
+        <p className="mx-auto mb-12 max-w-md text-center text-base text-ink/70">
+          Un aperçu de notre univers, entre coffee shop et concept store.
+        </p>
+        <Gallery />
       </section>
     </main>
   );
