@@ -5,8 +5,8 @@
   /* Couleurs de marque */
   --color-pink: #f6d9df; /* rose poudré (fonds doux) */
   --color-pink-soft: #fbeef1; /* rose très clair (fonds de section) */
-  --color-green: #2f4b3f; /* vert forêt (logo, accents forts) */
-  --color-green-deep: #22392f; /* vert plus profond (survols) */
+  --color-green: #406440; /* vert du logo (barre, footer, accents forts) */
+  --color-green-deep: #335033; /* vert plus profond (survols) */
   --color-cream: #faf6f1; /* crème (fond principal du site) */
   --color-ink: #2b2321; /* brun-noir doux (texte) */
 
