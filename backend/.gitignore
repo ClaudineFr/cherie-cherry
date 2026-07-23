@@ -1,0 +1,12 @@
+# Environnement virtuel Python (spécifique à ta machine, ne pas versionner)
+venv/
+
+# Base de données SQLite locale
+*.sqlite3
+
+# Fichiers compilés Python
+__pycache__/
+*.pyc
+
+# Variables d'environnement / secrets
+.env
