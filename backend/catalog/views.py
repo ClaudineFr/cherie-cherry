@@ -1,14 +1,14 @@
 from rest_framework import viewsets
 
-from .models import Produit
-from .serializers import ProduitSerializer
+from .models import Product
+from .serializers import ProductSerializer
 
 
-class ProduitViewSet(viewsets.ModelViewSet):
+class ProductViewSet(viewsets.ModelViewSet):
     """Gère l'API des produits : lister, voir, créer, modifier, supprimer."""
 
     # Les données à servir : tous les produits.
-    queryset = Produit.objects.all()
+    queryset = Product.objects.all()
 
     # Le serializer utilisé pour les transformer en JSON.
-    serializer_class = ProduitSerializer
+    serializer_class = ProductSerializer

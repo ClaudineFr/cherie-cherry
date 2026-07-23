@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Produit(models.Model):
+class Product(models.Model):
     """Un article vendu dans le concept store.
 
     Chaque instance de cette classe = une ligne dans la table de la base.
@@ -10,39 +10,39 @@ class Produit(models.Model):
 
     # Les catégories possibles. Format : (valeur_en_base, libellé_affiché).
     # On reprend les mêmes catégories que le front (products.ts).
-    class Categorie(models.TextChoices):
-        BIJOUX = "bijoux", "Bijoux"
-        PAPETERIE = "papeterie", "Papeterie"
-        SACS = "sacs", "Sacs"
-        VETEMENTS = "vetements", "Vêtements"
+    class Category(models.TextChoices):
+        JEWELRY = "jewelry", "Bijoux"
+        STATIONERY = "stationery", "Papeterie"
+        BAGS = "bags", "Sacs"
+        CLOTHING = "clothing", "Vêtements"
 
-    nom = models.CharField("nom", max_length=120)
+    name = models.CharField("nom", max_length=120)
 
-    categorie = models.CharField(
+    category = models.CharField(
         "catégorie",
         max_length=20,
-        choices=Categorie.choices,
+        choices=Category.choices,
     )
 
     description = models.TextField("description", blank=True)
 
     # DecimalField = idéal pour de l'argent (pas d'erreur d'arrondi).
     # max_digits = nombre total de chiffres, decimal_places = chiffres après la virgule.
-    prix = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
 
     stock = models.PositiveIntegerField("stock", default=0)
 
-    coup_de_coeur = models.BooleanField("coup de cœur", default=False)
+    featured = models.BooleanField("coup de cœur", default=False)
 
     # Rempli automatiquement à la création / modification.
-    cree_le = models.DateTimeField("créé le", auto_now_add=True)
-    modifie_le = models.DateTimeField("modifié le", auto_now=True)
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+    updated_at = models.DateTimeField("modifié le", auto_now=True)
 
     class Meta:
         verbose_name = "produit"
         verbose_name_plural = "produits"
-        ordering = ["categorie", "nom"]
+        ordering = ["category", "name"]
 
     def __str__(self):
         # Ce que Django affichera pour représenter un produit (ex. dans l'admin).
-        return self.nom
+        return self.name

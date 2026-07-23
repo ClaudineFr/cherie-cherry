@@ -1,18 +1,18 @@
 from django.contrib import admin
 
-from .models import Produit
+from .models import Product
 
 
-@admin.register(Produit)
-class ProduitAdmin(admin.ModelAdmin):
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
     # Colonnes affichées dans la liste des produits.
-    list_display = ["nom", "categorie", "prix", "stock", "coup_de_coeur"]
+    list_display = ["name", "category", "price", "stock", "featured"]
 
     # Cases modifiables directement depuis la liste, sans ouvrir chaque produit.
-    list_editable = ["prix", "stock", "coup_de_coeur"]
+    list_editable = ["price", "stock", "featured"]
 
     # Filtres dans la colonne de droite.
-    list_filter = ["categorie", "coup_de_coeur"]
+    list_filter = ["category", "featured"]
 
     # Barre de recherche (par nom).
-    search_fields = ["nom"]
+    search_fields = ["name"]

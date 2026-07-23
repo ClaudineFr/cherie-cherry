@@ -1,17 +1,20 @@
 from rest_framework import serializers
-from .models import Produit
-class ProduitSerializer(serializers.ModelSerializer):
-    """Décrit comment un Produit est transformé en JSON (et inversement)."""
+
+from .models import Product
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    """Décrit comment un Product est transformé en JSON (et inversement)."""
 
     class Meta:
-        model = Produit
+        model = Product
         # Les champs qu'on expose dans l'API.
         fields = [
             "id",
-            "nom",
-            "categorie",
+            "name",
+            "category",
             "description",
-            "prix",
+            "price",
             "stock",
-            "coup_de_coeur",
+            "featured",
         ]
