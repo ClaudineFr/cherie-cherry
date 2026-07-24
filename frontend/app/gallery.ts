@@ -1,17 +1,45 @@
-// Pour modifier la galerie : on ajoute/retire des entrées ici, pas dans l'affichage.
-// Chaque photo est importée statiquement pour que next/image l'optimise
-// et connaisse ses dimensions (pas de saut de mise en page au chargement).
+// Ce fichier fait le pont entre l'API Django et la galerie d'ambiance.
+// Les photos ne sont plus codées en dur : la proprio les gère depuis l'admin.
 
-import type { StaticImageData } from "next/image";
-import ambiance1 from "@/public/gallery/ambiance-1.jpg";
-import ambiance2 from "@/public/gallery/ambiance-2.png";
+// L'URL vient d'une variable d'environnement (voir .env.local), comme pour
+// les produits, pour pouvoir pointer vers une autre API en production.
+const API_URL = process.env.API_GALLERY_URL;
 
+// Une photo telle que l'affichage l'attend.
+// src est une URL (chaîne), pas un import statique : l'image vit côté API.
 export type Photo = {
-  src: StaticImageData;
+  src: string;
   alt: string;
 };
 
-export const gallery: Photo[] = [
-  { src: ambiance1, alt: "Le coin café de Chérie Cherry" },
-  { src: ambiance2, alt: "L'ambiance du concept store" },
-];
+// La forme brute renvoyée par l'API (image = URL absolue construite par Django).
+type ApiPhoto = {
+  id: number;
+  image: string;
+  alt: string;
+};
+
+// Va chercher les photos sur l'API et les convertit au format `Photo`.
+export async function fetchGallery(): Promise<Photo[]> {
+  if (!API_URL) {
+    throw new Error(
+      "API_GALLERY_URL n'est pas définie. Vérifie ton fichier .env.local.",
+    );
+  }
+
+  const res = await fetch(API_URL, {
+    // Pas de cache : on veut la galerie à jour à chaque visite.
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`API galerie : réponse ${res.status}`);
+  }
+
+  const data: ApiPhoto[] = await res.json();
+
+  return data.map((item) => ({
+    src: item.image,
+    alt: item.alt,
+  }));
+}

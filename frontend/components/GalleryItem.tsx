@@ -54,7 +54,12 @@ export default function GalleryItem({ photo, index }: GalleryItemProps) {
       <Image
         src={photo.src}
         alt={photo.alt}
-        className="w-full rounded-2xl"
+        // L'API ne fournit pas les dimensions réelles. On donne des valeurs
+        // indicatives (ratio 3/4) pour que next/image réserve de la place ;
+        // `h-auto` laisse ensuite le vrai ratio s'appliquer une fois chargé.
+        width={600}
+        height={800}
+        className="h-auto w-full rounded-2xl"
         sizes="(min-width: 1024px) 33vw, 50vw"
       />
     </figure>
