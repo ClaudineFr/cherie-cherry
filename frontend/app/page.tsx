@@ -1,10 +1,5 @@
-import CategoryCard from "@/components/CategoryCard";
 import UniverseCard from "@/components/UniverseCard";
 import Gallery from "@/components/Gallery";
-import cafeImg from "@/public/categories/cafe.png";
-import decoImg from "@/public/categories/deco.png";
-import papeterieImg from "@/public/categories/papeterie.png";
-import modeImg from "@/public/categories/mode.png";
 import coffeeShopImg from "@/public/universes/coffee-shop.jpg";
 import conceptStoreImg from "@/public/universes/concept-store.png";
 
@@ -44,39 +39,6 @@ export default function Home() {
             eyebrow="Concept store"
             title="La boutique"
             description="Déco, papeterie et prêt-à-porter féminin, chinés avec soin."
-          />
-        </div>
-      </section>
-
-      {/* Section catégories */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <h2 className="mb-12 text-center font-serif text-3xl text-green">
-          Ce qu&apos;on propose
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <CategoryCard
-            image={cafeImg}
-            title="Café & Matcha"
-            description="Cafés de spécialité, matcha latte et douceurs maison."
-            priority={true}
-          />
-          <CategoryCard
-            image={decoImg}
-            title="Déco"
-            description="Objets et pièces déco chinés pour la maison."
-            priority={true}
-          />
-          <CategoryCard
-            image={papeterieImg}
-            title="Papeterie"
-            description="Carnets, cartes et petits trésors de bureau."
-            priority={true}
-          />
-          <CategoryCard
-            image={modeImg}
-            title="Mode"
-            description="Une sélection prêt-à-porter féminine et raffinée."
-            priority={true}
           />
         </div>
       </section>
