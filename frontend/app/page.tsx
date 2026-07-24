@@ -32,6 +32,7 @@ export default function Home() {
             eyebrow="Coffee & Matcha Club"
             title="Le coffee shop"
             description="Cafés de spécialité, matcha et pâtisseries maison, à savourer sur place."
+            preload
           />
           <UniverseCard
             href="/concept-store"

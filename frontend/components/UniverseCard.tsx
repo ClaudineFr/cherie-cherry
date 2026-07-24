@@ -7,6 +7,8 @@ type UniverseCardProps = {
   eyebrow: string;
   title: string;
   description: string;
+  /* À activer pour la première carte visible (image LCP, au-dessus de la ligne de flottaison) */
+  preload?: boolean;
 };
 
 export default function UniverseCard({
@@ -15,6 +17,7 @@ export default function UniverseCard({
   eyebrow,
   title,
   description,
+  preload = false,
 }: UniverseCardProps) {
   return (
     <Link
@@ -26,6 +29,8 @@ export default function UniverseCard({
         src={image}
         alt={title}
         fill
+        sizes="(max-width: 640px) 100vw, 512px"
+        preload={preload}
         className="object-cover transition-transform duration-500 group-hover:scale-105"
       />
       {/* Voile sombre pour la lisibilité du texte */}
