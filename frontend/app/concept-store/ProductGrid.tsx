@@ -144,7 +144,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((product) => (
               <li
-                key={product.name}
+                key={product.id ?? product.name}
                 className="flex flex-col rounded-2xl border border-green/10 bg-cream p-5"
               >
                 <div className="relative mb-4 aspect-square rounded-xl bg-pink">

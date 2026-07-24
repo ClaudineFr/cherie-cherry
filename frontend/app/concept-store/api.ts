@@ -41,6 +41,7 @@ export async function fetchProducts(): Promise<Product[]> {
 
   // Conversion API -> format du front.
   return data.map((item) => ({
+    id: item.id,
     name: item.name,
     category: CATEGORY_LABELS[item.category] ?? "Bijoux", // repli si catégorie inconnue
     description: item.description || undefined,

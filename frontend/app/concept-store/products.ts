@@ -2,21 +2,17 @@
 
 // Les catégories disponibles. On les liste ici une seule fois pour que
 // les filtres et les produits utilisent exactement les mêmes valeurs.
-export const categories = [
-  "Bijoux",
-  "Papeterie",
-  "Sacs",
-  "Vêtements",
-] as const;
+export const categories = ["Bijoux", "Papeterie", "Sacs", "Vêtements"] as const;
 
 export type Category = (typeof categories)[number];
 
 export type Product = {
+  id?: number;
   name: string;
   category: Category;
   description?: string;
-  price: number; // en euros, en nombre → sert aussi aux filtres par prix
-  featured?: boolean; // true = nouveauté / coup de cœur (mis en avant)
+  price: number;
+  featured?: boolean;
 };
 
 export const products: Product[] = [
