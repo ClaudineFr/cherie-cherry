@@ -2,9 +2,9 @@
 
 import type { Category, Product } from "./products";
 
-// Adresse de l'API Django. Codée en dur pour l'instant ;
-// on la mettra dans une variable d'environnement plus tard.
-const API_URL = "http://127.0.0.1:8000/api/produits/";
+// L'URL vient de la variable d'environnement API_PRODUCTS_URL (voir .env.local).
+// Ainsi on peut pointer vers une autre API en production sans toucher au code.
+const API_URL = process.env.API_PRODUCTS_URL;
 
 // La forme brute d'un produit tel que l'API le renvoie.
 // Noter : category en anglais, price en chaîne de caractères.
@@ -28,6 +28,11 @@ const CATEGORY_LABELS: Record<string, Category> = {
 
 // Va chercher les produits sur l'API et les convertit au format `Product` du front.
 export async function fetchProducts(): Promise<Product[]> {
+  if (!API_URL) {
+    throw new Error(
+      "API_PRODUCTS_URL n'est pas définie. Vérifie ton fichier .env.local.",
+    );
+  }
   const res = await fetch(API_URL, {
     // Ne pas mettre en cache : on veut les prix/stock à jour à chaque visite.
     cache: "no-store",
