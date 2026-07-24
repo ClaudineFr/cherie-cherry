@@ -1,7 +1,7 @@
 import UniverseCard from "@/components/UniverseCard";
 import Gallery from "@/components/Gallery";
 import coffeeShopImg from "@/public/universes/coffee-shop.jpg";
-import conceptStoreImg from "@/public/universes/concept-store.png";
+import conceptStoreImg from "@/public/universes/concept-store.jpg";
 
 export default function Home() {
   return (
