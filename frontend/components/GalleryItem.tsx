@@ -11,7 +11,14 @@ type GalleryItemProps = {
 
 export default function GalleryItem({ photo, index }: GalleryItemProps) {
   // `visible` = la photo est-elle entrée dans l'écran ? (false au départ)
-  const [visible, setVisible] = useState(false);
+  // Si l'utilisateur préfère moins d'animation, on démarre visible : pas de
+  // fondu à observer. (On teste `typeof window` car ce code tourne aussi côté
+  // serveur, où `window` n'existe pas.)
+  const [visible, setVisible] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   // `ref` = un lien direct vers l'élément <figure> dans le DOM, pour l'observer.
   const ref = useRef<HTMLElement>(null);
 
@@ -19,14 +26,8 @@ export default function GalleryItem({ photo, index }: GalleryItemProps) {
     const el = ref.current;
     if (!el) return;
 
-    // Si l'utilisateur préfère moins d'animation, on affiche direct.
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduceMotion) {
-      setVisible(true);
-      return;
-    }
+    // Animation désactivée (déjà visible) : rien à observer.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // L'IntersectionObserver prévient quand l'élément entre dans l'écran.
     const observer = new IntersectionObserver(
