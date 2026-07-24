@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Product
+from .models import GalleryPhoto, Product
 
 
 @admin.register(Product)
@@ -16,3 +16,8 @@ class ProductAdmin(admin.ModelAdmin):
 
     # Barre de recherche (par nom).
     search_fields = ["name"]
+
+@admin.register(GalleryPhoto)
+class GalleryPhotoAdmin(admin.ModelAdmin):
+    list_display = ["alt", "created_at"]
+

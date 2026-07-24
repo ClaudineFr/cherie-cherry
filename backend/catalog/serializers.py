@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product
+from .models import GalleryPhoto, Product
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -19,3 +19,16 @@ class ProductSerializer(serializers.ModelSerializer):
             "featured",
             "image"
         ]
+
+
+class GalleryPhotoSerializer(serializers.ModelSerializer):
+    """Décrit comment une GalleryPhoto est transformée en JSON."""
+
+    class Meta:
+        model = GalleryPhoto
+        fields = [
+            "id",
+            "image",
+            "alt",
+        ]
+

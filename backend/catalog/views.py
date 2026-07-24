@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import Product
-from .serializers import ProductSerializer
+from .models import GalleryPhoto, Product
+from .serializers import GalleryPhotoSerializer, ProductSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -12,3 +12,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     # Le serializer utilisé pour les transformer en JSON.
     serializer_class = ProductSerializer
+
+
+class GalleryPhotoViewSet(viewsets.ModelViewSet):
+    """Gère l'API de la galerie : lister, voir, créer, modifier, supprimer."""
+
+    queryset = GalleryPhoto.objects.all()
+    serializer_class = GalleryPhotoSerializer

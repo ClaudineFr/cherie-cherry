@@ -1,9 +1,10 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import ProductViewSet
+from .views import GalleryPhotoViewSet, ProductViewSet
 
-# Le routeur génère automatiquement les URLs à partir du ViewSet.
 router = DefaultRouter()
 router.register(r"produits", ProductViewSet)
+router.register(r"galerie", GalleryPhotoViewSet)
 
 urlpatterns = router.urls
+

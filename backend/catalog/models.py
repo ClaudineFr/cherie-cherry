@@ -55,3 +55,30 @@ class Product(models.Model):
     def __str__(self):
         # Ce que Django affichera pour représenter un produit (ex. dans l'admin).
         return self.name
+
+
+
+class GalleryPhoto(models.Model):
+    """Une photo d'ambiance affichée dans la galerie de la page d'accueil.
+
+    La proprio ajoute/supprime ces photos depuis l'admin.
+    """
+
+    image = models.ImageField(
+        "image",
+        upload_to="gallery/",
+    )
+
+    # Texte alternatif : décrit la photo pour l'accessibilité (lecteurs d'écran)
+    # et s'affiche si l'image ne charge pas.
+    alt = models.CharField("texte alternatif", max_length=200)
+
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "photo de galerie"
+        verbose_name_plural = "photos de galerie"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.alt
