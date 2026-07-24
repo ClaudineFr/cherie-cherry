@@ -6,10 +6,11 @@
   --color-pink: #f6d9df; /* rose poudré (fonds doux) */
   --color-pink-soft: #fbeef1; /* rose très clair (fonds de section) */
   --color-pink-vivid: #f8a6d5; /* rose vif du logo (accents ponctuels : boutons, survols) */
+  --color-pink-deep: #d9709c; /* rose framboise clair, lisible sur crème (titres) */
   --color-green: #406440; /* vert du logo (barre, footer, accents forts) */
   --color-green-deep: #335033; /* vert plus profond (survols) */
   --color-cream: #faf6f1; /* crème (fond principal du site) */
-  --color-ink: #2b2321; /* brun-noir doux (texte) */
+  --color-ink: #406440; /* vert (ancien brun-noir : tout le texte est désormais vert) */
 
   /* Polices */
   --font-serif: var(--font-playfair); /* titres élégants */
@@ -28,5 +29,23 @@ html {
 
 body {
   background-color: var(--color-cream);
-  color: var(--color-ink);
+  color: var(--color-green); /* texte courant en vert */
+}
+
+/* Couleurs par défaut des titres — dans @layer base pour que les
+   classes utilitaires (ex. text-cream) puissent les surcharger */
+@layer base {
+  /* Titres en rose framboise (signature de la marque) */
+  h1,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-pink-deep);
+  }
+
+  /* Sous-titres (h2) en vert profond */
+  h2 {
+    color: var(--color-green-deep);
+  }
 }

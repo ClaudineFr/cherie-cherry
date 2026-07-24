@@ -9,4 +9,8 @@
 .next/
 node_modules/
 
+# Captures d'écran / fichiers de travail temporaires (Playwright, etc.)
+.playwright-mcp/
+*.png
+
 # Le frontend (Next.js) et le backend (Django) ont chacun leur propre .gitignore

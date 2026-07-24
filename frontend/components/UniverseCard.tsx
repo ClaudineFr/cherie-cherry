@@ -36,7 +36,7 @@ export default function UniverseCard({
         <p className="text-xs uppercase tracking-[0.25em] text-cream/80">
           {eyebrow}
         </p>
-        <h3 className="font-serif text-3xl">{title}</h3>
+        <h3 className="font-serif text-3xl text-cream">{title}</h3>
         <p className="max-w-xs text-sm text-cream/90">{description}</p>
         <span className="mt-2 text-sm uppercase tracking-widest">
           Découvrir →
