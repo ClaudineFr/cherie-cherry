@@ -4,6 +4,9 @@ venv/
 # Base de données SQLite locale
 *.sqlite3
 
+# Fichiers uploadés par les utilisateurs (images produits) — spécifiques à la machine
+media/
+
 # Fichiers compilés Python
 __pycache__/
 *.pyc

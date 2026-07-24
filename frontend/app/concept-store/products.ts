@@ -13,6 +13,7 @@ export type Product = {
   description?: string;
   price: number;
   featured?: boolean;
+  image?: string | null;
 };
 
 export const products: Product[] = [

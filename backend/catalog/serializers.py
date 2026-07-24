@@ -17,4 +17,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "stock",
             "featured",
+            "image"
         ]

@@ -119,3 +119,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+# Fichiers "media" = fichiers uploadés par les utilisateurs (images produits).
+# MEDIA_URL  : l'URL publique sous laquelle on y accède (ex: /media/products/x.jpg)
+# MEDIA_ROOT : le dossier réel sur le disque où Django les range (backend/media/).
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"

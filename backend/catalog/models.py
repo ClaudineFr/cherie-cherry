@@ -34,6 +34,15 @@ class Product(models.Model):
 
     featured = models.BooleanField("coup de cœur", default=False)
 
+     # Image du produit. upload_to = sous-dossier dans MEDIA_ROOT où ranger le fichier.
+    # blank=True + null=True = le produit peut ne pas avoir d'image (optionnel).
+    image = models.ImageField(
+        "image",
+        upload_to="products/",
+        blank=True,
+        null=True,
+    )
+
     # Rempli automatiquement à la création / modification.
     created_at = models.DateTimeField("créé le", auto_now_add=True)
     updated_at = models.DateTimeField("modifié le", auto_now=True)

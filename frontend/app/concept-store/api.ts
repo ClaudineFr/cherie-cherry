@@ -16,6 +16,7 @@ type ApiProduct = {
   price: string;
   stock: number;
   featured: boolean;
+  image?: string | null;
 };
 
 // Traduction des catégories de l'API (anglais) vers les libellés du front (français).
@@ -52,5 +53,6 @@ export async function fetchProducts(): Promise<Product[]> {
     description: item.description || undefined,
     price: Number(item.price), // "45.00" (chaîne) -> 45 (nombre)
     featured: item.featured,
+    image: item.image,
   }));
 }

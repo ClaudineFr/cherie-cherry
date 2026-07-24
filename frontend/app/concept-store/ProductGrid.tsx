@@ -3,6 +3,7 @@
 //   La directive "use client" dit à Next.js de l'exécuter dans le navigateur.
 
 import { useState } from "react";
+import Image from "next/image";
 import { categories, type Category, type Product } from "./products";
 
 // `test` renvoie true si le prix du produit entre dans la tranche.
@@ -147,13 +148,23 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                 key={product.id ?? product.name}
                 className="flex flex-col rounded-2xl border border-green/10 bg-cream p-5"
               >
-                <div className="relative mb-4 aspect-square rounded-xl bg-pink">
+                <div className="relative mb-4 aspect-square overflow-hidden rounded-xl bg-pink">
+                  {product.image && (
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                  )}
                   {product.featured && (
                     <span className="absolute left-3 top-3 rounded-full bg-green px-3 py-1 text-xs text-cream">
                       Coup de cœur
                     </span>
                   )}
                 </div>
+
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-serif text-lg text-green">
                     {product.name}
