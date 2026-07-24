@@ -170,6 +170,15 @@ export default function ProductGrid({ products }: { products: Product[] }) {
               </li>
             ))}
           </ul>
+        ) : products.length === 0 ? (
+          <div className="rounded-2xl border border-green/10 bg-cream px-6 py-16 text-center">
+            <p className="font-serif text-xl text-green">
+              La boutique se remplit bientôt
+            </p>
+            <p className="mt-2 text-sm text-ink/50">
+              De jolies choses arrivent très prochainement. Revenez vite&nbsp;!
+            </p>
+          </div>
         ) : (
           <p className="text-center text-ink/50">
             Aucun produit ne correspond à ces filtres.
