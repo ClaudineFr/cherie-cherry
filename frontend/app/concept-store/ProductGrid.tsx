@@ -3,7 +3,7 @@
 //   La directive "use client" dit à Next.js de l'exécuter dans le navigateur.
 
 import { useState } from "react";
-import { categories, products, type Category } from "./products";
+import { categories, type Category, type Product } from "./products";
 
 // `test` renvoie true si le prix du produit entre dans la tranche.
 const priceRanges = [
@@ -12,7 +12,7 @@ const priceRanges = [
   { label: "Plus de 50 €", test: (p: number) => p > 50 },
 ];
 
-export default function ProductGrid() {
+export default function ProductGrid({ products }: { products: Product[] }) {
   // Chaque filtre = un morceau d'état. Quand l'état change,
   // React ré-affiche automatiquement la grille filtrée.
   const [category, setCategory] = useState<Category | "all">("all");

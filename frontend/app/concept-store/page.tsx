@@ -1,6 +1,11 @@
 import ProductGrid from "./ProductGrid";
+import { fetchProducts } from "./api";
 
-export default function ConceptStorePage() {
+// Server Component asynchrone : le fetch se fait sur le serveur Next
+// (donc pas besoin de CORS), puis on passe les produits à la grille.
+export default async function ConceptStorePage() {
+  const products = await fetchProducts();
+
   return (
     <main className="flex-1 bg-cream px-6 py-20">
       <div className="mx-auto max-w-5xl">
@@ -17,7 +22,7 @@ export default function ConceptStorePage() {
         </div>
 
         <div className="mt-16">
-          <ProductGrid />
+          <ProductGrid products={products} />
         </div>
       </div>
     </main>
