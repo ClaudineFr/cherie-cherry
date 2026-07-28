@@ -23,7 +23,7 @@ export default function Home() {
       </section>
 
       {/* Section : nos deux univers */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
+      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="mb-12 text-center font-serif text-2xl text-green md:text-3xl">
           Nos deux univers
         </h2>
@@ -47,7 +47,7 @@ export default function Home() {
       </section>
 
       {/* Section : stories Instagram mises en avant */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
+      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           Chérie Cherry &amp; Vous
         </h2>
@@ -58,27 +58,27 @@ export default function Home() {
       </section>
 
       {/* Section : feed Instagram de la marque */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
+      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           Rejoignez la communauté
         </h2>
-        <p className="mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
+        <p className="mx-auto mb-12 text-center text-xs text-ink/70 md:text-sm">
           Suivez{" "}
           <a
             href="https://www.instagram.com/cheriecherry.fr"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-green underline underline-offset-2 transition-opacity hover:opacity-70"
+            className="font-medium text-pink-vivid underline underline-offset-2 transition-opacity hover:opacity-70"
           >
             @cheriecherry.fr
           </a>{" "}
-          sur Instagram pour ne rien manquer de notre actualité.
+          sur Instagram.
         </p>
         <InstagramFeed />
       </section>
 
       {/* Section galerie / ambiance */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
+      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           L&apos;ambiance
         </h2>

@@ -59,7 +59,7 @@ export default function StoriesRow({ stories }: { stories: Story[] }) {
                 />
               </span>
             </span>
-            <span className="max-w-full truncate text-xs text-ink/70">
+            <span className="max-w-full truncate text-xs text-pink-vivid">
               {story.handle}
             </span>
           </li>

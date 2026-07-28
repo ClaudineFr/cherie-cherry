@@ -11,7 +11,6 @@ export default async function ContactPage() {
     .join(" — ");
 
   const contactInfos = [
-    { emoji: "📞", label: "Téléphone", value: "04 90 XX XX XX" },
     { emoji: "✉️", label: "Email", value: "contact@cheriecherry.fr" },
     {
       emoji: "📍",
@@ -32,7 +31,7 @@ export default async function ContactPage() {
         </h1>
 
         {/* Bandeau coordonnées */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {contactInfos.map((info) => (
             <div
               key={info.label}
