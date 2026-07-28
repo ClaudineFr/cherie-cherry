@@ -166,7 +166,10 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # CompressedStaticFilesStorage : compresse les fichiers statiques sans
+        # exiger un "manifest" strict. On évite ainsi le 500 si un fichier
+        # référencé manque (le variant "Manifest..." plante dans ce cas).
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 

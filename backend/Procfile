@@ -1,8 +1,10 @@
 # Indique à Railway comment faire tourner le backend Django.
 #
-# release : commandes lancées UNE FOIS à chaque déploiement, avant le démarrage.
+# On enchaîne migrate + collectstatic AVANT de lancer gunicorn, dans la même
+# commande de démarrage. Raison : le disque du conteneur est éphémère (recréé
+# à chaque déploiement) et la phase "release" séparée n'est pas exécutée de
+# façon fiable ici — donc on regénère staticfiles/ à chaque démarrage.
 #   - migrate       : applique les migrations sur la base Postgres
-#   - collectstatic : rassemble le CSS/JS de l'admin pour que WhiteNoise le serve
-# web : le serveur qui répond aux requêtes (gunicorn lance le WSGI de config/).
-release: python manage.py migrate --noinput && python manage.py collectstatic --noinput
-web: gunicorn config.wsgi --bind 0.0.0.0:$PORT
+#   - collectstatic : rassemble le CSS/JS de l'admin pour WhiteNoise
+#   - gunicorn      : le serveur qui répond aux requêtes
+web: python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn config.wsgi --bind 0.0.0.0:$PORT
