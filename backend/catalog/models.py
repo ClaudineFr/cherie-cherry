@@ -119,3 +119,36 @@ class OpeningHours(models.Model):
         # get_day_display() : Django génère ça tout seul à partir des choices.
         # Il renvoie le libellé ("Lundi") plutôt que le numéro (0).
         return self.get_day_display()
+
+class InstagramStory(models.Model):
+    """Une « story » Instagram mise en avant sur la page d'accueil.
+
+    Ce ne sont pas de vraies stories Instagram (via l'API Meta), mais des
+    photos que la proprio choisit et upload elle-même depuis l'admin, affichées
+    en ronds façon stories. Chaque rond renvoie vers un lien Instagram.
+    """
+
+    image = models.ImageField(
+        "image",
+        upload_to="stories/",
+    )
+
+    # Le @ affiché sous le rond (ex. "@carla_psu") ou un titre court.
+    handle = models.CharField("légende / @handle", max_length=100)
+
+
+    # Pour ranger les ronds dans l'ordre voulu : plus le nombre est petit,
+    # plus le rond apparaît tôt. La proprio ajuste ça depuis l'admin.
+    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "story Instagram"
+        verbose_name_plural = "stories Instagram"
+        # On trie d'abord par ordre, puis par date de création (plus récent
+        # d'abord) pour départager deux stories de même ordre.
+        ordering = ["order", "-created_at"]
+
+    def __str__(self):
+        return self.handle

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -49,4 +49,16 @@ class OpeningHoursSerializer(serializers.ModelSerializer):
             "opens_at",
             "closes_at",
             "closed",
+        ]
+
+class InstagramStorySerializer(serializers.ModelSerializer):
+    """Décrit comment une InstagramStory est transformée en JSON."""
+
+    class Meta:
+        model = InstagramStory
+        fields = [
+            "id",
+            "image",
+            "handle",
+            "order",
         ]

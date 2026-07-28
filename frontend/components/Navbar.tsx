@@ -47,7 +47,7 @@ export default function Navbar() {
       <div
         className={`${
           isOpen ? "flex" : "hidden"
-        } absolute left-0 top-full w-full flex-col items-center gap-6 bg-green px-8 py-6 text-[0.7rem] uppercase tracking-[0.15em] sm:static sm:flex sm:w-auto sm:flex-row sm:gap-6 sm:bg-transparent sm:p-0`}
+        } absolute left-0 top-full w-full flex-col items-center gap-6 bg-green px-8 py-6 text-[0.7rem] uppercase tracking-[0.08em] sm:static sm:flex sm:w-auto sm:flex-row sm:gap-6 sm:bg-transparent sm:p-0`}
       >
         {links.map((link) => (
           <Link

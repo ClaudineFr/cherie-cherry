@@ -1,5 +1,6 @@
 import UniverseCard from "@/components/UniverseCard";
 import Gallery from "@/components/Gallery";
+import InstagramStories from "@/components/InstagramStories";
 import coffeeShopImg from "@/public/universes/coffee-shop.jpg";
 import conceptStoreImg from "@/public/universes/concept-store.jpg";
 
@@ -22,7 +23,7 @@ export default function Home() {
 
       {/* Section : nos deux univers */}
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h2 className="mb-12 text-center font-serif text-3xl text-green">
+        <h2 className="mb-12 text-center font-serif text-2xl text-green md:text-3xl">
           Nos deux univers
         </h2>
         <div className="grid gap-6 sm:grid-cols-2">
@@ -44,12 +45,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Section : stories Instagram mises en avant */}
+      <section className="mx-auto max-w-5xl px-6 py-20">
+        <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
+          Chérie Cherry &amp; Vous
+        </h2>
+        <p className="mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
+          Vos plus beaux moments partagés en boutique.
+        </p>
+        <InstagramStories />
+      </section>
+
       {/* Section galerie / ambiance */}
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h2 className="mb-4 text-center font-serif text-3xl text-green">
+        <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           L&apos;ambiance
         </h2>
-        <p className="mx-auto mb-12 max-w-md text-center text-base text-ink/70">
+        <p className="mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
           Un aperçu de notre univers, entre coffee shop et concept store.
         </p>
         <Gallery />
