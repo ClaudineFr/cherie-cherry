@@ -7,6 +7,9 @@ venv/
 # Fichiers uploadés par les utilisateurs (images produits) — spécifiques à la machine
 media/
 
+# Fichiers statiques rassemblés par `collectstatic` — régénérés au déploiement
+staticfiles/
+
 # Fichiers compilés Python
 __pycache__/
 *.pyc

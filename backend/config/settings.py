@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +23,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l_0uxex^9is*1#op=j*ecgnkaa^x62b9=mqp7m-=15t*&b555s'
+# En prod, la vraie clé vient de la variable d'environnement DJANGO_SECRET_KEY
+# (définie sur Railway). En local, on retombe sur la clé de dev ci-dessous.
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-l_0uxex^9is*1#op=j*ecgnkaa^x62b9=mqp7m-=15t*&b555s",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG est désactivé par défaut. On ne l'active QUE si DJANGO_DEBUG == "1".
+# En local, mettre DJANGO_DEBUG=1 dans son environnement pour retrouver les
+# pages d'erreur détaillées.
+DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
 
-ALLOWED_HOSTS = []
+# Les hôtes autorisés à servir le site, séparés par des virgules dans la
+# variable d'env DJANGO_ALLOWED_HOSTS (ex: "cheriecherry.fr,www.cheriecherry.fr").
+# En local (DEBUG), on autorise localhost automatiquement.
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
+    if h.strip()
+]
+if DEBUG:
+    ALLOWED_HOSTS += ["127.0.0.1", "localhost"]
+
+# Railway sert le site derrière un proxy HTTPS. Ces réglages disent à Django
+# de faire confiance à l'en-tête envoyé par le proxy pour savoir qu'on est en
+# HTTPS, et de n'accepter les requêtes POST de l'admin que depuis nos domaines.
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if o.strip()
+]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -45,6 +75,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # WhiteNoise sert les fichiers statiques (le CSS de l'admin, etc.) en prod.
+    # Doit être placé juste après SecurityMiddleware.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,11 +109,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# En prod, Railway fournit une variable DATABASE_URL pointant vers Postgres.
+# dj_database_url la traduit en config Django. En local, DATABASE_URL n'existe
+# pas → on retombe sur le fichier SQLite comme avant.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
 
 
@@ -120,9 +156,26 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# STATIC_ROOT : dossier où `collectstatic` rassemble tous les fichiers statiques
+# (CSS/JS de l'admin Django, etc.) pour que WhiteNoise les serve en prod.
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise : compresse et met en cache les fichiers statiques.
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 
 # Fichiers "media" = fichiers uploadés par les utilisateurs (images produits).
 # MEDIA_URL  : l'URL publique sous laquelle on y accède (ex: /media/products/x.jpg)
-# MEDIA_ROOT : le dossier réel sur le disque où Django les range (backend/media/).
+# MEDIA_ROOT : le dossier réel sur le disque où Django les range.
+#   - En local : backend/media/ (comme avant).
+#   - En prod  : Railway définit DJANGO_MEDIA_ROOT vers un VOLUME persistant
+#     (ex: /data/media) pour que les photos survivent aux redéploiements.
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = os.environ.get("DJANGO_MEDIA_ROOT", BASE_DIR / "media")
