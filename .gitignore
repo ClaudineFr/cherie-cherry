@@ -11,6 +11,10 @@ node_modules/
 
 # Captures d'écran / fichiers de travail temporaires (Playwright, etc.)
 .playwright-mcp/
-*.png
+# Les captures traînent à la RACINE du repo (home.png, screenshots Playwright…).
+# On ne les versionne pas — mais uniquement à la racine : le slash devant limite
+# la règle au niveau racine, pour ne PAS ignorer les vrais assets rangés dans
+# des sous-dossiers comme frontend/public/.
+/*.png
 
 # Le frontend (Next.js) et le backend (Django) ont chacun leur propre .gitignore
