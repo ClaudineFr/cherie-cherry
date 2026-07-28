@@ -82,3 +82,40 @@ class GalleryPhoto(models.Model):
 
     def __str__(self):
         return self.alt
+
+class OpeningHours(models.Model):
+    """Les horaires d'ouverture pour un jour de la semaine.
+
+    Une ligne = un jour. La proprio modifie ça depuis l'admin.
+    """
+
+    # Les jours de la semaine. La valeur en base est un numéro (0 = lundi)
+    # pour que le tri se fasse dans le bon ordre. Le libellé, lui, est affiché.
+    class Day(models.IntegerChoices):
+        MONDAY = 0, "Lundi"
+        TUESDAY = 1, "Mardi"
+        WEDNESDAY = 2, "Mercredi"
+        THURSDAY = 3, "Jeudi"
+        FRIDAY = 4, "Vendredi"
+        SATURDAY = 5, "Samedi"
+        SUNDAY = 6, "Dimanche"
+
+    # unique=True : on ne veut qu'UNE seule ligne par jour.
+    day = models.IntegerField("jour", choices=Day.choices, unique=True)
+
+    # TimeField = une heure seule (sans date). null=True car un jour fermé
+    # n'a pas d'horaire.
+    opens_at = models.TimeField("ouverture", null=True, blank=True)
+    closes_at = models.TimeField("fermeture", null=True, blank=True)
+
+    closed = models.BooleanField("fermé", default=False)
+
+    class Meta:
+        verbose_name = "horaire d'ouverture"
+        verbose_name_plural = "horaires d'ouverture"
+        ordering = ["day"]
+
+    def __str__(self):
+        # get_day_display() : Django génère ça tout seul à partir des choices.
+        # Il renvoie le libellé ("Lundi") plutôt que le numéro (0).
+        return self.get_day_display()

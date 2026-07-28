@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product
+from .models import GalleryPhoto, Product, OpeningHours
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -32,3 +32,21 @@ class GalleryPhotoSerializer(serializers.ModelSerializer):
             "alt",
         ]
 
+class OpeningHoursSerializer(serializers.ModelSerializer):
+    """Décrit comment un OpeningHours est transformé en JSON."""
+
+    # Champ "calculé" : en plus du numéro (day=0), on expose le libellé
+    # ("Lundi") pour que le front l'affiche sans avoir à le deviner.
+    # source="get_day_display" appelle la méthode que Django génère tout seul.
+    day_label = serializers.CharField(source="get_day_display", read_only=True)
+
+    class Meta:
+        model = OpeningHours
+        fields = [
+            "id",
+            "day",
+            "day_label",
+            "opens_at",
+            "closes_at",
+            "closed",
+        ]

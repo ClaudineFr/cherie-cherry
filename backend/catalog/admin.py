@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import GalleryPhoto, Product
+from .models import GalleryPhoto, OpeningHours, Product
+
 
 
 @admin.register(Product)
@@ -21,3 +22,10 @@ class ProductAdmin(admin.ModelAdmin):
 class GalleryPhotoAdmin(admin.ModelAdmin):
     list_display = ["alt", "created_at"]
 
+@admin.register(OpeningHours)
+class OpeningHoursAdmin(admin.ModelAdmin):
+    # Colonnes affichées dans la liste des horaires.
+    list_display = ["__str__", "opens_at", "closes_at", "closed"]
+
+    # Cases modifiables directement depuis la liste, sans ouvrir chaque jour.
+    list_editable = ["opens_at", "closes_at", "closed"]

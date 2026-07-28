@@ -1,17 +1,29 @@
 import Link from "next/link";
 import { FaInstagram, FaTiktok } from "react-icons/fa6";
+import { fetchOpeningHours, groupOpeningHours } from "@/app/openingHours";
 
-export default function Footer() {
+// async : le footer va chercher les horaires sur l'API au rendu (Server Component).
+export default async function Footer() {
+  // On récupère les horaires puis on les regroupe (jours identiques fusionnés).
+  const hours = groupOpeningHours(await fetchOpeningHours());
+
   return (
     <footer className="bg-green text-cream">
-      {/* Zone principale : 3 colonnes, le bloc central mis en avant */}
       <div className="mx-auto grid max-w-4xl gap-10 px-8 py-14 text-center sm:grid-cols-3 sm:items-start sm:gap-8">
         {/* Contact */}
         <div className="flex flex-col items-center gap-2 text-xs text-cream/80">
           <p className="mb-2 uppercase tracking-widest text-cream">Contact</p>
           <p>7 rue de la République</p>
           <p>84200 Carpentras</p>
-          <p>Du mardi au dimanche · 10h30 – 19h00</p>
+          {/* Horaires : une ligne par plage de jours regroupée */}
+          <div className="mt-2 flex flex-col gap-0.5">
+            <p className="uppercase tracking-widest text-cream">Horaires</p>
+            {hours.map((range) => (
+              <p key={range.days}>
+                {range.days} {range.hours}
+              </p>
+            ))}
+          </div>
         </div>
 
         {/* Bloc central : le nom + baseline, mis en avant */}
@@ -28,7 +40,9 @@ export default function Footer() {
 
         {/* Réseaux sociaux */}
         <div className="flex flex-col items-center gap-2 text-xs">
-          <p className="mb-2 uppercase tracking-widest text-cream">Nous suivre</p>
+          <p className="mb-2 uppercase tracking-widest text-cream">
+            Nous suivre
+          </p>
           <div className="flex gap-3">
             <a
               href="https://www.instagram.com/cheriecherry.fr"

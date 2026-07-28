@@ -1,17 +1,26 @@
 import ContactForm from "@/components/ContactForm";
+import { fetchOpeningHours, groupOpeningHours } from "@/app/openingHours";
 
-const contactInfos = [
-  { emoji: "📞", label: "Téléphone", value: "04 90 XX XX XX" },
-  { emoji: "✉️", label: "Email", value: "contact@cheriecherry.fr" },
-  {
-    emoji: "📍",
-    label: "Adresse",
-    value: "7 rue de la République, 84200 Carpentras",
-  },
-  { emoji: "🕒", label: "Horaires", value: "Mar. – Dim. · 10h30 – 19h00" },
-];
+// async : la page va chercher les horaires sur l'API au rendu (Server Component).
+export default async function ContactPage() {
+  // Horaires regroupés (jours fermés masqués), transformés en texte.
+  // Ex. "Mardi – Samedi · 10h30 – 19h00".
+  const ranges = groupOpeningHours(await fetchOpeningHours());
+  const horaires = ranges
+    .map((range) => `${range.days} · ${range.hours}`)
+    .join(" — ");
 
-export default function ContactPage() {
+  const contactInfos = [
+    { emoji: "📞", label: "Téléphone", value: "04 90 XX XX XX" },
+    { emoji: "✉️", label: "Email", value: "contact@cheriecherry.fr" },
+    {
+      emoji: "📍",
+      label: "Adresse",
+      value: "7 rue de la République, 84200 Carpentras",
+    },
+    { emoji: "🕒", label: "Horaires", value: horaires },
+  ];
+
   return (
     <main className="flex-1 bg-cream px-6 py-20">
       <div className="mx-auto max-w-3xl">

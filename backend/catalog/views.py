@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import GalleryPhoto, Product
-from .serializers import GalleryPhotoSerializer, ProductSerializer
+from .models import GalleryPhoto, Product, OpeningHours
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -19,3 +19,9 @@ class GalleryPhotoViewSet(viewsets.ModelViewSet):
 
     queryset = GalleryPhoto.objects.all()
     serializer_class = GalleryPhotoSerializer
+
+class OpeningHoursViewSet(viewsets.ModelViewSet):
+    """Gère l'API des horaires : lister, voir, créer, modifier, supprimer."""
+
+    queryset = OpeningHours.objects.all()
+    serializer_class = OpeningHoursSerializer
