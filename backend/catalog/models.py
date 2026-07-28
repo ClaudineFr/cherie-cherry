@@ -152,3 +152,36 @@ class InstagramStory(models.Model):
 
     def __str__(self):
         return self.handle
+
+class InstagramPost(models.Model):
+    """Une publication Instagram de la marque, affichée dans le feed de la home.
+
+    Ce n'est PAS un vrai feed Instagram live (pas d'API Meta) : ce sont des
+    posts que le client réplique à la main depuis l'admin. Chaque vignette
+    renvoie vers la vraie publication Instagram.
+    """
+
+    image = models.ImageField(
+        "image",
+        upload_to="posts/",
+    )
+
+    # Légende courte affichée sous / sur la vignette (optionnelle).
+    caption = models.CharField("légende", max_length=200, blank=True)
+
+    # Le lien vers la vraie publication Instagram. C'est là que pointe le clic.
+    link = models.URLField("lien vers le post")
+
+    # Pour ranger les posts dans l'ordre voulu (plus petit = affiché en premier).
+    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "post Instagram"
+        verbose_name_plural = "posts Instagram"
+        ordering = ["order", "-created_at"]
+
+    def __str__(self):
+        # La légende si elle existe, sinon un repère avec l'id.
+        return self.caption or f"Post #{self.pk}"

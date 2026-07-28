@@ -1,12 +1,10 @@
 from rest_framework import viewsets
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory
-from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    """Gère l'API des produits : lister, voir, créer, modifier, supprimer."""
-
     # Les données à servir : tous les produits.
     queryset = Product.objects.all()
 
@@ -15,19 +13,17 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class GalleryPhotoViewSet(viewsets.ModelViewSet):
-    """Gère l'API de la galerie : lister, voir, créer, modifier, supprimer."""
-
     queryset = GalleryPhoto.objects.all()
     serializer_class = GalleryPhotoSerializer
 
 class OpeningHoursViewSet(viewsets.ModelViewSet):
-    """Gère l'API des horaires : lister, voir, créer, modifier, supprimer."""
-
     queryset = OpeningHours.objects.all()
     serializer_class = OpeningHoursSerializer
 
 class InstagramStoryViewSet(viewsets.ModelViewSet):
-    """Gère l'API des stories Instagram : lister, voir, créer, modifier, supprimer."""
-
     queryset = InstagramStory.objects.all()
     serializer_class = InstagramStorySerializer
+
+class InstagramPostViewSet(viewsets.ModelViewSet):
+    queryset = InstagramPost.objects.all()
+    serializer_class = InstagramPostSerializer

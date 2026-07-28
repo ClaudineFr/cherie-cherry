@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost
 
 
 
@@ -35,4 +35,11 @@ class InstagramStoryAdmin(admin.ModelAdmin):
     list_display = ["handle", "order", "created_at"]
 
     # L'ordre modifiable directement dans la liste, sans ouvrir chaque story.
+    list_editable = ["order"]
+
+@admin.register(InstagramPost)
+class InstagramPostAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "order", "link", "created_at"]
+
+    # L'ordre modifiable directement dans la liste.
     list_editable = ["order"]

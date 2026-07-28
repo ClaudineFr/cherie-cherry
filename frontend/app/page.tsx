@@ -1,6 +1,7 @@
 import UniverseCard from "@/components/UniverseCard";
 import Gallery from "@/components/Gallery";
 import InstagramStories from "@/components/InstagramStories";
+import InstagramFeed from "@/components/InstagramFeed";
 import coffeeShopImg from "@/public/universes/coffee-shop.jpg";
 import conceptStoreImg from "@/public/universes/concept-store.jpg";
 
@@ -54,6 +55,26 @@ export default function Home() {
           Vos plus beaux moments partagés en boutique.
         </p>
         <InstagramStories />
+      </section>
+
+      {/* Section : feed Instagram de la marque */}
+      <section className="mx-auto max-w-5xl px-6 py-20">
+        <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
+          Rejoignez la communauté
+        </h2>
+        <p className="mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
+          Suivez{" "}
+          <a
+            href="https://www.instagram.com/cheriecherry.fr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-green underline underline-offset-2 transition-opacity hover:opacity-70"
+          >
+            @cheriecherry.fr
+          </a>{" "}
+          sur Instagram pour ne rien manquer de notre actualité.
+        </p>
+        <InstagramFeed />
       </section>
 
       {/* Section galerie / ambiance */}

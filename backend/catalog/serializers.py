@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory
-
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost
 
 class ProductSerializer(serializers.ModelSerializer):
     """Décrit comment un Product est transformé en JSON (et inversement)."""
@@ -22,8 +21,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class GalleryPhotoSerializer(serializers.ModelSerializer):
-    """Décrit comment une GalleryPhoto est transformée en JSON."""
-
     class Meta:
         model = GalleryPhoto
         fields = [
@@ -33,8 +30,6 @@ class GalleryPhotoSerializer(serializers.ModelSerializer):
         ]
 
 class OpeningHoursSerializer(serializers.ModelSerializer):
-    """Décrit comment un OpeningHours est transformé en JSON."""
-
     # Champ "calculé" : en plus du numéro (day=0), on expose le libellé
     # ("Lundi") pour que le front l'affiche sans avoir à le deviner.
     # source="get_day_display" appelle la méthode que Django génère tout seul.
@@ -52,13 +47,22 @@ class OpeningHoursSerializer(serializers.ModelSerializer):
         ]
 
 class InstagramStorySerializer(serializers.ModelSerializer):
-    """Décrit comment une InstagramStory est transformée en JSON."""
-
     class Meta:
         model = InstagramStory
         fields = [
             "id",
             "image",
             "handle",
+            "order",
+        ]
+
+class InstagramPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InstagramPost
+        fields = [
+            "id",
+            "image",
+            "caption",
+            "link",
             "order",
         ]
