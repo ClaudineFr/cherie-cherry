@@ -17,13 +17,13 @@ export default function ComingSoonPage() {
       />
 
       <div className="flex flex-col items-center gap-3">
-        <p className="text-xs uppercase tracking-[0.3em] text-cream/70">
+        <p className="text-sm uppercase tracking-[0.3em] text-cream/70">
           Coffee &amp; Matcha Club
         </p>
-        <h1 className="font-serif text-3xl text-pink-vivid sm:text-4xl">
+        <h1 className="font-serif text-4xl text-pink-vivid sm:text-5xl">
           Bientôt disponible
         </h1>
-        <p className="max-w-sm text-xs text-cream/80">
+        <p className="max-w-md text-sm text-cream/80 sm:text-base">
           Le site internet de notre coffee shop et concept store ouvre très
           prochainement. Suivez-nous pour ne rien manquer.
         </p>
