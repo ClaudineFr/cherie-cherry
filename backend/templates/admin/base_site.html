@@ -121,6 +121,34 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
           burger.classList.toggle("is-open", !isOpen);
         });
       }
+
+      // --- Fil d'ariane : afficher la catégorie au lieu de « Contenu du site » ---
+      // On associe chaque modèle à sa catégorie (mêmes catégories que l'accueil)
+      // et on remplace le libellé de l'app dans le fil d'ariane.
+      var CATEGORIES = {
+        "instagramstory": "Accueil",
+        "instagrampost": "Accueil",
+        "galleryphoto": "Accueil",
+        "menudrink": "Coffee shop",
+        "drinkofmonth": "Coffee shop",
+        "drinkofmonthsettings": "Coffee shop",
+        "supplement": "Coffee shop",
+        "product": "Concept store",
+        "openinghours": "Infos pratiques"
+      };
+      var fixBreadcrumb = function () {
+        var match = document.body.className.match(/model-([a-z]+)/);
+        if (!match) { return; }
+        var category = CATEGORIES[match[1]];
+        if (!category) { return; }
+        var appLink = document.querySelector('div.breadcrumbs a[href$="/catalog/"]');
+        if (appLink) { appLink.textContent = category; }
+      };
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", fixBreadcrumb);
+      } else {
+        fixBreadcrumb();
+      }
     })();
   </script>
 {% endblock %}

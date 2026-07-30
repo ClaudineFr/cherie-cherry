@@ -1,19 +1,22 @@
-{% load i18n cc_admin %}
+{% load i18n %}
 {% comment %}
-Barre latérale de navigation, personnalisée pour Chérie Cherry.
+Barre latérale de navigation, groupée par catégorie (mêmes catégories que
+l'accueil). « Authentification et autorisation » n'y figure pas : ces écrans
+restent accessibles via le menu « Mon compte ».
 
-On masque l'application « Authentification et autorisation » (Groupes /
-Utilisateurs) : le BO est utilisé par une seule personne non-technique, donc ces
-écrans n'ont pas à occuper la navigation principale. Ils restent accessibles via
-le menu « Mon compte » de l'en-tête.
-
-On reprend le markup d'origine de Django, mais on retire l'app `auth` de la liste
-via le filtre `exclude_app` avant de la passer au gabarit app_list.html.
+On réutilise le partiel _category_module.html en mode compact (nom du modèle
+seul, sans les colonnes Ajouter/Modifier). La source des modèles est
+`available_apps` (fournie par l'admin pour la barre latérale).
 {% endcomment %}
 <button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
 <nav class="sticky" id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
   <input type="search" id="nav-filter"
          placeholder="{% translate 'Start typing to filter…' %}"
          aria-label="{% translate 'Filter navigation items' %}">
-  {% include 'admin/app_list.html' with app_list=available_apps|exclude_app:"auth" show_changelinks=False %}
+  <div class="cc-sidebar-categories">
+    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Accueil" names="InstagramStory,InstagramPost,GalleryPhoto" %}
+    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Coffee shop" names="MenuDrink,DrinkOfMonth,DrinkOfMonthSettings,Supplement" %}
+    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Concept store" names="Product" %}
+    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Infos pratiques" names="OpeningHours" %}
+  </div>
 </nav>

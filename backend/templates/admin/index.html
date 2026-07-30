@@ -26,10 +26,10 @@ Le partiel admin/_category_module.html reçoit :
 {% endcomment %}
 {% block content %}
 <div id="content-main" class="app-list cc-categories">
-  {% include "admin/_category_module.html" with title="Accueil" note="Les sections de la page d'accueil : vos stories, vos posts Instagram et la galerie d'ambiance." names="InstagramStory,InstagramPost,GalleryPhoto" %}
-  {% include "admin/_category_module.html" with title="Coffee shop" note="Le menu, les boissons du mois et les suppléments de la page Coffee shop." names="MenuDrink,DrinkOfMonth,DrinkOfMonthSettings,Supplement" %}
-  {% include "admin/_category_module.html" with title="Concept store" note="Les produits de la boutique en ligne." names="Product" %}
-  {% include "admin/_category_module.html" with title="Infos pratiques" note="Vos horaires d'ouverture, affichés dans le pied de page et la page contact." names="OpeningHours" %}
+  {% include "admin/_category_module.html" with idprefix="cc-" title="Accueil" note="Les sections de la page d'accueil : vos stories, vos posts Instagram et la galerie d'ambiance." names="InstagramStory,InstagramPost,GalleryPhoto" %}
+  {% include "admin/_category_module.html" with idprefix="cc-" title="Coffee shop" note="Le menu, les boissons du mois et les suppléments de la page Coffee shop." names="MenuDrink,DrinkOfMonth,DrinkOfMonthSettings,Supplement" %}
+  {% include "admin/_category_module.html" with idprefix="cc-" title="Concept store" note="Les produits de la boutique en ligne." names="Product" %}
+  {% include "admin/_category_module.html" with idprefix="cc-" title="Infos pratiques" note="Vos horaires d'ouverture, affichés dans le pied de page et la page contact." names="OpeningHours" %}
 </div>
 {% endblock %}
 
