@@ -46,14 +46,14 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
   {% endcomment %}
   <span class="cc-userlinks">
     <span class="cc-account">
-      <button type="button" class="cc-account-toggle" aria-haspopup="true" aria-expanded="false">
+      <button type="button" class="cc-account-toggle" aria-expanded="false" aria-controls="cc-account-menu">
         Mon compte <span aria-hidden="true">▾</span>
       </button>
-      <span class="cc-account-menu" role="menu" hidden>
-        <a role="menuitem" href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
-        <a role="menuitem" href="{% url 'admin:auth_user_changelist' %}">Utilisateurs</a>
+      <span class="cc-account-menu" id="cc-account-menu" aria-label="Mon compte" hidden>
+        <a href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
+        <a href="{% url 'admin:auth_user_changelist' %}">Utilisateurs</a>
         {% if user.has_usable_password %}
-          <a role="menuitem" href="{% url 'admin:password_change' %}">Modifier le mot de passe</a>
+          <a href="{% url 'admin:password_change' %}">Modifier le mot de passe</a>
         {% endif %}
       </span>
     </span>
@@ -91,21 +91,43 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
 
   <script>
     (function () {
-      // --- Déroulant « Mon compte » (desktop) ---
+      // --- Déroulant « Mon compte » (desktop), accessible au clavier ---
       var toggle = document.querySelector(".cc-account-toggle");
       var menu = document.querySelector(".cc-account-menu");
       if (toggle && menu) {
-        var closeAcc = function () { menu.hidden = true; toggle.setAttribute("aria-expanded", "false"); };
-        toggle.addEventListener("click", function (e) {
-          e.stopPropagation();
-          if (menu.hidden) { menu.hidden = false; toggle.setAttribute("aria-expanded", "true"); }
-          else { closeAcc(); }
+        var links = menu.querySelectorAll("a");
+        var closeAcc = function (giveFocusBack) {
+          menu.hidden = true;
+          toggle.setAttribute("aria-expanded", "false");
+          if (giveFocusBack) { toggle.focus(); }
+        };
+        var openAcc = function () {
+          menu.hidden = false;
+          toggle.setAttribute("aria-expanded", "true");
+          if (links.length) { links[0].focus(); }  // focus au 1er lien
+        };
+        toggle.addEventListener("click", function () {
+          menu.hidden ? openAcc() : closeAcc(false);
         });
+        // Clic à l'extérieur : on ferme. On teste `contains` sur le bouton ET le
+        // menu, pour qu'un clic sur la flèche ▾ (enfant du bouton) ne compte pas
+        // comme « extérieur » (sinon le menu se rouvrirait/refermerait aussitôt).
         document.addEventListener("click", function (e) {
-          if (!menu.hidden && !menu.contains(e.target)) { closeAcc(); }
+          if (menu.hidden) { return; }
+          if (!toggle.contains(e.target) && !menu.contains(e.target)) { closeAcc(false); }
         });
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape") { closeAcc(); }
+        // Échap : ferme et redonne le focus au bouton.
+        menu.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { closeAcc(true); }
+        });
+        toggle.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { closeAcc(false); }
+        });
+        // Tab hors du menu : on ferme (le focus part naturellement au suivant).
+        menu.addEventListener("focusout", function (e) {
+          if (!menu.hidden && !menu.contains(e.relatedTarget) && e.relatedTarget !== toggle) {
+            closeAcc(false);
+          }
         });
       }
 

@@ -8,6 +8,7 @@
   --cc-pink-soft: #fbeef1;
   --cc-pink-vivid: #f8a6d5;
   --cc-pink-deep: #d9709c;
+  --cc-title: #b84577; /* framboise + profond : contraste AA sur crème pour les titres */
   --cc-green: #406440;
   --cc-green-deep: #335033;
   --cc-cream: #faf6f1;
@@ -61,6 +62,31 @@ html[data-theme="light"] {
   --selected-row: #fdf4f6;
 
   --message-success-bg: #e3efe0;
+}
+
+/* Accessibilité : focus clavier visible + mouvement réduit */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--cc-pink-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Sur fond vert (en-tête), le focus passe en clair pour rester visible. */
+#header a:focus-visible,
+#header button:focus-visible {
+  outline-color: #ffffff;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* Typo serif */
@@ -257,7 +283,7 @@ body.change-list .colMS {
   margin-right: 0;
 }
 #content h1 {
-  color: var(--accent);
+  color: var(--cc-title);
   font-size: 1.8rem;
   margin-bottom: 20px;
 }
