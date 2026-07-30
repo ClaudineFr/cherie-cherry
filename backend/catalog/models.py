@@ -185,3 +185,92 @@ class InstagramPost(models.Model):
     def __str__(self):
         # La légende si elle existe, sinon un repère avec l'id.
         return self.caption or f"Post #{self.pk}"
+
+
+class MenuDrink(models.Model):
+    """Une boisson de la carte permanente du coffee shop.
+
+    La proprio ajoute / modifie / retire ces boissons depuis l'admin.
+    """
+
+    class Category(models.TextChoices):
+        COFFEE = "coffee", "Coffee"
+        MATCHA = "matcha", "Matcha & more"
+
+    name = models.CharField("nom", max_length=120)
+
+    description = models.CharField("description", max_length=200, blank=True)
+
+    # DecimalField. Le « € » sera
+    # ajouté côté front à l'affichage.
+    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+
+    category = models.CharField(
+        "catégorie",
+        max_length=20,
+        choices=Category.choices,
+    )
+
+    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+
+    # Décocher pour masquer une boisson sans la supprimer (rupture, saison...).
+    available = models.BooleanField("disponible", default=True)
+
+    class Meta:
+        verbose_name = "boisson du menu"
+        verbose_name_plural = "boissons du menu"
+        ordering = ["category", "order"]
+
+    def __str__(self):
+        return self.name
+
+class DrinkOfMonth(models.Model):
+    """Une « boisson du mois » : une création éphémère mise en avant.
+
+    Séparée du menu permanent (MenuDrink). La proprio les gère depuis l'admin.
+    """
+
+    name = models.CharField("nom", max_length=120)
+
+    description = models.CharField("description", max_length=200, blank=True)
+
+    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+
+    # Pour ranger les boissons du mois dans l'ordre voulu (comme les stories).
+    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+
+    # Décocher pour la retirer du site sans la supprimer.
+    active = models.BooleanField("active", default=True)
+
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "boisson du mois"
+        verbose_name_plural = "boissons du mois"
+        ordering = ["order", "-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class DrinkOfMonthSettings(models.Model):
+    """Réglages de l'encart « boissons du mois ».
+
+    On ne garde qu'UNE seule ligne : c'est un réglage global de l'encart,
+    pas une donnée par boisson. La cliente y choisit la date de fin.
+    """
+
+    # Date jusqu'à laquelle les boissons du mois sont proposées.
+    # null/blank = optionnel : si vide, aucune phrase « durée limitée ».
+    available_until = models.DateField(
+        "disponibles jusqu'au",
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = "réglage des boissons du mois"
+        verbose_name_plural = "réglages des boissons du mois"
+
+    def __str__(self):
+        return "Réglages des boissons du mois"

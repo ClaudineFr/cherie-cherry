@@ -1,8 +1,6 @@
 from django.contrib import admin
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost
-
-
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -43,3 +41,37 @@ class InstagramPostAdmin(admin.ModelAdmin):
 
     # L'ordre modifiable directement dans la liste.
     list_editable = ["order"]
+
+@admin.register(MenuDrink)
+class MenuDrinkAdmin(admin.ModelAdmin):
+    # Colonnes affichées dans la liste des boissons.
+    list_display = ["name", "category", "price", "order", "available"]
+
+    # Modifiables directement depuis la liste, sans ouvrir chaque boisson.
+    list_editable = ["price", "order", "available"]
+
+    # Filtre par catégorie dans la colonne de droite.
+    list_filter = ["category", "available"]
+
+    # Barre de recherche par nom.
+    search_fields = ["name"]
+
+@admin.register(DrinkOfMonth)
+class DrinkOfMonthAdmin(admin.ModelAdmin):
+    list_display = ["name", "price", "order", "active"]
+    list_editable = ["price", "order", "active"]
+    list_filter = ["active"]
+    search_fields = ["name"]
+
+@admin.register(DrinkOfMonthSettings)
+class DrinkOfMonthSettingsAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "available_until"]
+
+    # On autorise l'ajout SEULEMENT s'il n'y a pas déjà une ligne :
+    # ces réglages sont uniques (un seul encart à régler).
+    def has_add_permission(self, request):
+        return not DrinkOfMonthSettings.objects.exists()
+
+    # On empêche la suppression : la ligne de réglages doit toujours exister.
+    def has_delete_permission(self, request, obj=None):
+        return False

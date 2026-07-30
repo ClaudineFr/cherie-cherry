@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost
-from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -27,3 +27,26 @@ class InstagramStoryViewSet(viewsets.ModelViewSet):
 class InstagramPostViewSet(viewsets.ModelViewSet):
     queryset = InstagramPost.objects.all()
     serializer_class = InstagramPostSerializer
+
+class MenuDrinkViewSet(viewsets.ModelViewSet):
+    queryset = MenuDrink.objects.filter(available=True)
+    serializer_class = MenuDrinkSerializer
+
+class DrinkOfMonthViewSet(viewsets.ModelViewSet):
+    # On ne sert que les boissons du mois actives.
+    queryset = DrinkOfMonth.objects.filter(active=True)
+    serializer_class = DrinkOfMonthSerializer
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+
+class DrinkOfMonthSettingsView(APIView):
+    """Renvoie les réglages de l'encart (la date de fin), sous forme d'UN objet."""
+
+    def get(self, request):
+        settings = DrinkOfMonthSettings.objects.first()
+        serializer = DrinkOfMonthSettingsSerializer(
+            settings or DrinkOfMonthSettings()
+        )
+        return Response(serializer.data)
