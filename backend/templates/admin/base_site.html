@@ -91,6 +91,12 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
 
   <script>
     (function () {
+      // Fonctions de fermeture partagées entre le menu compte et le tiroir des
+      // catégories, pour que l'ouverture de l'un ferme l'autre (exclusion
+      // mutuelle). Renseignées ci-dessous si les éléments existent.
+      var closeAccount = function () {};
+      var closeDrawer = function () {};
+
       // --- Déroulant « Mon compte » (desktop), accessible au clavier ---
       var toggle = document.querySelector(".cc-account-toggle");
       var menu = document.querySelector(".cc-account-menu");
@@ -101,7 +107,9 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
           toggle.setAttribute("aria-expanded", "false");
           if (giveFocusBack) { toggle.focus(); }
         };
+        closeAccount = function () { closeAcc(false); };
         var openAcc = function () {
+          closeDrawer();  // ferme le tiroir des catégories s'il est ouvert
           menu.hidden = false;
           toggle.setAttribute("aria-expanded", "true");
           if (links.length) { links[0].focus(); }  // focus au 1er lien
@@ -136,10 +144,12 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
       var drawer = document.getElementById("cc-drawer");
       if (burger && drawer) {
         var setDrawer = function (open) {
+          if (open) { closeAccount(); }  // ferme le menu compte s'il est ouvert
           drawer.hidden = !open;
           burger.setAttribute("aria-expanded", String(open));
           burger.classList.toggle("is-open", open);
         };
+        closeDrawer = function () { setDrawer(false); };
         burger.addEventListener("click", function () {
           setDrawer(drawer.hidden);
         });

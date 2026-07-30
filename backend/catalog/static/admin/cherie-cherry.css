@@ -616,10 +616,47 @@ a.button:hover {
   #user-tools .cc-userlinks > #logout-form button {
     color: #ffffff;
   }
-  /* Le déroulant « Mon compte » s'aligne sous son icône. */
+  /* Le déroulant « Mon compte » : au lieu du petit popover, on le passe en
+     panneau pleine largeur ancré sous la topbar (comme le tiroir des
+     catégories). .cc-account reste statique pour ne pas servir d'ancrage ;
+     c'est #header (position:relative) qui ancre le panneau. */
+  .cc-account {
+    position: static;
+  }
   #user-tools .cc-account-menu {
-    right: auto;
+    position: absolute;
+    top: 100%;
     left: 0;
+    right: 0;
+    width: 100%;
+    min-width: 0;
+    z-index: 30;
+    padding: 8px 0;
+    border: none;
+    border-radius: 0;
+    background: var(--cc-green);
+    box-shadow: 0 8px 20px rgba(28, 43, 24, 0.25);
+  }
+  /* Un intitulé « Mon compte » en tête du panneau, pour le contexte. */
+  #user-tools .cc-account-menu::before {
+    content: "Mon compte";
+    display: block;
+    padding: 6px 20px 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  #user-tools .cc-account-menu a {
+    padding: 14px 20px;
+    border-radius: 0;
+    color: #ffffff;
+    font-size: 0.95rem;
+  }
+  #user-tools .cc-account-menu a:hover {
+    background: var(--cc-green-deep);
+    color: #ffffff;
   }
 
   /* Panneau des catégories : pleine largeur, ancré sous la topbar. Le panneau
