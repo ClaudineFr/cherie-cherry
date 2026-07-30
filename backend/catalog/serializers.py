@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement
 
 class ProductSerializer(serializers.ModelSerializer):
     """Décrit comment un Product est transformé en JSON (et inversement)."""
@@ -98,4 +98,16 @@ class DrinkOfMonthSettingsSerializer(serializers.ModelSerializer):
         model = DrinkOfMonthSettings
         fields = [
             "available_until",
+        ]
+
+
+class SupplementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplement
+        fields = [
+            "id",
+            "label",
+            "price",
+            "order",
+            "available",
         ]

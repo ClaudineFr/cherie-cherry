@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -75,3 +75,10 @@ class DrinkOfMonthSettingsAdmin(admin.ModelAdmin):
     # On empêche la suppression : la ligne de réglages doit toujours exister.
     def has_delete_permission(self, request, obj=None):
         return False
+
+@admin.register(Supplement)
+class SupplementAdmin(admin.ModelAdmin):
+    list_display = ["label", "price", "order", "available"]
+    list_editable = ["price", "order", "available"]
+    list_filter = ["available"]
+    search_fields = ["label"]

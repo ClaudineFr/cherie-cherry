@@ -1,10 +1,11 @@
-import { fetchMenu, servingNote, supplements } from "./menu";
+import { fetchMenu, fetchSupplements, servingNote } from "./menu";
 import { fetchDrinksOfMonth, fetchDrinksOfMonthNote } from "./drinksOfMonth";
 
 // async : la page va chercher la carte sur l'API au rendu (Server Component),
 // comme le Footer le fait pour les horaires.
 export default async function CoffeeShopPage() {
   const menu = await fetchMenu();
+  const supplements = await fetchSupplements();
   const drinksOfMonth = await fetchDrinksOfMonth();
   const drinksOfMonthNote = await fetchDrinksOfMonthNote();
 
@@ -92,17 +93,20 @@ export default async function CoffeeShopPage() {
           ))}
         </div>
 
-        {/* Encart suppléments */}
-        <div className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-          <p className="mb-2 uppercase tracking-widest text-green">
-            Suppléments
-          </p>
-          <ul className="flex flex-col gap-1">
-            {supplements.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-        </div>
+        {/* Encart suppléments : affiché seulement s'il y a au moins un
+            supplément (géré depuis l'admin). */}
+        {supplements.length > 0 && (
+          <div className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
+            <p className="mb-2 uppercase tracking-widest text-green">
+              Suppléments
+            </p>
+            <ul className="flex flex-col gap-1">
+              {supplements.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Note pâtisseries */}
         <p className="mt-6 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">

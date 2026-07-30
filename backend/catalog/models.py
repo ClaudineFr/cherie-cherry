@@ -274,3 +274,31 @@ class DrinkOfMonthSettings(models.Model):
 
     def __str__(self):
         return "Réglages des boissons du mois"
+
+
+class Supplement(models.Model):
+    """Un supplément proposé sur les boissons (lait végétal, sirop...).
+
+    Affiché dans l'encart « Suppléments » de la page coffee shop. La proprio
+    modifie le libellé et le prix depuis l'admin.
+    """
+
+    # Le libellé complet du supplément, ex. "Lait : avoine, amande, sans lactose".
+    label = models.CharField("libellé", max_length=200)
+
+    # Le prix du supplément (le « + » et le « € » sont ajoutés à l'affichage).
+    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+
+    # Pour ranger les suppléments dans l'ordre voulu (comme le menu).
+    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+
+    # Décocher pour masquer un supplément sans le supprimer.
+    available = models.BooleanField("disponible", default=True)
+
+    class Meta:
+        verbose_name = "supplément"
+        verbose_name_plural = "suppléments"
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.label

@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings
-from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -36,6 +36,11 @@ class DrinkOfMonthViewSet(viewsets.ModelViewSet):
     # On ne sert que les boissons du mois actives.
     queryset = DrinkOfMonth.objects.filter(active=True)
     serializer_class = DrinkOfMonthSerializer
+
+class SupplementViewSet(viewsets.ModelViewSet):
+    # On ne sert que les suppléments disponibles.
+    queryset = Supplement.objects.filter(available=True)
+    serializer_class = SupplementSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response

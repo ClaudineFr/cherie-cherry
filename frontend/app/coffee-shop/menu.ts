@@ -4,16 +4,12 @@
 
 // L'URL vient d'une variable d'environnement (voir .env.local).
 const API_URL = process.env.API_MENU_URL;
+const SUPPLEMENTS_URL = process.env.API_SUPPLEMENTS_URL;
 
 // --- Textes qui ne bougent pas : on les garde en dur ---
 
 export const servingNote =
   "Toutes nos boissons sont disponibles chaudes ou glacées.";
-
-export const supplements = [
-  "Lait : avoine, amande, sans lactose + 0,50 €",
-  "Sirop : vanille, caramel, noisette, coco + 0,50 €",
-];
 
 // --- Les boissons, côté API ---
 
@@ -104,4 +100,44 @@ export async function fetchMenu(): Promise<MenuCategory[]> {
   }
 
   return categories;
+}
+
+// --- Les suppléments, côté API ---
+
+// Un supplément tel que l'API le renvoie.
+type Supplement = {
+  id: number;
+  label: string;
+  price: string;
+  order: number;
+  available: boolean;
+};
+
+// Va chercher les suppléments et construit chaque ligne à afficher, ex.
+// "Lait : avoine, amande, sans lactose + 0,50 €". En cas d'échec (API
+// injoignable), on renvoie une liste vide plutôt que de faire planter la page.
+export async function fetchSupplements(): Promise<string[]> {
+  if (!SUPPLEMENTS_URL) {
+    console.error(
+      "API_SUPPLEMENTS_URL n'est pas définie. Vérifie ton .env.local.",
+    );
+    return [];
+  }
+
+  try {
+    const res = await fetch(SUPPLEMENTS_URL, { cache: "no-store" });
+    if (!res.ok) {
+      console.error(`API suppléments : réponse ${res.status}`);
+      return [];
+    }
+
+    const data: Supplement[] = await res.json();
+
+    return [...data]
+      .sort((a, b) => a.order - b.order)
+      .map((s) => `${s.label} + ${formatPrice(s.price)}`);
+  } catch (err) {
+    console.error("Impossible de joindre l'API suppléments :", err);
+    return [];
+  }
 }
