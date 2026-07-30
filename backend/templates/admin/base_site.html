@@ -42,12 +42,21 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
 
 {% block userlinks %}
   {% comment %}
-  DESKTOP (> 640px) : pastilles + déroulant « Mon compte » (masqué en mobile).
+  Bouton hamburger (mobile) : ouvre le tiroir des catégories. Placé à gauche
+  par CSS (à la place du branding). Masqué en desktop.
+  {% endcomment %}
+  <button type="button" class="cc-burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="cc-drawer">
+    <span class="cc-burger-icon" aria-hidden="true"></span>
+  </button>
+
+  {% comment %}
+  Liens du compte. En desktop : pastilles + déroulant « Mon compte ». En mobile :
+  chaque élément affiche une icône (le texte est masqué par CSS).
   {% endcomment %}
   <span class="cc-userlinks">
     <span class="cc-account">
       <button type="button" class="cc-account-toggle" aria-expanded="false" aria-controls="cc-account-menu">
-        Mon compte <span aria-hidden="true">▾</span>
+        <span class="cc-ico" aria-hidden="true">👤</span><span class="cc-txt">Mon compte <span aria-hidden="true">▾</span></span>
       </button>
       <span class="cc-account-menu" id="cc-account-menu" aria-label="Mon compte" hidden>
         <a href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
@@ -58,35 +67,26 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
       </span>
     </span>
     {% if site_url %}
-      <a class="cc-viewsite" href="{{ site_url }}">Voir le site</a>
+      <a class="cc-viewsite" href="{{ site_url }}" title="Voir le site" aria-label="Voir le site"><span class="cc-ico" aria-hidden="true">🔗</span><span class="cc-txt">Voir le site</span></a>
     {% endif %}
     <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
       {% csrf_token %}
-      <button type="submit">{% translate 'Log out' %}</button>
+      <button type="submit" title="{% translate 'Log out' %}" aria-label="{% translate 'Log out' %}"><span class="cc-ico" aria-hidden="true">⏻</span><span class="cc-txt">{% translate 'Log out' %}</span></button>
     </form>
   </span>
 
   {% comment %}
-  MOBILE (≤ 640px) : bouton hamburger + panneau vert pleine largeur sous la
-  barre, comme le menu du front. Contient les liens du compte.
+  Panneau des catégories (mobile) : s'ouvre sous la topbar via le hamburger
+  (même bouton pour ouvrir/fermer). Les liens sont les mêmes que la sidebar.
   {% endcomment %}
-  <button type="button" class="cc-burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="cc-mobile-menu">
-    <span class="cc-burger-icon" aria-hidden="true"></span>
-  </button>
-  <nav id="cc-mobile-menu" class="cc-mobile-menu" hidden>
-    <a href="{% url 'admin:index' %}">Accueil</a>
-    <a href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
-    <a href="{% url 'admin:auth_user_changelist' %}">Utilisateurs</a>
-    {% if user.has_usable_password %}
-      <a href="{% url 'admin:password_change' %}">Modifier le mot de passe</a>
-    {% endif %}
-    {% if site_url %}
-      <a href="{{ site_url }}">Voir le site</a>
-    {% endif %}
-    <form method="post" action="{% url 'admin:logout' %}" class="cc-mobile-logout">
-      {% csrf_token %}
-      <button type="submit">{% translate 'Log out' %}</button>
-    </form>
+  <nav id="cc-drawer" class="cc-drawer" aria-label="Catégories" hidden>
+    <ul class="cc-rail-list">
+      <li><a href="{% url 'admin:index' %}"><span class="cc-rail-icon" aria-hidden="true">🏠</span><span class="cc-rail-label">Accueil du BO</span></a></li>
+      <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">📸</span><span class="cc-rail-label">Accueil du site</span></a></li>
+      <li><a href="{% url 'admin:catalog_menudrink_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">☕</span><span class="cc-rail-label">Coffee shop</span></a></li>
+      <li><a href="{% url 'admin:catalog_product_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">🛍️</span><span class="cc-rail-label">Concept store</span></a></li>
+      <li><a href="{% url 'admin:catalog_openinghours_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">📍</span><span class="cc-rail-label">Infos pratiques</span></a></li>
+    </ul>
   </nav>
 
   <script>
@@ -131,16 +131,20 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
         });
       }
 
-      // --- Menu hamburger (mobile) ---
+      // --- Panneau des catégories (mobile) : un seul bouton ouvre/ferme ---
       var burger = document.querySelector(".cc-burger");
-      var mobile = document.getElementById("cc-mobile-menu");
-      if (burger && mobile) {
+      var drawer = document.getElementById("cc-drawer");
+      if (burger && drawer) {
+        var setDrawer = function (open) {
+          drawer.hidden = !open;
+          burger.setAttribute("aria-expanded", String(open));
+          burger.classList.toggle("is-open", open);
+        };
         burger.addEventListener("click", function () {
-          var isOpen = !mobile.hidden;
-          mobile.hidden = isOpen;
-          burger.setAttribute("aria-expanded", String(!isOpen));
-          burger.setAttribute("aria-label", isOpen ? "Ouvrir le menu" : "Fermer le menu");
-          burger.classList.toggle("is-open", !isOpen);
+          setDrawer(drawer.hidden);
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !drawer.hidden) { setDrawer(false); }
         });
       }
 

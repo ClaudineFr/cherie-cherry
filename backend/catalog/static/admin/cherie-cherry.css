@@ -213,9 +213,13 @@ fieldset h2,
   color: var(--cc-pink-deep);
 }
 
-/* Hamburger + menu mobile (masqués sur desktop) */
+/* Hamburger + panneau mobile (masqués sur desktop) */
 .cc-burger,
-.cc-mobile-menu {
+.cc-drawer {
+  display: none;
+}
+/* Sur desktop, les icônes des liens compte sont masquées (on montre le texte). */
+.cc-ico {
   display: none;
 }
 
@@ -388,11 +392,14 @@ div.breadcrumbs.cc-breadcrumb-inline a {
 }
 .cc-rail-list li {
   margin: 0;
+  width: 100%;
 }
 .cc-rail-list a {
   display: flex;
   align-items: center;
   gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
   padding: 14px 20px;
   color: var(--cc-cream);
   text-decoration: none;
@@ -523,34 +530,28 @@ a.button:hover {
   min-width: 60%;
 }
 
-/* Responsive mobile : menu hamburger façon front */
+/* Responsive mobile : hamburger à gauche (tiroir catégories) + icônes compte */
 @media (max-width: 640px) {
   #header {
     flex-direction: row !important;
     align-items: center;
     justify-content: space-between;
     position: relative;
-    padding: 14px 18px;
+    padding: 12px 14px;
   }
+  /* Le nom de marque laisse la place au hamburger à gauche. */
   #site-name {
-    margin: 0;
-  }
-  #site-name a {
-    font-size: 1.3rem;
-  }
-  #site-name .cc-subtitle {
-    font-size: 0.62rem;
-  }
-
-  #user-tools .cc-userlinks {
     display: none;
   }
-  #user-tools {
-    margin: 0;
-    flex: 1;
-    justify-content: flex-end;
+
+  /* Le rail de catégories est masqué : la navigation passe par le tiroir. */
+  #nav-sidebar.cc-rail {
+    display: none;
   }
+
+  /* Le bouton hamburger va tout à gauche (avant #user-tools). */
   .cc-burger {
+    order: -1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -559,20 +560,16 @@ a.button:hover {
     padding: 0;
     background: transparent;
     border: none;
-    border-radius: 10px;
     cursor: pointer;
   }
   .cc-burger-icon,
   .cc-burger-icon::before,
   .cc-burger-icon::after {
     display: block;
-    width: 20px;
+    width: 22px;
     height: 2px;
     background: #ffffff;
     border-radius: 2px;
-    transition:
-      transform 0.2s ease,
-      opacity 0.2s ease;
   }
   .cc-burger-icon {
     position: relative;
@@ -583,61 +580,67 @@ a.button:hover {
     position: absolute;
     left: 0;
   }
-  .cc-burger-icon::before {
-    top: -6px;
+  .cc-burger-icon::before { top: -7px; }
+  .cc-burger-icon::after { top: 7px; }
+
+  /* #user-tools contient le hamburger + les liens compte : réparti gauche/droite. */
+  #user-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    gap: 0;
   }
-  .cc-burger-icon::after {
-    top: 6px;
-  }
-  .cc-burger.is-open .cc-burger-icon {
-    background: transparent;
-  }
-  .cc-burger.is-open .cc-burger-icon::before {
-    transform: translateY(6px) rotate(45deg);
-  }
-  .cc-burger.is-open .cc-burger-icon::after {
-    transform: translateY(-6px) rotate(-45deg);
+  .cc-userlinks {
+    gap: 4px;
   }
 
-  .cc-mobile-menu {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    left: 0;
-    top: 100%;
-    width: 100%;
-    z-index: 200;
-    background: var(--cc-green);
-    padding: 10px 0;
-    box-shadow: 0 8px 20px rgba(51, 80, 51, 0.25);
+  /* Les liens compte deviennent des icônes (on masque le texte). */
+  .cc-ico {
+    display: inline;
+    font-size: 1.15rem;
+    line-height: 1;
   }
-  .cc-mobile-menu[hidden] {
+  .cc-txt {
     display: none;
   }
-  .cc-mobile-menu a,
-  .cc-mobile-menu .cc-mobile-logout button {
-    display: block;
-    width: 100%;
-    padding: 14px 22px;
-    background: transparent;
+  #user-tools .cc-account-toggle,
+  #user-tools .cc-userlinks > .cc-viewsite,
+  #user-tools .cc-userlinks > #logout-form button {
+    padding: 8px 10px;
     border: none;
-    color: var(--cc-cream);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    text-align: left;
-    text-decoration: none;
-    cursor: pointer;
+    background: transparent;
+    border-radius: 8px;
   }
-  .cc-mobile-menu a:hover,
-  .cc-mobile-menu .cc-mobile-logout button:hover {
-    background: var(--cc-green-deep);
+  #user-tools .cc-userlinks > #logout-form button {
     color: #ffffff;
   }
-  .cc-mobile-menu .cc-mobile-logout {
+  /* Le déroulant « Mon compte » s'aligne sous son icône. */
+  #user-tools .cc-account-menu {
+    right: auto;
+    left: 0;
+  }
+
+  /* Panneau des catégories : pleine largeur, ancré sous la topbar. Le panneau
+     est imbriqué dans #user-tools (donc dans #header) : on le sort du flux flex
+     avec position:absolute pour qu'il occupe toute la largeur sous la barre au
+     lieu d'être un simple élément flex dans la rangée. #header est en
+     position:relative, il sert donc d'ancrage. */
+  #user-tools .cc-drawer {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
     margin: 0;
-    padding: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 30;
+    background: var(--cc-green);
+    box-shadow: 0 8px 20px rgba(28, 43, 24, 0.25);
+    overflow: hidden;
+  }
+  #user-tools .cc-drawer[hidden] {
+    display: none;
   }
 }
