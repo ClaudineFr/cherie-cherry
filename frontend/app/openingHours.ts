@@ -18,23 +18,26 @@ export type OpeningHours = {
 // de les avoir dans l'ordre lundi → dimanche, quoi que renvoie l'API.
 export async function fetchOpeningHours(): Promise<OpeningHours[]> {
   if (!API_URL) {
-    throw new Error(
-      "API_HOURS_URL n'est pas définie. Vérifie ton fichier .env.local.",
-    );
+    console.error("API_HOURS_URL n'est pas définie. Vérifie ton .env.local.");
+    return [];
   }
 
-  const res = await fetch(API_URL, {
-    // Pas de cache : on veut les horaires à jour à chaque visite.
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(API_URL, {
+      // Pas de cache : on veut les horaires à jour à chaque visite.
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      console.error(`API horaires : réponse ${res.status}`);
+      return [];
+    }
 
-  if (!res.ok) {
-    throw new Error(`API horaires : réponse ${res.status}`);
+    const data: OpeningHours[] = await res.json();
+    return [...data].sort((a, b) => a.day - b.day);
+  } catch (err) {
+    console.error("Impossible de joindre l'API horaires :", err);
+    return [];
   }
-
-  const data: OpeningHours[] = await res.json();
-
-  return [...data].sort((a, b) => a.day - b.day);
 }
 
 // --- Mise en forme pour l'affichage ---
