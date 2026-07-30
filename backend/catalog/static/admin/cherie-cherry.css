@@ -1,0 +1,557 @@
+/*
+ * Organisation :
+ *   1. Palette de la marque (constantes)
+ *   2. Variables natives de l'admin, reteintées
+ *   3. Typo serif (en-tête + titres)
+ *   4. Mise en page & espacements (UX : lisibilité, sobriété)
+ *   5. Listes (UX : repérage rapide)
+ *   6. Formulaires (UX : confort de saisie)
+ *   7. Boutons
+ *   8. Page de login
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap");
+
+/* ------------------------------------------------------------------ */
+/* 1. Palette de la marque                                            */
+/* ------------------------------------------------------------------ */
+:root {
+  --cc-pink: #f6d9df; /* rose poudré */
+  --cc-pink-soft: #fbeef1; /* rose très clair */
+  --cc-pink-vivid: #f8a6d5; /* rose vif (accents) */
+  --cc-pink-deep: #d9709c; /* rose framboise (titres) */
+  --cc-green: #406440; /* vert forêt */
+  --cc-green-deep: #335033; /* vert profond (survols) */
+  --cc-cream: #faf6f1; /* crème (fond) */
+  --cc-white: #ffffff; /* blanc (cartes) */
+
+  --cc-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+
+  --cc-radius: 12px;
+  --cc-shadow: 0 2px 12px rgba(64, 100, 64, 0.08);
+  --cc-shadow-hover: 0 4px 18px rgba(64, 100, 64, 0.14);
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Variables natives de l'admin, reteintées (thème clair)          */
+/* ------------------------------------------------------------------ */
+:root,
+html[data-theme="light"] {
+  --primary: var(--cc-green);
+  --secondary: var(--cc-green);
+  --accent: var(--cc-pink-deep);
+  --primary-fg: #ffffff;
+
+  --body-bg: var(--cc-cream);
+  --body-fg: var(--cc-green);
+  --body-quiet-color: #6f7d6a;
+  --body-loud-color: var(--cc-green-deep);
+
+  --header-bg: var(--cc-green);
+  --header-color: #ffffff;
+  --header-branding-color: #ffffff;
+  --header-link-color: #ffffff;
+
+  --breadcrumbs-bg: var(--cc-green-deep);
+  --breadcrumbs-fg: #ffffff;
+  --breadcrumbs-link-fg: #ffffff;
+
+  --link-fg: var(--cc-green-deep);
+  --link-hover-color: var(--cc-pink-deep);
+  --link-selected-fg: var(--cc-pink-deep);
+
+  --button-bg: var(--cc-green);
+  --button-hover-bg: var(--cc-green-deep);
+  --default-button-bg: var(--cc-green);
+  --default-button-hover-bg: var(--cc-green-deep);
+  --object-tools-bg: var(--cc-pink-deep);
+  --object-tools-hover-bg: var(--cc-green);
+
+  --hairline-color: #efe2e5;
+  --border-color: #e7d5da;
+
+  --darkened-bg: var(--cc-pink-soft);
+  --selected-bg: var(--cc-pink-soft);
+  --selected-row: #fdf4f6;
+
+  --message-success-bg: #e3efe0;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Typo serif                                                      */
+/* ------------------------------------------------------------------ */
+#site-name a {
+  font-family: var(--cc-serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+#site-name .cc-subtitle {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  color: #ffffff;
+}
+
+#content h1,
+.module h2,
+.module caption,
+fieldset h2,
+.inline-group h2 {
+  font-family: var(--cc-serif);
+  letter-spacing: 0.3px;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3b. Menu du haut à droite : liens en pastilles                     */
+/* ------------------------------------------------------------------ */
+#user-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: 0.2px;
+}
+#user-tools strong {
+  color: #ffffff;
+}
+.cc-userlinks {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#user-tools .cc-account-toggle,
+#user-tools .cc-userlinks > .cc-viewsite,
+#user-tools .cc-userlinks > #logout-form button {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+#user-tools .cc-account-toggle:hover,
+#user-tools .cc-userlinks > .cc-viewsite:hover {
+  background: #ffffff;
+  color: var(--cc-green-deep);
+  border-color: #ffffff;
+}
+#user-tools .cc-userlinks > #logout-form {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+#user-tools .cc-userlinks > #logout-form button {
+  border-color: var(--cc-pink-vivid);
+  color: var(--cc-pink);
+}
+#user-tools .cc-userlinks > #logout-form button:hover {
+  background: var(--cc-pink-deep);
+  color: #ffffff;
+  border-color: var(--cc-pink-deep);
+}
+
+/* --- Menu déroulant « Mon compte » --- */
+.cc-account {
+  position: relative;
+  display: inline-block;
+}
+#user-tools .cc-account-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(51, 80, 51, 0.22);
+  border: 1px solid var(--cc-pink);
+}
+#user-tools .cc-account-menu[hidden] {
+  display: none;
+}
+#user-tools .cc-account-menu a {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--cc-green-deep);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+  text-align: left;
+}
+#user-tools .cc-account-menu a:hover {
+  background: var(--cc-pink-soft);
+  color: var(--cc-pink-deep);
+}
+
+/* --- Hamburger + menu mobile (masqués sur desktop) --- */
+.cc-burger,
+.cc-mobile-menu {
+  display: none;
+}
+
+body.dashboard #content-main .app-auth {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3c. Panneau « Actions récentes » (colonne de droite, toutes pages) */
+/* ------------------------------------------------------------------ */
+#content-related {
+  margin-top: 0;
+}
+#content-related .module#recent-actions-module {
+  border-radius: var(--cc-radius);
+  box-shadow: var(--cc-shadow);
+  background: var(--cc-white);
+  border: 1px solid var(--hairline-color);
+  overflow: hidden;
+}
+#content-related #recent-actions-module h2 {
+  background: var(--cc-green);
+  color: #ffffff;
+  font-family: var(--cc-serif);
+}
+#content-related #recent-actions-module h3 {
+  color: var(--cc-green-deep);
+  padding: 10px 14px 0;
+  font-size: 0.82rem;
+}
+#content-related #recent-actions-module p,
+#content-related .actionlist {
+  padding: 6px 14px 12px;
+}
+#content-related .actionlist li {
+  margin-bottom: 8px;
+}
+
+body.change-list #content-related {
+  display: none;
+}
+body.change-list #content.colMS,
+body.change-list .colMS {
+  margin-right: 0;
+}
+#content h1 {
+  color: var(--accent);
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Mise en page & espacements (UX)                                 */
+/* ------------------------------------------------------------------ */
+
+#header {
+  padding: 16px 40px;
+  box-shadow: 0 1px 8px rgba(51, 80, 51, 0.15);
+}
+
+div.breadcrumbs {
+  padding: 12px 40px;
+}
+
+#content {
+  padding: 24px 40px 40px;
+}
+
+.module,
+.dashboard .module {
+  border-radius: var(--cc-radius);
+  overflow: hidden;
+  box-shadow: var(--cc-shadow);
+  background: var(--cc-white);
+  border: 1px solid var(--hairline-color);
+}
+
+/* Bandeaux de section (les h2 verts). */
+.module caption,
+.module h2,
+.inline-group h2 {
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  letter-spacing: 0.6px;
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Listes : repérage rapide (UX)                                   */
+/* ------------------------------------------------------------------ */
+/* Lignes plus aérées + survol marqué pour suivre la ligne du regard. */
+#result_list tbody td,
+#result_list tbody th {
+  padding: 12px 10px;
+}
+#result_list tbody tr:hover td,
+#result_list tbody tr:hover th {
+  background: var(--cc-pink-soft);
+}
+
+#result_list thead th {
+  background: var(--cc-pink);
+}
+#result_list thead th,
+#result_list thead th a {
+  color: var(--cc-green-deep);
+  font-weight: 600;
+}
+
+.sidebar .current-model,
+#nav-sidebar .current-model {
+  border-left: 3px solid var(--cc-pink-deep);
+}
+
+#changelist-filter h2 {
+  background: var(--cc-green);
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Formulaires : confort de saisie (UX)                            */
+/* ------------------------------------------------------------------ */
+.form-row {
+  padding: 14px 16px;
+}
+
+.form-row label,
+.aligned label {
+  font-weight: 600;
+  color: var(--cc-green-deep);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select,
+.vTextField {
+  border-radius: 8px;
+  padding: 9px 11px;
+  border: 1px solid var(--border-color);
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+select:focus,
+.vTextField:focus {
+  border-color: var(--cc-pink-deep);
+  outline: 3px solid var(--cc-pink);
+  outline-offset: 0;
+}
+
+.help,
+.form-row .help {
+  color: var(--body-quiet-color);
+  font-size: 0.8rem;
+}
+
+fieldset.module {
+  border: 1px solid var(--hairline-color);
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. Boutons                                                         */
+/* ------------------------------------------------------------------ */
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.button:hover,
+input[type="submit"]:hover,
+.submit-row input:hover,
+a.button:hover {
+  box-shadow: var(--cc-shadow-hover);
+}
+
+.object-tools a {
+  border-radius: 999px;
+}
+
+.submit-row {
+  border-radius: var(--cc-radius);
+  background: var(--cc-pink-soft);
+  border: 1px solid var(--cc-pink);
+  padding: 14px 16px;
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. Page de login                                                   */
+/* ------------------------------------------------------------------ */
+.login {
+  background: var(--cc-pink-soft);
+}
+.login #container {
+  border-radius: var(--cc-radius);
+  box-shadow: 0 8px 30px rgba(64, 100, 64, 0.18);
+  overflow: hidden;
+  border: none;
+}
+.login #header {
+  padding: 22px 16px;
+}
+.login #header h1,
+.login #header h1 a {
+  font-family: var(--cc-serif);
+}
+.login .form-row {
+  padding: 12px 0;
+}
+.login .submit-row {
+  background: transparent;
+  border: none;
+  padding: 8px 0 0;
+}
+.login .submit-row input {
+  width: auto;
+  min-width: 60%;
+}
+
+/* ------------------------------------------------------------------ */
+/* 9. Responsive mobile (≤ 640px) : menu hamburger façon front         */
+/* ------------------------------------------------------------------ */
+@media (max-width: 640px) {
+  /* En-tête : logo à gauche, hamburger à droite (comme le front).
+     On annule le passage en colonne que l'admin applique ≤1024px. */
+  #header {
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 14px 18px;
+  }
+  #site-name {
+    margin: 0;
+  }
+  #site-name a {
+    font-size: 1.3rem;
+  }
+  #site-name .cc-subtitle {
+    font-size: 0.62rem;
+  }
+
+  /* On masque les pastilles desktop, on montre le hamburger. */
+  #user-tools .cc-userlinks {
+    display: none;
+  }
+  /* #user-tools pousse le hamburger tout à droite. */
+  #user-tools {
+    margin: 0;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  .cc-burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background: transparent;
+    border: none;                /* pas de bordure */
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  /* Icône hamburger dessinée en CSS (3 barres) qui devient une croix. */
+  .cc-burger-icon,
+  .cc-burger-icon::before,
+  .cc-burger-icon::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .cc-burger-icon {
+    position: relative;
+  }
+  .cc-burger-icon::before,
+  .cc-burger-icon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+  .cc-burger-icon::before { top: -6px; }
+  .cc-burger-icon::after  { top: 6px; }
+  .cc-burger.is-open .cc-burger-icon { background: transparent; }
+  .cc-burger.is-open .cc-burger-icon::before { transform: translateY(6px) rotate(45deg); }
+  .cc-burger.is-open .cc-burger-icon::after  { transform: translateY(-6px) rotate(-45deg); }
+
+  /* Panneau déroulant pleine largeur sous la barre (fond vert, liens crème). */
+  .cc-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    z-index: 200;
+    background: var(--cc-green);
+    padding: 10px 0;
+    box-shadow: 0 8px 20px rgba(51, 80, 51, 0.25);
+  }
+  .cc-mobile-menu[hidden] {
+    display: none;
+  }
+  .cc-mobile-menu a,
+  .cc-mobile-menu .cc-mobile-logout button {
+    display: block;
+    width: 100%;
+    padding: 14px 22px;
+    background: transparent;
+    border: none;
+    color: var(--cc-cream);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .cc-mobile-menu a:hover,
+  .cc-mobile-menu .cc-mobile-logout button:hover {
+    background: var(--cc-green-deep);
+    color: #ffffff;
+  }
+  .cc-mobile-menu .cc-mobile-logout {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+}

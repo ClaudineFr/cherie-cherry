@@ -1,0 +1,168 @@
+{% extends "admin/base.html" %}
+{% load static i18n %}
+
+{% comment %}
+On surcharge admin/base_site.html (d'où le nom du fichier) mais on hérite de
+admin/base.html pour éviter que le template s'étende lui-même.
+{% endcomment %}
+
+{# Titre de l'onglet du navigateur. #}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Chérie Cherry{% endblock %}
+
+{# En-tête personnalisé : le nom de la marque à la place de « Django administration ». #}
+{% block branding %}
+  <div id="site-name">
+    <a href="{% url 'admin:index' %}">Chérie Cherry</a>
+    <span class="cc-subtitle">Espace d'administration</span>
+  </div>
+{% endblock %}
+
+{# Charge notre feuille de style aux couleurs de la marque, en plus du CSS Django. #}
+{% block extrahead %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'admin/cherie-cherry.css' %}">
+  {% comment %}
+  Thème clair uniquement : on impose data-theme="light" et on aligne le
+  localStorage pour que le script de thème de l'admin ne repasse jamais en
+  sombre (le bouton de bascule est par ailleurs retiré).
+  {% endcomment %}
+  <script>
+    document.documentElement.dataset.theme = "light";
+    try { localStorage.setItem("theme", "light"); } catch (e) {}
+  </script>
+{% endblock %}
+
+{% comment %}
+Liens du menu en haut à droite, présentés en pastilles (le style est dans
+cherie-cherry.css via #user-tools.cc-userlinks). On reprend la logique de
+l'admin, sans les « / » de séparation (les pastilles se suffisent).
+{% endcomment %}
+{# On retire le message « Bienvenue, … » (bloc vidé volontairement). #}
+{% block welcome-msg %}{% endblock %}
+
+{% block userlinks %}
+  {% comment %}
+  DESKTOP (> 640px) : pastilles + déroulant « Mon compte » (masqué en mobile).
+  {% endcomment %}
+  <span class="cc-userlinks">
+    <span class="cc-account">
+      <button type="button" class="cc-account-toggle" aria-haspopup="true" aria-expanded="false">
+        Mon compte <span aria-hidden="true">▾</span>
+      </button>
+      <span class="cc-account-menu" role="menu" hidden>
+        <a role="menuitem" href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
+        <a role="menuitem" href="{% url 'admin:auth_user_changelist' %}">Utilisateurs</a>
+        {% if user.has_usable_password %}
+          <a role="menuitem" href="{% url 'admin:password_change' %}">Modifier le mot de passe</a>
+        {% endif %}
+      </span>
+    </span>
+    {% if site_url %}
+      <a class="cc-viewsite" href="{{ site_url }}">Voir le site</a>
+    {% endif %}
+    <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+      {% csrf_token %}
+      <button type="submit">{% translate 'Log out' %}</button>
+    </form>
+  </span>
+
+  {% comment %}
+  MOBILE (≤ 640px) : bouton hamburger + panneau vert pleine largeur sous la
+  barre, comme le menu du front. Contient les liens du compte.
+  {% endcomment %}
+  <button type="button" class="cc-burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="cc-mobile-menu">
+    <span class="cc-burger-icon" aria-hidden="true"></span>
+  </button>
+  <nav id="cc-mobile-menu" class="cc-mobile-menu" hidden>
+    <a href="{% url 'admin:index' %}">Accueil</a>
+    <a href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
+    <a href="{% url 'admin:auth_user_changelist' %}">Utilisateurs</a>
+    {% if user.has_usable_password %}
+      <a href="{% url 'admin:password_change' %}">Modifier le mot de passe</a>
+    {% endif %}
+    {% if site_url %}
+      <a href="{{ site_url }}">Voir le site</a>
+    {% endif %}
+    <form method="post" action="{% url 'admin:logout' %}" class="cc-mobile-logout">
+      {% csrf_token %}
+      <button type="submit">{% translate 'Log out' %}</button>
+    </form>
+  </nav>
+
+  <script>
+    (function () {
+      // --- Déroulant « Mon compte » (desktop) ---
+      var toggle = document.querySelector(".cc-account-toggle");
+      var menu = document.querySelector(".cc-account-menu");
+      if (toggle && menu) {
+        var closeAcc = function () { menu.hidden = true; toggle.setAttribute("aria-expanded", "false"); };
+        toggle.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (menu.hidden) { menu.hidden = false; toggle.setAttribute("aria-expanded", "true"); }
+          else { closeAcc(); }
+        });
+        document.addEventListener("click", function (e) {
+          if (!menu.hidden && !menu.contains(e.target)) { closeAcc(); }
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { closeAcc(); }
+        });
+      }
+
+      // --- Menu hamburger (mobile) ---
+      var burger = document.querySelector(".cc-burger");
+      var mobile = document.getElementById("cc-mobile-menu");
+      if (burger && mobile) {
+        burger.addEventListener("click", function () {
+          var isOpen = !mobile.hidden;
+          mobile.hidden = isOpen;
+          burger.setAttribute("aria-expanded", String(!isOpen));
+          burger.setAttribute("aria-label", isOpen ? "Ouvrir le menu" : "Fermer le menu");
+          burger.classList.toggle("is-open", !isOpen);
+        });
+      }
+    })();
+  </script>
+{% endblock %}
+
+{% comment %}
+Actions récentes sur TOUTES les pages : on passe la colonne en « main + sidebar »
+(colMS) et on remplit le bloc sidebar avec le même contenu que la page d'accueil.
+Sur l'accueil, c'est le template index.html qui fournit ce bloc (même rendu).
+{% endcomment %}
+{% block coltype %}{% if user.is_authenticated %}colMS{% else %}colM{% endif %}{% endblock %}
+
+{% block sidebar %}
+  {% if user.is_authenticated %}
+  <div id="content-related">
+    <div class="module" id="recent-actions-module">
+      <h2>{% translate 'Recent actions' %}</h2>
+      <h3>{% translate 'My actions' %}</h3>
+      {% load log %}
+      {% get_admin_log 10 as admin_log for_user user %}
+      {% if not admin_log %}
+        <p>{% translate 'None available' %}</p>
+      {% else %}
+        <ul class="actionlist">
+          {% for entry in admin_log %}
+            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+              <span class="visually-hidden">{% if entry.is_addition %}{% translate 'Added:' %}{% elif entry.is_change %}{% translate 'Changed:' %}{% elif entry.is_deletion %}{% translate 'Deleted:' %}{% endif %}</span>
+              {% if entry.is_deletion or not entry.get_admin_url %}
+                {{ entry.object_repr }}
+              {% else %}
+                <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+              {% endif %}
+              <br>
+              {% if entry.content_type %}
+                <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+              {% else %}
+                <span class="mini quiet">{% translate 'Unknown content' %}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+{% endblock %}

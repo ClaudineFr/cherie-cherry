@@ -1,0 +1,56 @@
+{% load i18n cc_admin %}
+{% comment %}
+Carte d'une catégorie de l'accueil du BO.
+
+Paramètres attendus (passés via {% include ... with %}) :
+  - title    : titre affiché de la carte
+  - names    : object_name des modèles à afficher, séparés par des virgules,
+               DANS L'ORDRE souhaité (ex. "InstagramStory,InstagramPost").
+  - app_list : fourni par l'admin, contient toutes les apps et leurs modèles.
+
+On boucle sur `names` (donc dans NOTRE ordre) et, pour chaque nom, on retrouve
+le modèle correspondant parmi les apps. Les liens (Ajouter / Modifier) sont ceux
+calculés par l'admin, donc rien n'est codé en dur.
+{% endcomment %}
+<div class="module cc-category">
+  <table>
+    <caption>
+      <span class="section">{{ title }}</span>
+    </caption>
+    <tbody>
+      {% for wanted in names|split:"," %}
+        {% for app in app_list %}
+          {% for model in app.models %}
+            {% if model.object_name == wanted %}
+              {% with model_name=model.object_name|lower %}
+                <tr class="model-{{ model_name }}{% if model.admin_url in request.path|urlencode %} current-model{% endif %}">
+                  <th scope="row" id="cc-{{ model_name }}">
+                    {% if model.admin_url %}
+                      <a href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %} aria-current="page"{% endif %}>{{ model.name }}</a>
+                    {% else %}
+                      {{ model.name }}
+                    {% endif %}
+                  </th>
+                  {% if model.add_url %}
+                    <td><a href="{{ model.add_url }}" class="addlink" aria-describedby="cc-{{ model_name }}">{% translate 'Add' %}</a></td>
+                  {% else %}
+                    <td></td>
+                  {% endif %}
+                  {% if model.admin_url %}
+                    {% if model.view_only %}
+                      <td><a href="{{ model.admin_url }}" class="viewlink" aria-describedby="cc-{{ model_name }}">{% translate 'View' %}</a></td>
+                    {% else %}
+                      <td><a href="{{ model.admin_url }}" class="changelink" aria-describedby="cc-{{ model_name }}">{% translate 'Change' %}</a></td>
+                    {% endif %}
+                  {% else %}
+                    <td></td>
+                  {% endif %}
+                </tr>
+              {% endwith %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

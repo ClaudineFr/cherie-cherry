@@ -91,7 +91,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Dossier de templates au niveau du projet, cherché AVANT ceux des apps.
+        # C'est ce qui nous permet de surcharger admin/base_site.html (l'admin
+        # est listé avant nos apps, donc sinon c'est son template qui gagne).
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -142,9 +145,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# Français : traduit automatiquement toute l'interface de l'admin.
+LANGUAGE_CODE = 'fr-fr'
 
-TIME_ZONE = 'UTC'
+# Fuseau horaire de Paris (cohérent avec les horaires d'ouverture affichés).
+TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
 
