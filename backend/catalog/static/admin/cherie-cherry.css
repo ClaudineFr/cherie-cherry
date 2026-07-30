@@ -1,29 +1,17 @@
-/*
- * Organisation :
- *   1. Palette de la marque (constantes)
- *   2. Variables natives de l'admin, reteintées
- *   3. Typo serif (en-tête + titres)
- *   4. Mise en page & espacements (UX : lisibilité, sobriété)
- *   5. Listes (UX : repérage rapide)
- *   6. Formulaires (UX : confort de saisie)
- *   7. Boutons
- *   8. Page de login
- */
+/* Habillage de l'admin Django aux couleurs de Chérie Cherry (thème clair). */
 
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap");
 
-/* ------------------------------------------------------------------ */
-/* 1. Palette de la marque                                            */
-/* ------------------------------------------------------------------ */
+/* Palette de la marque */
 :root {
-  --cc-pink: #f6d9df; /* rose poudré */
-  --cc-pink-soft: #fbeef1; /* rose très clair */
-  --cc-pink-vivid: #f8a6d5; /* rose vif (accents) */
-  --cc-pink-deep: #d9709c; /* rose framboise (titres) */
-  --cc-green: #406440; /* vert forêt */
-  --cc-green-deep: #335033; /* vert profond (survols) */
-  --cc-cream: #faf6f1; /* crème (fond) */
-  --cc-white: #ffffff; /* blanc (cartes) */
+  --cc-pink: #f6d9df;
+  --cc-pink-soft: #fbeef1;
+  --cc-pink-vivid: #f8a6d5;
+  --cc-pink-deep: #d9709c;
+  --cc-green: #406440;
+  --cc-green-deep: #335033;
+  --cc-cream: #faf6f1;
+  --cc-white: #ffffff;
 
   --cc-serif: "Playfair Display", Georgia, "Times New Roman", serif;
 
@@ -32,9 +20,7 @@
   --cc-shadow-hover: 0 4px 18px rgba(64, 100, 64, 0.14);
 }
 
-/* ------------------------------------------------------------------ */
-/* 2. Variables natives de l'admin, reteintées (thème clair)          */
-/* ------------------------------------------------------------------ */
+/* Variables natives de l'admin, reteintées */
 :root,
 html[data-theme="light"] {
   --primary: var(--cc-green);
@@ -77,9 +63,7 @@ html[data-theme="light"] {
   --message-success-bg: #e3efe0;
 }
 
-/* ------------------------------------------------------------------ */
-/* 3. Typo serif                                                      */
-/* ------------------------------------------------------------------ */
+/* Typo serif */
 #site-name a {
   font-family: var(--cc-serif);
   font-size: 1.6rem;
@@ -106,9 +90,7 @@ fieldset h2,
   letter-spacing: 0.3px;
 }
 
-/* ------------------------------------------------------------------ */
-/* 3b. Menu du haut à droite : liens en pastilles                     */
-/* ------------------------------------------------------------------ */
+/* Menu du haut : pastilles */
 #user-tools {
   display: flex;
   align-items: center;
@@ -166,7 +148,7 @@ fieldset h2,
   border-color: var(--cc-pink-deep);
 }
 
-/* --- Menu déroulant « Mon compte » --- */
+/* Menu déroulant « Mon compte » */
 .cc-account {
   position: relative;
   display: inline-block;
@@ -205,7 +187,7 @@ fieldset h2,
   color: var(--cc-pink-deep);
 }
 
-/* --- Hamburger + menu mobile (masqués sur desktop) --- */
+/* Hamburger + menu mobile (masqués sur desktop) */
 .cc-burger,
 .cc-mobile-menu {
   display: none;
@@ -215,10 +197,7 @@ body.dashboard #content-main .app-auth {
   display: none;
 }
 
-/* --- Cartes de catégorie de l'accueil : titre + phrase d'aide --- */
-/* Le tableau occupe toute la largeur de la carte pour que le bandeau vert
-   (la <caption>) couvre toute la carte. On garde le calcul de colonnes par
-   défaut (table-layout: auto) pour ne pas écraser « Ajouter/Modification ». */
+/* Cartes de catégorie de l'accueil */
 .cc-category,
 .cc-category table {
   width: 100%;
@@ -226,9 +205,6 @@ body.dashboard #content-main .app-auth {
 .cc-category caption .section {
   display: block;
 }
-/* La colonne « nom » absorbe l'espace restant : le tableau (et donc le bandeau
-   vert de la caption) s'étire sur toute la largeur, sans toucher aux colonnes
-   « Ajouter » / « Modification » qui restent dimensionnées à leur contenu. */
 .cc-category th[scope="row"] {
   width: 100%;
 }
@@ -244,9 +220,7 @@ body.dashboard #content-main .app-auth {
   text-transform: none;
 }
 
-/* ------------------------------------------------------------------ */
-/* 3c. Panneau « Actions récentes » (colonne de droite, toutes pages) */
-/* ------------------------------------------------------------------ */
+/* Panneau « Actions récentes » */
 #content-related {
   margin-top: 0;
 }
@@ -288,23 +262,17 @@ body.change-list .colMS {
   margin-bottom: 20px;
 }
 
-/* ------------------------------------------------------------------ */
-/* 4. Mise en page & espacements (UX)                                 */
-/* ------------------------------------------------------------------ */
-
+/* Mise en page & espacements */
 #header {
   padding: 16px 40px;
   box-shadow: 0 1px 8px rgba(51, 80, 51, 0.15);
 }
-
 div.breadcrumbs {
   padding: 12px 40px;
 }
-
 #content {
   padding: 24px 40px 40px;
 }
-
 .module,
 .dashboard .module {
   border-radius: var(--cc-radius);
@@ -313,8 +281,6 @@ div.breadcrumbs {
   background: var(--cc-white);
   border: 1px solid var(--hairline-color);
 }
-
-/* Bandeaux de section (les h2 verts). */
 .module caption,
 .module h2,
 .inline-group h2 {
@@ -323,10 +289,7 @@ div.breadcrumbs {
   letter-spacing: 0.6px;
 }
 
-/* ------------------------------------------------------------------ */
-/* 5. Listes : repérage rapide (UX)                                   */
-/* ------------------------------------------------------------------ */
-/* Lignes plus aérées + survol marqué pour suivre la ligne du regard. */
+/* Listes */
 #result_list tbody td,
 #result_list tbody th {
   padding: 12px 10px;
@@ -335,7 +298,6 @@ div.breadcrumbs {
 #result_list tbody tr:hover th {
   background: var(--cc-pink-soft);
 }
-
 #result_list thead th {
   background: var(--cc-pink);
 }
@@ -344,29 +306,23 @@ div.breadcrumbs {
   color: var(--cc-green-deep);
   font-weight: 600;
 }
-
 .sidebar .current-model,
 #nav-sidebar .current-model {
   border-left: 3px solid var(--cc-pink-deep);
 }
-
 #changelist-filter h2 {
   background: var(--cc-green);
 }
 
-/* ------------------------------------------------------------------ */
-/* 6. Formulaires : confort de saisie (UX)                            */
-/* ------------------------------------------------------------------ */
+/* Formulaires */
 .form-row {
   padding: 14px 16px;
 }
-
 .form-row label,
 .aligned label {
   font-weight: 600;
   color: var(--cc-green-deep);
 }
-
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -393,20 +349,16 @@ select:focus,
   outline: 3px solid var(--cc-pink);
   outline-offset: 0;
 }
-
 .help,
 .form-row .help {
   color: var(--body-quiet-color);
   font-size: 0.8rem;
 }
-
 fieldset.module {
   border: 1px solid var(--hairline-color);
 }
 
-/* ------------------------------------------------------------------ */
-/* 7. Boutons                                                         */
-/* ------------------------------------------------------------------ */
+/* Boutons */
 .button,
 input[type="submit"],
 input[type="button"],
@@ -426,11 +378,9 @@ input[type="submit"]:hover,
 a.button:hover {
   box-shadow: var(--cc-shadow-hover);
 }
-
 .object-tools a {
   border-radius: 999px;
 }
-
 .submit-row {
   border-radius: var(--cc-radius);
   background: var(--cc-pink-soft);
@@ -438,9 +388,7 @@ a.button:hover {
   padding: 14px 16px;
 }
 
-/* ------------------------------------------------------------------ */
-/* 8. Page de login                                                   */
-/* ------------------------------------------------------------------ */
+/* Page de login */
 .login {
   background: var(--cc-pink-soft);
 }
@@ -470,12 +418,8 @@ a.button:hover {
   min-width: 60%;
 }
 
-/* ------------------------------------------------------------------ */
-/* 9. Responsive mobile (≤ 640px) : menu hamburger façon front         */
-/* ------------------------------------------------------------------ */
+/* Responsive mobile : menu hamburger façon front */
 @media (max-width: 640px) {
-  /* En-tête : logo à gauche, hamburger à droite (comme le front).
-     On annule le passage en colonne que l'admin applique ≤1024px. */
   #header {
     flex-direction: row !important;
     align-items: center;
@@ -493,11 +437,9 @@ a.button:hover {
     font-size: 0.62rem;
   }
 
-  /* On masque les pastilles desktop, on montre le hamburger. */
   #user-tools .cc-userlinks {
     display: none;
   }
-  /* #user-tools pousse le hamburger tout à droite. */
   #user-tools {
     margin: 0;
     flex: 1;
@@ -511,11 +453,10 @@ a.button:hover {
     height: 42px;
     padding: 0;
     background: transparent;
-    border: none;                /* pas de bordure */
+    border: none;
     border-radius: 10px;
     cursor: pointer;
   }
-  /* Icône hamburger dessinée en CSS (3 barres) qui devient une croix. */
   .cc-burger-icon,
   .cc-burger-icon::before,
   .cc-burger-icon::after {
@@ -524,7 +465,9 @@ a.button:hover {
     height: 2px;
     background: #ffffff;
     border-radius: 2px;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
   }
   .cc-burger-icon {
     position: relative;
@@ -535,13 +478,22 @@ a.button:hover {
     position: absolute;
     left: 0;
   }
-  .cc-burger-icon::before { top: -6px; }
-  .cc-burger-icon::after  { top: 6px; }
-  .cc-burger.is-open .cc-burger-icon { background: transparent; }
-  .cc-burger.is-open .cc-burger-icon::before { transform: translateY(6px) rotate(45deg); }
-  .cc-burger.is-open .cc-burger-icon::after  { transform: translateY(-6px) rotate(-45deg); }
+  .cc-burger-icon::before {
+    top: -6px;
+  }
+  .cc-burger-icon::after {
+    top: 6px;
+  }
+  .cc-burger.is-open .cc-burger-icon {
+    background: transparent;
+  }
+  .cc-burger.is-open .cc-burger-icon::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .cc-burger.is-open .cc-burger-icon::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
 
-  /* Panneau déroulant pleine largeur sous la barre (fond vert, liens crème). */
   .cc-mobile-menu {
     display: flex;
     flex-direction: column;
