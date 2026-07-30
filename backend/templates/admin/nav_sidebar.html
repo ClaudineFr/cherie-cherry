@@ -1,22 +1,46 @@
 {% load i18n %}
 {% comment %}
-Barre latérale de navigation, groupée par catégorie (mêmes catégories que
-l'accueil). « Authentification et autorisation » n'y figure pas : ces écrans
-restent accessibles via le menu « Mon compte ».
+Barre latérale « rail d'icônes » : repliée par défaut (icône seule), elle
+s'élargit au survol pour révéler le nom des catégories. Remplace la barre
+latérale native de Django (filtre + toggle) par une navigation par catégorie
+calquée sur le site.
 
-On réutilise le partiel _category_module.html en mode compact (nom du modèle
-seul, sans les colonnes Ajouter/Modifier). La source des modèles est
-`available_apps` (fournie par l'admin pour la barre latérale).
+Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
+« actif » (page courante) est repéré côté client pour surligner sa catégorie.
 {% endcomment %}
-<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
-<nav class="sticky" id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
-  <input type="search" id="nav-filter"
-         placeholder="{% translate 'Start typing to filter…' %}"
-         aria-label="{% translate 'Filter navigation items' %}">
-  <div class="cc-sidebar-categories">
-    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Accueil" names="InstagramStory,InstagramPost,GalleryPhoto" %}
-    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Coffee shop" names="MenuDrink,DrinkOfMonth,DrinkOfMonthSettings,Supplement" %}
-    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Concept store" names="Product" %}
-    {% include "admin/_category_module.html" with app_list=available_apps compact=True idprefix="ccnav-" title="Infos pratiques" names="OpeningHours" %}
-  </div>
+<nav class="cc-rail" id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
+  {% comment %}Champ masqué : le script natif nav_sidebar.js cherche #nav-filter au chargement et planterait sans lui. Inutile ici (rail custom).{% endcomment %}
+  <input type="search" id="nav-filter" hidden aria-hidden="true" tabindex="-1">
+  <ul class="cc-rail-list">
+    <li>
+      <a href="{% url 'admin:index' %}" data-models="index">
+        <span class="cc-rail-icon" aria-hidden="true">🏠</span>
+        <span class="cc-rail-label">Accueil du BO</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:catalog_instagramstory_changelist' %}" data-models="instagramstory instagrampost galleryphoto">
+        <span class="cc-rail-icon" aria-hidden="true">📸</span>
+        <span class="cc-rail-label">Accueil du site</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:catalog_menudrink_changelist' %}" data-models="menudrink drinkofmonth drinkofmonthsettings supplement">
+        <span class="cc-rail-icon" aria-hidden="true">☕</span>
+        <span class="cc-rail-label">Coffee shop</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:catalog_product_changelist' %}" data-models="product">
+        <span class="cc-rail-icon" aria-hidden="true">🛍️</span>
+        <span class="cc-rail-label">Concept store</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:catalog_openinghours_changelist' %}" data-models="openinghours">
+        <span class="cc-rail-icon" aria-hidden="true">📍</span>
+        <span class="cc-rail-label">Infos pratiques</span>
+      </a>
+    </li>
+  </ul>
 </nav>

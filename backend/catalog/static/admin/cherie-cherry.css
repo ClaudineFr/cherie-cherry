@@ -219,11 +219,25 @@ fieldset h2,
   display: none;
 }
 
-body.dashboard #content-main .app-auth {
-  display: none;
+/* Zone de bienvenue de l'accueil (navigation via la barre latérale) */
+.cc-welcome {
+  padding: 8px 0 0;
+  max-width: 62ch;
+}
+.cc-welcome-lead {
+  font-family: var(--cc-serif);
+  font-size: 1.4rem;
+  color: var(--cc-title);
+  margin: 0 0 12px;
+}
+.cc-welcome-help {
+  color: var(--body-fg);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
 }
 
-/* Cartes de catégorie de l'accueil */
+/* Cartes de catégorie (barre latérale) */
 .cc-category,
 .cc-category table {
   width: 100%;
@@ -296,6 +310,22 @@ body.change-list .colMS {
 div.breadcrumbs {
   padding: 12px 40px;
 }
+/* Le fil d'ariane déplacé dans le contenu : discret, au-dessus du titre.
+   (Le <nav> d'origine reste vide en haut, on masque sa barre verte.) */
+nav[aria-label="Breadcrumbs"] {
+  display: none;
+}
+div.breadcrumbs.cc-breadcrumb-inline {
+  display: block;
+  background: transparent;
+  color: var(--body-quiet-color);
+  padding: 0 0 6px;
+  margin: 0;
+  font-size: 0.8rem;
+}
+div.breadcrumbs.cc-breadcrumb-inline a {
+  color: var(--cc-green-deep);
+}
 #content {
   padding: 24px 40px 40px;
 }
@@ -332,12 +362,61 @@ div.breadcrumbs {
   color: var(--cc-green-deep);
   font-weight: 600;
 }
-.sidebar .current-model,
-#nav-sidebar .current-model {
-  border-left: 3px solid var(--cc-pink-deep);
-}
 #changelist-filter h2 {
   background: var(--cc-green);
+}
+
+/* Barre latérale des catégories (desktop) : toujours ouverte (icône + nom).
+   On cible aussi #nav-sidebar pour neutraliser le CSS natif de Django qui
+   masque la barre (visibility:hidden + left/margin-left négatifs). */
+.cc-rail,
+#nav-sidebar.cc-rail {
+  position: relative;
+  z-index: 50;
+  flex: 0 0 auto;
+  width: 232px;
+  left: 0;
+  margin-left: 0;
+  visibility: visible;
+  background: var(--cc-green);
+  border: none;
+}
+.cc-rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cc-rail-list li {
+  margin: 0;
+}
+.cc-rail-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  color: var(--cc-cream);
+  text-decoration: none;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+}
+.cc-rail-list a:hover {
+  background: var(--cc-green-deep);
+}
+.cc-rail-list a.cc-active {
+  background: var(--cc-green-deep);
+  border-left-color: var(--cc-pink-vivid);
+}
+.cc-rail-icon {
+  flex: 0 0 auto;
+  width: 22px;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.cc-rail-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 /* Formulaires */

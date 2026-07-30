@@ -9,27 +9,15 @@
 
 {% block nav-breadcrumbs %}{% endblock %}
 
-{% block nav-sidebar %}{% endblock %}
-
 {% comment %}
-Accueil du BO réorganisé PAR CATÉGORIE (calqué sur la structure du site) au lieu
-de la liste par application de Django.
-
-On regroupe les modèles de l'app « catalog » en 4 cartes correspondant aux
-zones du site : Accueil, Coffee shop, Concept store, Infos pratiques.
-
-Le partiel admin/_category_module.html reçoit :
-  - title  : le titre de la carte
-  - names  : la liste (séparée par des virgules) des object_name des modèles à
-             y afficher, DANS L'ORDRE souhaité
-  - app_list : la liste d'apps fournie par l'admin (pour retrouver les URLs)
+Accueil épuré : la navigation se fait par la barre latérale (catégories),
+présente aussi ici. Le contenu central est une zone de bienvenue ; « Actions
+récentes » reste dans la colonne de droite.
 {% endcomment %}
 {% block content %}
-<div id="content-main" class="app-list cc-categories">
-  {% include "admin/_category_module.html" with idprefix="cc-" title="Accueil" note="Les sections de la page d'accueil : vos stories, vos posts Instagram et la galerie d'ambiance." names="InstagramStory,InstagramPost,GalleryPhoto" %}
-  {% include "admin/_category_module.html" with idprefix="cc-" title="Coffee shop" note="Le menu, les boissons du mois et les suppléments de la page Coffee shop." names="MenuDrink,DrinkOfMonth,DrinkOfMonthSettings,Supplement" %}
-  {% include "admin/_category_module.html" with idprefix="cc-" title="Concept store" note="Les produits de la boutique en ligne." names="Product" %}
-  {% include "admin/_category_module.html" with idprefix="cc-" title="Infos pratiques" note="Vos horaires d'ouverture, affichés dans le pied de page et la page contact." names="OpeningHours" %}
+<div id="content-main" class="cc-welcome">
+  <p class="cc-welcome-lead">Bienvenue dans votre espace d'administration.</p>
+  <p class="cc-welcome-help">Choisissez une rubrique dans le menu de gauche pour modifier le contenu de votre site&nbsp;: l'accueil, le coffee shop, la boutique ou vos infos pratiques.</p>
 </div>
 {% endblock %}
 
