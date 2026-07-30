@@ -269,8 +269,10 @@ class DrinkOfMonthSettings(models.Model):
     )
 
     class Meta:
-        verbose_name = "réglage des boissons du mois"
-        verbose_name_plural = "réglages des boissons du mois"
+        # Libellé orienté « métier » : c'est la phrase « durée limitée » affichée
+        # sous les boissons du mois, pas un réglage technique.
+        verbose_name = "note « durée limitée »"
+        verbose_name_plural = "note « durée limitée »"
 
     def __str__(self):
         return "Réglages des boissons du mois"

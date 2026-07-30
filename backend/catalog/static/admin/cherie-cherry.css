@@ -215,6 +215,35 @@ body.dashboard #content-main .app-auth {
   display: none;
 }
 
+/* --- Cartes de catégorie de l'accueil : titre + phrase d'aide --- */
+/* Le tableau occupe toute la largeur de la carte pour que le bandeau vert
+   (la <caption>) couvre toute la carte. On garde le calcul de colonnes par
+   défaut (table-layout: auto) pour ne pas écraser « Ajouter/Modification ». */
+.cc-category,
+.cc-category table {
+  width: 100%;
+}
+.cc-category caption .section {
+  display: block;
+}
+/* La colonne « nom » absorbe l'espace restant : le tableau (et donc le bandeau
+   vert de la caption) s'étire sur toute la largeur, sans toucher aux colonnes
+   « Ajouter » / « Modification » qui restent dimensionnées à leur contenu. */
+.cc-category th[scope="row"] {
+  width: 100%;
+}
+.cc-category-note {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--cc-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.78rem;
+  letter-spacing: 0.2px;
+  color: rgba(255, 255, 255, 0.82);
+  text-transform: none;
+}
+
 /* ------------------------------------------------------------------ */
 /* 3c. Panneau « Actions récentes » (colonne de droite, toutes pages) */
 /* ------------------------------------------------------------------ */

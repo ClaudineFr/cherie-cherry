@@ -14,3 +14,13 @@ register = template.Library()
 def split(value, separator=","):
     """Découpe une chaîne en liste selon `separator` (virgule par défaut)."""
     return [part.strip() for part in value.split(separator)]
+
+
+@register.filter
+def exclude_app(app_list, app_label):
+    """Retourne la liste d'apps privée de celle dont l'app_label est donné.
+
+    Sert à masquer « Authentification et autorisation » (app_label "auth") de la
+    barre latérale : ces écrans restent accessibles via le menu « Mon compte ».
+    """
+    return [app for app in app_list if app.get("app_label") != app_label]

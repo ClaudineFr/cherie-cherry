@@ -16,6 +16,7 @@ calculés par l'admin, donc rien n'est codé en dur.
   <table>
     <caption>
       <span class="section">{{ title }}</span>
+      {% if note %}<span class="cc-category-note">{{ note }}</span>{% endif %}
     </caption>
     <tbody>
       {% for wanted in names|split:"," %}
