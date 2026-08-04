@@ -302,3 +302,33 @@ class Supplement(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class ContactMessage(models.Model):
+    """Un message envoyé via le formulaire de contact du site.
+
+    Chaque envoi du formulaire crée une ligne ici. La proprio les lit depuis
+    l'admin (elle ne les crée pas : ils viennent des visiteurs). Le formulaire
+    poste sur l'API, qui enregistre le message.
+    """
+
+    name = models.CharField("nom", max_length=120)
+    email = models.EmailField("email")
+    subject = models.CharField("sujet", max_length=200)
+    message = models.TextField("message")
+
+    # Passe à True quand la proprio a lu / traité le message, pour distinguer
+    # d'un coup d'œil ce qui est nouveau.
+    is_read = models.BooleanField("lu", default=False)
+
+    created_at = models.DateTimeField("reçu le", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "message de contact"
+        verbose_name_plural = "messages de contact"
+        # Les plus récents en haut de la liste.
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        # Repère lisible dans l'admin : qui + sujet.
+        return f"{self.name} — {self.subject}"

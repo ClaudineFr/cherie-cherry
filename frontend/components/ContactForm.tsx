@@ -1,101 +1,113 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useActionState } from "react";
+
+import { sendContactMessage, type ContactState } from "@/app/contact/actions";
+
+// État initial : rien n'a encore été soumis.
+const initialState: ContactState = {};
 
 export default function ContactForm() {
-  // 1. L'état du formulaire : un objet avec nos 4 champs.
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+  // useActionState relie le <form> à la Server Action.
+  // - state   : ce que l'action a renvoyé (ok / erreurs / message)
+  // - action  : à passer au <form action={...}> ; il appelle la Server Action
+  // - pending : true pendant l'envoi (pour désactiver le bouton)
+  const [state, action, pending] = useActionState(
+    sendContactMessage,
+    initialState,
+  );
 
-  // 2. L'état pour savoir si le message a été "envoyé".
-  const [sent, setSent] = useState(false);
-
-  // 2b. Quand "sent" passe à true, on attend 4s puis on réinitialise tout.
-  useEffect(() => {
-    if (!sent) return; // rien à faire tant qu'on n'a pas envoyé
-
-    const timer = setTimeout(() => {
-      setForm({ name: "", email: "", subject: "", message: "" });
-      setSent(false);
-    }, 4000);
-
-    // Nettoyage : si le composant disparaît avant la fin, on annule le minuteur.
-    return () => clearTimeout(timer);
-  }, [sent]);
-
-  // 3. Appelé à chaque frappe dans un champ : met à jour l'état.
-  function handleChange(
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
-    const { name, value } = event.target;
-    setForm((previous) => ({ ...previous, [name]: value }));
-  }
-
-  // 4. Appelé à la soumission du formulaire.
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault(); // empêche le rechargement de page par défaut
-    console.log("Message envoyé (simulation) :", form);
-    setSent(true);
-  }
-
-  // 5. Si déjà envoyé, on affiche un message de confirmation à la place.
-  if (sent) {
+  // Si le message est bien parti, on remplace le formulaire par une confirmation.
+  if (state.ok) {
     return (
       <p className="rounded-2xl bg-pink-soft px-6 py-8 text-center text-green">
-        Merci {form.name} ! Votre message a bien été envoyé. 🍒
+        Merci ! Votre message a bien été envoyé. 🍒
       </p>
     );
   }
 
+  // Petite aide : le message d'erreur d'un champ donné, s'il existe.
+  const fieldError = (name: string) => state.errors?.[name]?.[0];
+
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
+    <form action={action} className="flex w-full flex-col gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1">
+          <input
+            type="text"
+            name="name"
+            placeholder="Votre nom"
+            required
+            className="rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
+          />
+          {fieldError("name") && (
+            <p className="text-xs text-red-600">{fieldError("name")}</p>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <input
+            type="email"
+            name="email"
+            placeholder="Votre email"
+            required
+            className="rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
+          />
+          {fieldError("email") && (
+            <p className="text-xs text-red-600">{fieldError("email")}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1">
         <input
           type="text"
-          name="name"
-          placeholder="Votre nom"
-          value={form.name}
-          onChange={handleChange}
+          name="subject"
+          placeholder="Sujet"
           required
           className="rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
         />
-        <input
-          type="email"
-          name="email"
-          placeholder="Votre email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          className="rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
-        />
+        {fieldError("subject") && (
+          <p className="text-xs text-red-600">{fieldError("subject")}</p>
+        )}
       </div>
-      <input
-        type="text"
-        name="subject"
-        placeholder="Sujet"
-        value={form.subject}
-        onChange={handleChange}
-        required
-        className="rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
-      />
-      <textarea
-        name="message"
-        placeholder="Votre message"
-        value={form.message}
-        onChange={handleChange}
-        required
-        rows={5}
-        className="rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
-      />
+
+      <div className="flex flex-col gap-1">
+        <textarea
+          name="message"
+          placeholder="Votre message"
+          required
+          rows={5}
+          className="rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
+        />
+        {fieldError("message") && (
+          <p className="text-xs text-red-600">{fieldError("message")}</p>
+        )}
+      </div>
+
+      {/*
+        Honeypot anti-spam : un champ que les humains ne voient pas
+        (aria-hidden + tabIndex -1 pour ne pas l'atteindre au clavier, et
+        caché visuellement). Les bots, eux, le remplissent → Django rejette.
+        On NE met PAS `required` dessus, sinon on bloquerait les humains.
+      */}
+      <div className="hidden" aria-hidden="true">
+        <label>
+          Ne pas remplir ce champ
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+        </label>
+      </div>
+
+      {/* Erreur globale (panne réseau, honeypot déclenché, etc.). */}
+      {state.message && (
+        <p className="text-sm text-red-600">{state.message}</p>
+      )}
+
       <button
         type="submit"
-        className="rounded-full bg-green px-6 py-3 text-sm uppercase tracking-widest text-cream transition-opacity hover:opacity-80"
+        disabled={pending}
+        className="rounded-full bg-green px-6 py-3 text-sm uppercase tracking-widest text-cream transition-opacity hover:opacity-80 disabled:opacity-50"
       >
-        Envoyer
+        {pending ? "Envoi en cours…" : "Envoyer"}
       </button>
     </form>
   );

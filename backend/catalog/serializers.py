@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage
 
 class ProductSerializer(serializers.ModelSerializer):
     """Décrit comment un Product est transformé en JSON (et inversement)."""
@@ -111,3 +111,38 @@ class SupplementSerializer(serializers.ModelSerializer):
             "order",
             "available",
         ]
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    # Champ "honeypot" (pot de miel) anti-spam : un champ que le formulaire
+    # cache aux visiteurs mais que les bots, qui remplissent tout, vont
+    # remplir. write_only => il ne ressort jamais dans le JVON renvoyé ;
+    # required=False => un humain n'a pas à le remplir.
+    # Il n'existe PAS sur le modèle : on ne le stocke pas, on le vérifie juste.
+    website = serializers.CharField(
+        required=False, allow_blank=True, write_only=True
+    )
+
+    class Meta:
+        model = ContactMessage
+        # Les champs qu'un visiteur envoie. is_read / created_at sont gérés
+        # côté serveur, jamais fournis par le formulaire.
+        fields = [
+            "name",
+            "email",
+            "subject",
+            "message",
+            "website",
+        ]
+
+    def validate_website(self, value):
+        # Si le honeypot est rempli, c'est un bot : on refuse.
+        if value:
+            raise serializers.ValidationError("Envoi refusé.")
+        return value
+
+    def create(self, validated_data):
+        # Le honeypot ne fait pas partie du modèle : on le retire avant de
+        # créer le ContactMessage.
+        validated_data.pop("website", None)
+        return super().create(validated_data)

@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement
-from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -41,6 +41,21 @@ class SupplementViewSet(viewsets.ModelViewSet):
     # On ne sert que les suppléments disponibles.
     queryset = Supplement.objects.filter(available=True)
     serializer_class = SupplementSerializer
+
+from rest_framework import generics
+
+
+class ContactMessageCreateView(generics.CreateAPIView):
+    """Endpoint du formulaire de contact : POST uniquement.
+
+    Contrairement aux autres endpoints (ModelViewSet, lecture + écriture),
+    celui-ci ne fait QUE créer un message. On n'expose ni la liste ni le
+    détail : les messages se lisent depuis l'admin, pas via l'API publique.
+    """
+
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
+
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
