@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
 
 class ProductSerializer(serializers.ModelSerializer):
     """Décrit comment un Product est transformé en JSON (et inversement)."""
@@ -146,3 +146,17 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         # créer le ContactMessage.
         validated_data.pop("website", None)
         return super().create(validated_data)
+
+
+class SiteSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteSettings
+        fields = [
+            "street",
+            "postal_code",
+            "city",
+            "email",
+            "phone",
+            "instagram_url",
+            "tiktok_url",
+        ]

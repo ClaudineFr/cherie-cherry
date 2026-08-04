@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -109,4 +109,23 @@ class ContactMessageAdmin(admin.ModelAdmin):
     # On empêche de créer un message à la main depuis l'admin : ils ne
     # doivent arriver que par le formulaire du site.
     def has_add_permission(self, request):
+        return False
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    # Regroupe les champs par thème dans le formulaire pour s'y retrouver.
+    fieldsets = [
+        ("Adresse", {"fields": ["street", "postal_code", "city"]}),
+        ("Contact", {"fields": ["email", "phone"]}),
+        ("Réseaux sociaux", {"fields": ["instagram_url", "tiktok_url"]}),
+    ]
+
+    # Singleton (comme DrinkOfMonthSettings) : on autorise l'ajout SEULEMENT
+    # s'il n'existe pas déjà une ligne.
+    def has_add_permission(self, request):
+        return not SiteSettings.objects.exists()
+
+    # Et on interdit la suppression : ces coordonnées doivent toujours exister.
+    def has_delete_permission(self, request, obj=None):
         return False

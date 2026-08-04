@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage
-from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer, SiteSettingsSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -69,4 +69,14 @@ class DrinkOfMonthSettingsView(APIView):
         serializer = DrinkOfMonthSettingsSerializer(
             settings or DrinkOfMonthSettings()
         )
+        return Response(serializer.data)
+
+class SiteSettingsView(APIView):
+    """Renvoie les coordonnées du site (adresse, contact, réseaux) en UN objet."""
+
+    def get(self, request):
+        settings = SiteSettings.objects.first()
+        # Si la proprio n'a pas encore rempli la ligne, on renvoie un objet
+        # vide plutôt qu'une erreur : le front affichera juste des champs vides.
+        serializer = SiteSettingsSerializer(settings or SiteSettings())
         return Response(serializer.data)
