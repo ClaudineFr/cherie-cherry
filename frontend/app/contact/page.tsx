@@ -1,7 +1,9 @@
 import ContactForm from "@/components/ContactForm";
 import { fetchOpeningHours, groupOpeningHours } from "@/app/openingHours";
+import { fetchSiteSettings } from "@/app/siteSettings";
 
-// async : la page va chercher les horaires sur l'API au rendu (Server Component).
+// async : la page va chercher horaires + coordonnées sur l'API au rendu
+// (Server Component).
 export default async function ContactPage() {
   // Horaires regroupés (jours fermés masqués), transformés en texte.
   // Ex. "Mardi – Samedi · 10h30 – 19h00".
@@ -10,15 +12,27 @@ export default async function ContactPage() {
     .map((range) => `${range.days} · ${range.hours}`)
     .join(" — ");
 
+  // Coordonnées éditables depuis l'admin.
+  const settings = await fetchSiteSettings();
+
+  // Adresse sur une ligne, ex. "7 rue de la République, 84200 Carpentras".
+  // On assemble seulement les morceaux renseignés (pas de virgule orpheline).
+  const adresse = [settings.street, `${settings.postal_code} ${settings.city}`.trim()]
+    .filter(Boolean)
+    .join(", ");
+
+  // On ne montre chaque encart que s'il a une valeur (email/adresse peuvent
+  // être vides tant que la proprio ne les a pas remplis).
   const contactInfos = [
-    { emoji: "✉️", label: "Email", value: "contact@cheriecherry.fr" },
-    {
-      emoji: "📍",
-      label: "Adresse",
-      value: "7 rue de la République, 84200 Carpentras",
-    },
-    { emoji: "🕒", label: "Horaires", value: horaires },
-  ];
+    settings.email && { emoji: "✉️", label: "Email", value: settings.email },
+    adresse && { emoji: "📍", label: "Adresse", value: adresse },
+    horaires && { emoji: "🕒", label: "Horaires", value: horaires },
+  ].filter(Boolean) as { emoji: string; label: string; value: string }[];
+
+  // Carte Google Maps déduite de l'adresse (pas de champ dédié dans l'admin).
+  const mapsSrc = adresse
+    ? `https://www.google.com/maps?q=${encodeURIComponent(adresse)}&output=embed`
+    : null;
 
   return (
     <main className="flex-1 bg-cream px-6 py-20">
@@ -51,20 +65,22 @@ export default async function ContactPage() {
           <ContactForm />
         </div>
 
-        {/* Carte Google Maps */}
-        <div className="mt-14">
-          <h2 className="mb-4 text-center font-serif text-2xl text-green">
-            Nous trouver
-          </h2>
-          <iframe
-            title="Carte — Chérie Cherry, 7 rue de la République, Carpentras"
-            src="https://www.google.com/maps?q=7+rue+de+la+R%C3%A9publique+84200+Carpentras&output=embed"
-            className="h-80 w-full rounded-2xl border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            allowFullScreen
-          />
-        </div>
+        {/* Carte Google Maps — affichée seulement si l'adresse est renseignée */}
+        {mapsSrc && (
+          <div className="mt-14">
+            <h2 className="mb-4 text-center font-serif text-2xl text-green">
+              Nous trouver
+            </h2>
+            <iframe
+              title={`Carte — Chérie Cherry, ${adresse}`}
+              src={mapsSrc}
+              className="h-80 w-full rounded-2xl border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+        )}
       </div>
     </main>
   );

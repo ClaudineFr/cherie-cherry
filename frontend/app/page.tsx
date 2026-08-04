@@ -4,8 +4,12 @@ import InstagramStories from "@/components/InstagramStories";
 import InstagramFeed from "@/components/InstagramFeed";
 import coffeeShopImg from "@/public/universes/coffee-shop.jpg";
 import conceptStoreImg from "@/public/universes/concept-store.jpg";
+import { fetchSiteSettings } from "@/app/siteSettings";
 
-export default function Home() {
+export default async function Home() {
+  // Lien Instagram éditable depuis l'admin.
+  const settings = await fetchSiteSettings();
+
   return (
     <main className="flex-1">
       {/* Section hero */}
@@ -64,14 +68,18 @@ export default function Home() {
         </h2>
         <p className="mx-auto mb-12 text-center text-xs text-ink/70 md:text-sm">
           Suivez{" "}
-          <a
-            href="https://www.instagram.com/cheriecherry.fr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-pink-vivid underline underline-offset-2 transition-opacity hover:opacity-70"
-          >
-            @cheriecherry.fr
-          </a>{" "}
+          {settings.instagram_url ? (
+            <a
+              href={settings.instagram_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-pink-vivid underline underline-offset-2 transition-opacity hover:opacity-70"
+            >
+              @cheriecherry.fr
+            </a>
+          ) : (
+            <span className="font-medium text-pink-vivid">@cheriecherry.fr</span>
+          )}{" "}
           sur Instagram.
         </p>
         <InstagramFeed />

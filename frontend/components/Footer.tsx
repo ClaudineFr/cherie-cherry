@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { FaInstagram, FaTiktok } from "react-icons/fa6";
 import { fetchOpeningHours, groupOpeningHours } from "@/app/openingHours";
+import { fetchSiteSettings } from "@/app/siteSettings";
 
-// async : le footer va chercher les horaires sur l'API au rendu (Server Component).
+// async : le footer va chercher horaires + coordonnées sur l'API au rendu
+// (Server Component).
 export default async function Footer() {
   // On récupère les horaires puis on les regroupe (jours identiques fusionnés).
   const hours = groupOpeningHours(await fetchOpeningHours());
+
+  // Les coordonnées éditables depuis l'admin (adresse, réseaux sociaux).
+  const settings = await fetchSiteSettings();
 
   return (
     <footer className="bg-green text-cream">
@@ -13,8 +18,13 @@ export default async function Footer() {
         {/* Contact */}
         <div className="flex flex-col items-center gap-2 text-xs text-cream/80">
           <p className="mb-2 uppercase tracking-widest text-cream">Contact</p>
-          <p>7 rue de la République</p>
-          <p>84200 Carpentras</p>
+          {/* Adresse : chaque ligne ne s'affiche que si elle est renseignée. */}
+          {settings.street && <p>{settings.street}</p>}
+          {(settings.postal_code || settings.city) && (
+            <p>
+              {settings.postal_code} {settings.city}
+            </p>
+          )}
           {/* Horaires : une ligne par plage de jours regroupée */}
           <div className="mt-2 flex flex-col gap-0.5">
             <p className="uppercase tracking-widest text-cream">Horaires</p>
@@ -44,24 +54,29 @@ export default async function Footer() {
             Nous suivre
           </p>
           <div className="flex gap-3">
-            <a
-              href="https://www.instagram.com/cheriecherry.fr"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-cream/10 transition-colors hover:bg-cream/25"
-            >
-              <FaInstagram className="h-4 w-4" />
-            </a>
-            <a
-              href="https://www.tiktok.com/@cheriecherry.fr"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="TikTok"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-cream/10 transition-colors hover:bg-cream/25"
-            >
-              <FaTiktok className="h-4 w-4" />
-            </a>
+            {/* Chaque réseau ne s'affiche que si son lien est renseigné. */}
+            {settings.instagram_url && (
+              <a
+                href={settings.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-cream/10 transition-colors hover:bg-cream/25"
+              >
+                <FaInstagram className="h-4 w-4" />
+              </a>
+            )}
+            {settings.tiktok_url && (
+              <a
+                href={settings.tiktok_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-cream/10 transition-colors hover:bg-cream/25"
+              >
+                <FaTiktok className="h-4 w-4" />
+              </a>
+            )}
           </div>
         </div>
       </div>

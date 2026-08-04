@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { fetchSiteSettings } from "@/app/siteSettings";
 
 export const metadata: Metadata = {
   title: "À propos — Chérie Cherry",
@@ -24,7 +25,10 @@ const values = [
   },
 ];
 
-export default function AProposPage() {
+export default async function AProposPage() {
+  // Adresse éditable depuis l'admin, glissée dans la phrase de signature.
+  const settings = await fetchSiteSettings();
+
   return (
     <main className="flex-1 bg-cream px-6 py-20">
       <div className="mx-auto max-w-3xl">
@@ -83,8 +87,9 @@ export default function AProposPage() {
         {/* Signature */}
         <p className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
           🍒&nbsp;Chérie Cherry, c&apos;est avant tout un lieu à vivre. Le mieux
-          reste encore de pousser la porte&nbsp;: on vous y attend, au 7 rue de
-          la République, à Carpentras.
+          reste encore de pousser la porte&nbsp;: on vous y attend
+          {settings.street && `, au ${settings.street}`}
+          {settings.city && `, à ${settings.city}`}.
         </p>
       </div>
     </main>
