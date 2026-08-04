@@ -302,3 +302,32 @@ class Supplement(models.Model):
 
     def __str__(self):
         return self.label
+
+class SiteSettings(models.Model):
+    """Les coordonnées et liens de la boutique, affichés un peu partout.
+
+    Comme DrinkOfMonthSettings, c'est un SINGLETON : on ne garde qu'UNE
+    seule ligne. Ce sont des réglages globaux du site (pas une liste), que
+    la proprio modifie depuis l'admin. Ça remplace les infos aujourd'hui
+    codées en dur dans le footer, la page contact, etc.
+    """
+
+    # --- Adresse (découpée pour un affichage souple) ---
+    street = models.CharField("rue", max_length=200, blank=True)
+    postal_code = models.CharField("code postal", max_length=10, blank=True)
+    city = models.CharField("ville", max_length=100, blank=True)
+
+    # --- Contact ---
+    email = models.EmailField("email", blank=True)
+    phone = models.CharField("téléphone", max_length=30, blank=True)
+
+    # --- Réseaux sociaux (URL complète du profil) ---
+    instagram_url = models.URLField("lien Instagram", blank=True)
+    tiktok_url = models.URLField("lien TikTok", blank=True)
+
+    class Meta:
+        verbose_name = "coordonnées du site"
+        verbose_name_plural = "coordonnées du site"
+
+    def __str__(self):
+        return "Coordonnées du site"
