@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -82,3 +82,31 @@ class SupplementAdmin(admin.ModelAdmin):
     list_editable = ["price", "order", "available"]
     list_filter = ["available"]
     search_fields = ["label"]
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    # Les messages viennent des visiteurs (via le formulaire du site), pas de
+    # la proprio. L'admin ne sert donc qu'à LES CONSULTER, en lecture seule.
+
+    # Colonnes de la liste : d'un coup d'œil, qui a écrit, à propos de quoi,
+    # quand, et si c'est déjà lu ou non.
+    list_display = ["name", "subject", "email", "created_at", "is_read"]
+
+    # "lu / non-lu" cochable directement dans la liste, sans ouvrir chaque
+    # message : c'est le seul champ que la proprio a besoin de modifier.
+    list_editable = ["is_read"]
+
+    # Filtre lu / non-lu + par date dans la colonne de droite.
+    list_filter = ["is_read", "created_at"]
+
+    # Recherche par nom, email ou sujet.
+    search_fields = ["name", "email", "subject"]
+
+    # Tous les champs du message sont en lecture seule quand on l'ouvre :
+    # on ne réécrit pas ce qu'un visiteur a envoyé.
+    readonly_fields = ["name", "email", "subject", "message", "created_at"]
+
+    # On empêche de créer un message à la main depuis l'admin : ils ne
+    # doivent arriver que par le formulaire du site.
+    def has_add_permission(self, request):
+        return False
