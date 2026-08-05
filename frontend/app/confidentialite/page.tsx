@@ -74,8 +74,9 @@ export default function ConfidentialitePage() {
             </h2>
             <p>
               Ces informations servent uniquement à traiter votre demande et à
-              y répondre. La base légale de ce traitement est votre
-              consentement, donné au moment de l&apos;envoi du formulaire.
+              y répondre. La base légale de ce traitement est l&apos;intérêt
+              légitime de Chérie Cherry à répondre aux sollicitations qui lui
+              sont adressées.
             </p>
           </section>
 
