@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
 
@@ -88,13 +89,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
     # Les messages viennent des visiteurs (via le formulaire du site), pas de
     # la proprio. L'admin ne sert donc qu'à LES CONSULTER, en lecture seule.
 
-    # Colonnes de la liste : d'un coup d'œil, qui a écrit, à propos de quoi,
-    # quand, et si c'est déjà lu ou non.
-    list_display = ["name", "subject", "email", "created_at", "is_read"]
-
-    # "lu / non-lu" cochable directement dans la liste, sans ouvrir chaque
-    # message : c'est le seul champ que la proprio a besoin de modifier.
-    list_editable = ["is_read"]
+    # Colonnes de la liste : le statut visuel en tête (pastille « Nouveau »),
+    # puis qui a écrit, à propos de quoi, et quand.
+    list_display = ["status", "name", "subject", "email", "created_at"]
 
     # Filtre lu / non-lu + par date dans la colonne de droite.
     list_filter = ["is_read", "created_at"]
@@ -102,9 +99,42 @@ class ContactMessageAdmin(admin.ModelAdmin):
     # Recherche par nom, email ou sujet.
     search_fields = ["name", "email", "subject"]
 
+    # Tri par défaut : les non-lus d'abord (is_read=False remonte), puis les
+    # plus récents en haut. La proprio voit tout de suite ce qui est nouveau.
+    ordering = ["is_read", "-created_at"]
+
+    # Navigation par date au-dessus de la liste.
+    date_hierarchy = "created_at"
+
+    # Actions groupées : cocher plusieurs messages puis les marquer d'un coup.
+    actions = ["mark_as_read", "mark_as_unread"]
+
     # Tous les champs du message sont en lecture seule quand on l'ouvre :
     # on ne réécrit pas ce qu'un visiteur a envoyé.
     readonly_fields = ["name", "email", "subject", "message", "created_at"]
+
+    @admin.display(description="statut", ordering="is_read")
+    def status(self, obj):
+        # Non lu : pastille rose vive « Nouveau » pour attirer l'œil.
+        # Lu : mention discrète en gris. Le HTML est 100 % statique (aucune
+        # donnée utilisateur interpolée) : mark_safe suffit et est sûr ici.
+        if obj.is_read:
+            return mark_safe('<span style="color:#999;">Lu</span>')
+        return mark_safe(
+            '<span style="display:inline-block;padding:2px 10px;border-radius:999px;'
+            'background:#d9709c;color:#fff;font-weight:600;font-size:0.75rem;">'
+            '● Nouveau</span>'
+        )
+
+    @admin.display(description="Marquer comme lu")
+    def mark_as_read(self, request, queryset):
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f"{updated} message(s) marqué(s) comme lu(s).")
+
+    @admin.display(description="Marquer comme non lu")
+    def mark_as_unread(self, request, queryset):
+        updated = queryset.update(is_read=False)
+        self.message_user(request, f"{updated} message(s) marqué(s) comme non lu(s).")
 
     # On empêche de créer un message à la main depuis l'admin : ils ne
     # doivent arriver que par le formulaire du site.
