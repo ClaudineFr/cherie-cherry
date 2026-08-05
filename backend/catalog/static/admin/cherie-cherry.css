@@ -1,0 +1,683 @@
+/* Habillage de l'admin Django aux couleurs de Chérie Cherry (thème clair). */
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap");
+
+/* Palette de la marque */
+:root {
+  --cc-pink: #f6d9df;
+  --cc-pink-soft: #fbeef1;
+  --cc-pink-vivid: #f8a6d5;
+  --cc-pink-deep: #d9709c;
+  --cc-title: #b84577; /* framboise + profond : contraste AA sur crème pour les titres */
+  --cc-green: #406440;
+  --cc-green-deep: #335033;
+  --cc-cream: #faf6f1;
+  --cc-white: #ffffff;
+
+  --cc-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+
+  --cc-radius: 12px;
+  --cc-shadow: 0 2px 12px rgba(64, 100, 64, 0.08);
+  --cc-shadow-hover: 0 4px 18px rgba(64, 100, 64, 0.14);
+}
+
+/* Variables natives de l'admin, reteintées */
+:root,
+html[data-theme="light"] {
+  --primary: var(--cc-green);
+  --secondary: var(--cc-green);
+  --accent: var(--cc-pink-deep);
+  --primary-fg: #ffffff;
+
+  --body-bg: var(--cc-cream);
+  --body-fg: var(--cc-green);
+  --body-quiet-color: #6f7d6a;
+  --body-loud-color: var(--cc-green-deep);
+
+  --header-bg: var(--cc-green);
+  --header-color: #ffffff;
+  --header-branding-color: #ffffff;
+  --header-link-color: #ffffff;
+
+  --breadcrumbs-bg: var(--cc-green-deep);
+  --breadcrumbs-fg: #ffffff;
+  --breadcrumbs-link-fg: #ffffff;
+
+  --link-fg: var(--cc-green-deep);
+  --link-hover-color: var(--cc-pink-deep);
+  --link-selected-fg: var(--cc-pink-deep);
+
+  --button-bg: var(--cc-green);
+  --button-hover-bg: var(--cc-green-deep);
+  --default-button-bg: var(--cc-green);
+  --default-button-hover-bg: var(--cc-green-deep);
+  --object-tools-bg: var(--cc-pink-deep);
+  --object-tools-hover-bg: var(--cc-green);
+
+  --hairline-color: #efe2e5;
+  --border-color: #e7d5da;
+
+  --darkened-bg: var(--cc-pink-soft);
+  --selected-bg: var(--cc-pink-soft);
+  --selected-row: #fdf4f6;
+
+  --message-success-bg: #e3efe0;
+}
+
+/* Accessibilité : focus clavier visible + mouvement réduit */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--cc-pink-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Sur fond vert (en-tête), le focus passe en clair pour rester visible. */
+#header a:focus-visible,
+#header button:focus-visible {
+  outline-color: #ffffff;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Typo serif */
+#site-name a {
+  font-family: var(--cc-serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+#site-name .cc-subtitle {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  color: #ffffff;
+}
+
+#content h1,
+.module h2,
+.module caption,
+fieldset h2,
+.inline-group h2 {
+  font-family: var(--cc-serif);
+  letter-spacing: 0.3px;
+}
+
+/* Menu du haut : pastilles */
+#user-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: 0.2px;
+}
+#user-tools strong {
+  color: #ffffff;
+}
+.cc-userlinks {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#user-tools .cc-account-toggle,
+#user-tools .cc-userlinks > .cc-viewsite,
+#user-tools .cc-userlinks > #logout-form button {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+#user-tools .cc-account-toggle:hover,
+#user-tools .cc-userlinks > .cc-viewsite:hover {
+  background: #ffffff;
+  color: var(--cc-green-deep);
+  border-color: #ffffff;
+}
+#user-tools .cc-userlinks > #logout-form {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+#user-tools .cc-userlinks > #logout-form button {
+  border-color: var(--cc-pink-vivid);
+  color: var(--cc-pink);
+}
+#user-tools .cc-userlinks > #logout-form button:hover {
+  background: var(--cc-pink-deep);
+  color: #ffffff;
+  border-color: var(--cc-pink-deep);
+}
+
+/* Menu déroulant « Mon compte » */
+.cc-account {
+  position: relative;
+  display: inline-block;
+}
+#user-tools .cc-account-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(51, 80, 51, 0.22);
+  border: 1px solid var(--cc-pink);
+}
+#user-tools .cc-account-menu[hidden] {
+  display: none;
+}
+#user-tools .cc-account-menu a {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--cc-green-deep);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+  text-align: left;
+}
+#user-tools .cc-account-menu a:hover {
+  background: var(--cc-pink-soft);
+  color: var(--cc-pink-deep);
+}
+
+/* Hamburger + panneau mobile (masqués sur desktop) */
+.cc-burger,
+.cc-drawer {
+  display: none;
+}
+/* Sur desktop, les icônes des liens compte sont masquées (on montre le texte). */
+.cc-ico {
+  display: none;
+}
+
+/* Zone de bienvenue de l'accueil (navigation via la barre latérale) */
+.cc-welcome {
+  padding: 8px 0 0;
+  max-width: 62ch;
+}
+.cc-welcome-lead {
+  font-family: var(--cc-serif);
+  font-size: 1.4rem;
+  color: var(--cc-title);
+  margin: 0 0 12px;
+}
+.cc-welcome-help {
+  color: var(--body-fg);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Cartes de catégorie (barre latérale) */
+.cc-category,
+.cc-category table {
+  width: 100%;
+}
+.cc-category caption .section {
+  display: block;
+}
+.cc-category th[scope="row"] {
+  width: 100%;
+}
+.cc-category-note {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--cc-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.78rem;
+  letter-spacing: 0.2px;
+  color: rgba(255, 255, 255, 0.82);
+  text-transform: none;
+}
+
+/* Panneau « Actions récentes » */
+#content-related {
+  margin-top: 0;
+}
+#content-related .module#recent-actions-module {
+  border-radius: var(--cc-radius);
+  box-shadow: var(--cc-shadow);
+  background: var(--cc-white);
+  border: 1px solid var(--hairline-color);
+  overflow: hidden;
+}
+#content-related #recent-actions-module h2 {
+  background: var(--cc-green);
+  color: #ffffff;
+  font-family: var(--cc-serif);
+}
+#content-related #recent-actions-module h3 {
+  color: var(--cc-green-deep);
+  padding: 10px 14px 0;
+  font-size: 0.82rem;
+}
+#content-related #recent-actions-module p,
+#content-related .actionlist {
+  padding: 6px 14px 12px;
+}
+#content-related .actionlist li {
+  margin-bottom: 8px;
+}
+
+body.change-list #content-related {
+  display: none;
+}
+body.change-list #content.colMS,
+body.change-list .colMS {
+  margin-right: 0;
+}
+#content h1 {
+  color: var(--cc-title);
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+/* Mise en page & espacements */
+#header {
+  padding: 16px 40px;
+  box-shadow: 0 1px 8px rgba(51, 80, 51, 0.15);
+}
+div.breadcrumbs {
+  padding: 12px 40px;
+}
+/* Le fil d'ariane déplacé dans le contenu : discret, au-dessus du titre.
+   (Le <nav> d'origine reste vide en haut, on masque sa barre verte.) */
+nav[aria-label="Breadcrumbs"] {
+  display: none;
+}
+div.breadcrumbs.cc-breadcrumb-inline {
+  display: block;
+  background: transparent;
+  color: var(--body-quiet-color);
+  padding: 0 0 6px;
+  margin: 0;
+  font-size: 0.8rem;
+}
+div.breadcrumbs.cc-breadcrumb-inline a {
+  color: var(--cc-green-deep);
+}
+#content {
+  padding: 24px 40px 40px;
+}
+.module,
+.dashboard .module {
+  border-radius: var(--cc-radius);
+  overflow: hidden;
+  box-shadow: var(--cc-shadow);
+  background: var(--cc-white);
+  border: 1px solid var(--hairline-color);
+}
+.module caption,
+.module h2,
+.inline-group h2 {
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  letter-spacing: 0.6px;
+}
+
+/* Listes */
+#result_list tbody td,
+#result_list tbody th {
+  padding: 12px 10px;
+}
+#result_list tbody tr:hover td,
+#result_list tbody tr:hover th {
+  background: var(--cc-pink-soft);
+}
+#result_list thead th {
+  background: var(--cc-pink);
+}
+#result_list thead th,
+#result_list thead th a {
+  color: var(--cc-green-deep);
+  font-weight: 600;
+}
+#changelist-filter h2 {
+  background: var(--cc-green);
+}
+
+/* Barre latérale des catégories (desktop) : toujours ouverte (icône + nom).
+   On cible aussi #nav-sidebar pour neutraliser le CSS natif de Django qui
+   masque la barre (visibility:hidden + left/margin-left négatifs). */
+.cc-rail,
+#nav-sidebar.cc-rail {
+  position: relative;
+  z-index: 50;
+  flex: 0 0 auto;
+  width: 232px;
+  left: 0;
+  margin-left: 0;
+  visibility: visible;
+  background: var(--cc-green);
+  border: none;
+}
+.cc-rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cc-rail-list li {
+  margin: 0;
+  width: 100%;
+}
+.cc-rail-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 20px;
+  color: var(--cc-cream);
+  text-decoration: none;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+}
+.cc-rail-list a:hover {
+  background: var(--cc-green-deep);
+}
+.cc-rail-list a.cc-active {
+  background: var(--cc-green-deep);
+  border-left-color: var(--cc-pink-vivid);
+}
+.cc-rail-icon {
+  flex: 0 0 auto;
+  width: 22px;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.cc-rail-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Formulaires */
+.form-row {
+  padding: 14px 16px;
+}
+.form-row label,
+.aligned label {
+  font-weight: 600;
+  color: var(--cc-green-deep);
+}
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select,
+.vTextField {
+  border-radius: 8px;
+  padding: 9px 11px;
+  border: 1px solid var(--border-color);
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+select:focus,
+.vTextField:focus {
+  border-color: var(--cc-pink-deep);
+  outline: 3px solid var(--cc-pink);
+  outline-offset: 0;
+}
+.help,
+.form-row .help {
+  color: var(--body-quiet-color);
+  font-size: 0.8rem;
+}
+fieldset.module {
+  border: 1px solid var(--hairline-color);
+}
+
+/* Boutons */
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.button:hover,
+input[type="submit"]:hover,
+.submit-row input:hover,
+a.button:hover {
+  box-shadow: var(--cc-shadow-hover);
+}
+.object-tools a {
+  border-radius: 999px;
+}
+.submit-row {
+  border-radius: var(--cc-radius);
+  background: var(--cc-pink-soft);
+  border: 1px solid var(--cc-pink);
+  padding: 14px 16px;
+}
+
+/* Page de login */
+.login {
+  background: var(--cc-pink-soft);
+}
+.login #container {
+  border-radius: var(--cc-radius);
+  box-shadow: 0 8px 30px rgba(64, 100, 64, 0.18);
+  overflow: hidden;
+  border: none;
+}
+.login #header {
+  padding: 22px 16px;
+}
+.login #header h1,
+.login #header h1 a {
+  font-family: var(--cc-serif);
+}
+.login .form-row {
+  padding: 12px 0;
+}
+.login .submit-row {
+  background: transparent;
+  border: none;
+  padding: 8px 0 0;
+}
+.login .submit-row input {
+  width: auto;
+  min-width: 60%;
+}
+
+/* Responsive mobile : hamburger à gauche (tiroir catégories) + icônes compte */
+@media (max-width: 640px) {
+  #header {
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 12px 14px;
+  }
+  /* Le nom de marque laisse la place au hamburger à gauche. */
+  #site-name {
+    display: none;
+  }
+
+  /* Le rail de catégories est masqué : la navigation passe par le tiroir. */
+  #nav-sidebar.cc-rail {
+    display: none;
+  }
+
+  /* Le bouton hamburger va tout à gauche (avant #user-tools). */
+  .cc-burger {
+    order: -1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .cc-burger-icon,
+  .cc-burger-icon::before,
+  .cc-burger-icon::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 2px;
+  }
+  .cc-burger-icon {
+    position: relative;
+  }
+  .cc-burger-icon::before,
+  .cc-burger-icon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+  .cc-burger-icon::before { top: -7px; }
+  .cc-burger-icon::after { top: 7px; }
+
+  /* #user-tools contient le hamburger + les liens compte : réparti gauche/droite. */
+  #user-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    gap: 0;
+  }
+  .cc-userlinks {
+    gap: 4px;
+  }
+
+  /* Les liens compte deviennent des icônes (on masque le texte). */
+  .cc-ico {
+    display: inline;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  .cc-txt {
+    display: none;
+  }
+  #user-tools .cc-account-toggle,
+  #user-tools .cc-userlinks > .cc-viewsite,
+  #user-tools .cc-userlinks > #logout-form button {
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+  }
+  #user-tools .cc-userlinks > #logout-form button {
+    color: #ffffff;
+  }
+  /* Le déroulant « Mon compte » : au lieu du petit popover, on le passe en
+     panneau pleine largeur ancré sous la topbar (comme le tiroir des
+     catégories). .cc-account reste statique pour ne pas servir d'ancrage ;
+     c'est #header (position:relative) qui ancre le panneau. */
+  .cc-account {
+    position: static;
+  }
+  #user-tools .cc-account-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-width: 0;
+    z-index: 30;
+    padding: 8px 0;
+    border: none;
+    border-radius: 0;
+    background: var(--cc-green);
+    box-shadow: 0 8px 20px rgba(28, 43, 24, 0.25);
+  }
+  /* Un intitulé « Mon compte » en tête du panneau, pour le contexte. */
+  #user-tools .cc-account-menu::before {
+    content: "Mon compte";
+    display: block;
+    padding: 6px 20px 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  #user-tools .cc-account-menu a {
+    padding: 14px 20px;
+    border-radius: 0;
+    color: #ffffff;
+    font-size: 0.95rem;
+  }
+  #user-tools .cc-account-menu a:hover {
+    background: var(--cc-green-deep);
+    color: #ffffff;
+  }
+
+  /* Panneau des catégories : pleine largeur, ancré sous la topbar. Le panneau
+     est imbriqué dans #user-tools (donc dans #header) : on le sort du flux flex
+     avec position:absolute pour qu'il occupe toute la largeur sous la barre au
+     lieu d'être un simple élément flex dans la rangée. #header est en
+     position:relative, il sert donc d'ancrage. */
+  #user-tools .cc-drawer {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    z-index: 30;
+    background: var(--cc-green);
+    box-shadow: 0 8px 20px rgba(28, 43, 24, 0.25);
+    overflow: hidden;
+  }
+  #user-tools .cc-drawer[hidden] {
+    display: none;
+  }
+}
