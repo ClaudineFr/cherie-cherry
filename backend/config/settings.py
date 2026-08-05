@@ -47,6 +47,13 @@ ALLOWED_HOSTS = [
 if DEBUG:
     ALLOWED_HOSTS += ["127.0.0.1", "localhost"]
 
+# URL du site public (le front Next.js), vers laquelle pointe le bouton
+# « Voir le site » de l'admin. Elle change selon l'environnement, donc on la
+# lit dans une variable d'env : en prod, mettre FRONTEND_URL sur le service
+# backend (ex: "https://www.cheriecherry.fr"). En local, on retombe sur le
+# serveur `npm run dev`.
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+
 # Railway sert le site derrière un proxy HTTPS. Ces réglages disent à Django
 # de faire confiance à l'en-tête envoyé par le proxy pour savoir qu'on est en
 # HTTPS, et de n'accepter les requêtes POST de l'admin que depuis nos domaines.
@@ -91,7 +98,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Dossier de templates au niveau projet, où on surcharge quelques
+        # bouts de l'admin Django (ex: le lien « Voir le site »).
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
