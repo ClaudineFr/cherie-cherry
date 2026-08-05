@@ -5,13 +5,20 @@ import InstagramFeed from "@/components/InstagramFeed";
 import coffeeShopImg from "@/public/universes/coffee-shop.jpg";
 import conceptStoreImg from "@/public/universes/concept-store.jpg";
 import { fetchSiteSettings } from "@/app/siteSettings";
+import { fetchOpeningHours } from "@/app/openingHours";
+import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
 
 export default async function Home() {
-  // Lien Instagram éditable depuis l'admin.
-  const settings = await fetchSiteSettings();
+  // Coordonnées + horaires (éditables depuis l'admin) : servent aussi bien
+  // à l'affichage qu'aux données structurées SEO ci-dessous.
+  const [settings, hours] = await Promise.all([
+    fetchSiteSettings(),
+    fetchOpeningHours(),
+  ]);
 
   return (
     <main className="flex-1">
+      <LocalBusinessJsonLd settings={settings} hours={hours} />
       {/* Section hero */}
       <section className="flex flex-col items-center justify-center gap-6 bg-pink-soft px-6 py-24 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-green">

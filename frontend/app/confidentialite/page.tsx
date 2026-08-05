@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialité — Chérie Cherry",
+  title: "Politique de confidentialité",
   description:
     "Politique de confidentialité de Chérie Cherry : données collectées via le formulaire de contact, finalité, durée de conservation et vos droits.",
 };

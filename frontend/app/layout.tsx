@@ -14,10 +14,24 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
+const description =
+  "Chérie Cherry, coffee shop et concept store : café, déco, papeterie et prêt-à-porter féminin.";
+
 export const metadata: Metadata = {
-  title: "Chérie Cherry — Coffee shop & concept store",
-  description:
-    "Chérie Cherry, coffee shop et concept store : café, déco, papeterie et prêt-à-porter féminin.",
+  metadataBase: new URL("https://www.cheriecherry.fr"),
+  title: {
+    default: "Chérie Cherry — Coffee shop & concept store",
+    template: "%s — Chérie Cherry",
+  },
+  description,
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Chérie Cherry",
+    title: "Chérie Cherry — Coffee shop & concept store",
+    description,
+    url: "/",
+  },
 };
 
 export default function RootLayout({

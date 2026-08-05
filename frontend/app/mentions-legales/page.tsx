@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Mentions légales — Chérie Cherry",
+  title: "Mentions légales",
   description:
     "Mentions légales du site Chérie Cherry : éditeur, hébergeur et propriété intellectuelle.",
 };
