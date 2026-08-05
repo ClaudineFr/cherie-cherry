@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 
 import { sendContactMessage, type ContactState } from "@/app/contact/actions";
@@ -109,6 +110,23 @@ export default function ContactForm() {
       >
         {pending ? "Envoi en cours…" : "Envoyer"}
       </button>
+
+      {/*
+        Mention RGPD : le visiteur est informé, au moment de l'envoi, de
+        l'usage de ses données et du lien vers la politique complète.
+        (Cookies techniques uniquement : pas de bandeau de consentement requis.)
+      */}
+      <p className="text-xs text-ink/60">
+        En envoyant ce formulaire, vous acceptez que vos données soient
+        utilisées pour traiter votre demande. Consultez notre{" "}
+        <Link
+          href="/confidentialite"
+          className="underline underline-offset-2 hover:text-green"
+        >
+          politique de confidentialité
+        </Link>
+        .
+      </p>
     </form>
   );
 }
