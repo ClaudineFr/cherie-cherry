@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { fetchSiteSettings } from "@/app/siteSettings";
 
 export const metadata: Metadata = {
-  title: "À propos — Chérie Cherry",
+  title: "À propos",
   description:
     "L'histoire de Chérie Cherry, coffee shop et concept store à Carpentras : notre esprit, nos valeurs et les mains derrière le lieu.",
 };
