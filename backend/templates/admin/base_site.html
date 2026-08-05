@@ -41,6 +41,9 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
 {% block welcome-msg %}{% endblock %}
 
 {% block userlinks %}
+  {# Sprite SVG des icônes (défini une fois, réutilisé via <use> partout). #}
+  {% include "admin/cc_icons.html" %}
+
   {% comment %}
   Bouton hamburger (mobile) : ouvre le tiroir des catégories. Placé à gauche
   par CSS (à la place du branding). Masqué en desktop.
@@ -56,7 +59,7 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
   <span class="cc-userlinks">
     <span class="cc-account">
       <button type="button" class="cc-account-toggle" aria-expanded="false" aria-controls="cc-account-menu">
-        <span class="cc-ico" aria-hidden="true">👤</span><span class="cc-txt">Mon compte <span aria-hidden="true">▾</span></span>
+        <span class="cc-ico" aria-hidden="true"><svg class="cc-icon"><use href="#icon-user"></use></svg></span><span class="cc-txt">Mon compte <span aria-hidden="true">▾</span></span>
       </button>
       <span class="cc-account-menu" id="cc-account-menu" aria-label="Mon compte" hidden>
         <a href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
@@ -68,11 +71,11 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
     </span>
     {% if site_url %}
       {# target=_blank : ouvre le site public dans un nouvel onglet (la proprio garde l'admin ouvert) ; rel=noopener : bonne pratique de sécu. #}
-      <a class="cc-viewsite" href="{{ site_url }}" target="_blank" rel="noopener" title="Voir le site" aria-label="Voir le site"><span class="cc-ico" aria-hidden="true">🔗</span><span class="cc-txt">Voir le site</span></a>
+      <a class="cc-viewsite" href="{{ site_url }}" target="_blank" rel="noopener" title="Voir le site" aria-label="Voir le site"><span class="cc-ico" aria-hidden="true"><svg class="cc-icon"><use href="#icon-external-link"></use></svg></span><span class="cc-txt">Voir le site</span></a>
     {% endif %}
     <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
       {% csrf_token %}
-      <button type="submit" title="{% translate 'Log out' %}" aria-label="{% translate 'Log out' %}"><span class="cc-ico" aria-hidden="true">⏻</span><span class="cc-txt">{% translate 'Log out' %}</span></button>
+      <button type="submit" title="{% translate 'Log out' %}" aria-label="{% translate 'Log out' %}"><span class="cc-ico" aria-hidden="true"><svg class="cc-icon"><use href="#icon-log-out"></use></svg></span><span class="cc-txt">{% translate 'Log out' %}</span></button>
     </form>
   </span>
 
@@ -82,11 +85,11 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
   {% endcomment %}
   <nav id="cc-drawer" class="cc-drawer" aria-label="Catégories" hidden>
     <ul class="cc-rail-list">
-      <li><a href="{% url 'admin:index' %}"><span class="cc-rail-icon" aria-hidden="true">🏠</span><span class="cc-rail-label">Accueil du BO</span></a></li>
-      <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">📸</span><span class="cc-rail-label">Accueil du site</span></a></li>
-      <li><a href="{% url 'admin:catalog_menudrink_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">☕</span><span class="cc-rail-label">Coffee shop</span></a></li>
-      <li><a href="{% url 'admin:catalog_product_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">🛍️</span><span class="cc-rail-label">Concept store</span></a></li>
-      <li><a href="{% url 'admin:catalog_openinghours_changelist' %}"><span class="cc-rail-icon" aria-hidden="true">📍</span><span class="cc-rail-label">Infos pratiques</span></a></li>
+      <li><a href="{% url 'admin:index' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-home"></use></svg></span><span class="cc-rail-label">Accueil du BO</span></a></li>
+      <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-camera"></use></svg></span><span class="cc-rail-label">Accueil du site</span></a></li>
+      <li><a href="{% url 'admin:catalog_menudrink_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-coffee"></use></svg></span><span class="cc-rail-label">Coffee shop</span></a></li>
+      <li><a href="{% url 'admin:catalog_product_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span><span class="cc-rail-label">Concept store</span></a></li>
+      <li><a href="{% url 'admin:catalog_openinghours_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-map-pin"></use></svg></span><span class="cc-rail-label">Infos pratiques</span></a></li>
     </ul>
   </nav>
 
@@ -159,45 +162,6 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
         });
       }
 
-      // --- Fil d'ariane : le raccourcir au niveau courant et le placer dans le
-      // contenu (au-dessus du titre) plutôt que dans la barre verte du haut.
-      // On retire « Accueil » et la catégorie (la sidebar joue déjà ce rôle) :
-      // il ne reste que le fil à partir du modèle courant.
-      var moveBreadcrumb = function () {
-        var bc = document.querySelector("div.breadcrumbs");
-        var content = document.getElementById("content");
-        if (!bc || !content) { return; }
-        // On reconstruit le fil à partir de ses segments : les liens <a> et le
-        // dernier segment (texte = page courante). On retire les 2 premiers
-        // liens (Accueil + catégorie), la sidebar jouant déjà ce rôle.
-        var links = Array.prototype.slice.call(bc.querySelectorAll("a"));
-        var kept = links.slice(2);                 // liens à garder (souvent 0 ou 1)
-        // Dernier segment = texte courant (après le dernier lien). On le prend
-        // sur le dernier nœud texte non vide du fil.
-        var lastText = "";
-        bc.childNodes.forEach(function (n) {
-          if (n.nodeType === 3) {
-            var t = n.textContent.replace(/›/g, "").trim();
-            if (t) { lastText = t; }
-          }
-        });
-        // Reconstruction.
-        bc.textContent = "";
-        kept.forEach(function (a, idx) {
-          if (idx > 0) { bc.appendChild(document.createTextNode(" › ")); }
-          bc.appendChild(a);
-        });
-        if (lastText) {
-          if (kept.length) { bc.appendChild(document.createTextNode(" › ")); }
-          bc.appendChild(document.createTextNode(lastText));
-        }
-        // Déplace le fil dans le contenu, avant le titre.
-        var h1 = content.querySelector("h1");
-        bc.classList.add("cc-breadcrumb-inline");
-        if (h1) { content.insertBefore(bc, h1); }
-        else { content.insertBefore(bc, content.firstChild); }
-      };
-
       // Surligne la catégorie active dans le rail (selon le modèle courant).
       var highlightRail = function () {
         var match = document.body.className.match(/model-([a-z]+)/);
@@ -208,7 +172,7 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
         });
       };
 
-      var onReady = function () { moveBreadcrumb(); highlightRail(); };
+      var onReady = function () { highlightRail(); };
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", onReady);
       } else {

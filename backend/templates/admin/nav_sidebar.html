@@ -14,32 +14,55 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
   <ul class="cc-rail-list">
     <li>
       <a href="{% url 'admin:index' %}" data-models="index">
-        <span class="cc-rail-icon" aria-hidden="true">🏠</span>
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-home"></use></svg></span>
         <span class="cc-rail-label">Accueil du BO</span>
       </a>
     </li>
     <li>
       <a href="{% url 'admin:catalog_instagramstory_changelist' %}" data-models="instagramstory instagrampost galleryphoto">
-        <span class="cc-rail-icon" aria-hidden="true">📸</span>
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-camera"></use></svg></span>
         <span class="cc-rail-label">Accueil du site</span>
       </a>
+      <ul class="cc-rail-sub" aria-label="Accueil du site">
+        <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}">Stories</a></li>
+        <li><a href="{% url 'admin:catalog_instagrampost_changelist' %}">Posts Instagram</a></li>
+        <li><a href="{% url 'admin:catalog_galleryphoto_changelist' %}">Galerie d'ambiance</a></li>
+      </ul>
     </li>
     <li>
       <a href="{% url 'admin:catalog_menudrink_changelist' %}" data-models="menudrink drinkofmonth drinkofmonthsettings supplement">
-        <span class="cc-rail-icon" aria-hidden="true">☕</span>
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-coffee"></use></svg></span>
         <span class="cc-rail-label">Coffee shop</span>
       </a>
+      <ul class="cc-rail-sub" aria-label="Coffee shop">
+        <li><a href="{% url 'admin:catalog_menudrink_changelist' %}">Boissons</a></li>
+        <li><a href="{% url 'admin:catalog_drinkofmonth_changelist' %}">Boisson du mois</a></li>
+        <li><a href="{% url 'admin:catalog_supplement_changelist' %}">Suppléments</a></li>
+        <li><a href="{% url 'admin:catalog_drinkofmonthsettings_changelist' %}">Réglages boisson du mois</a></li>
+      </ul>
     </li>
     <li>
       <a href="{% url 'admin:catalog_product_changelist' %}" data-models="product">
-        <span class="cc-rail-icon" aria-hidden="true">🛍️</span>
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span>
         <span class="cc-rail-label">Concept store</span>
       </a>
     </li>
     <li>
       <a href="{% url 'admin:catalog_openinghours_changelist' %}" data-models="openinghours">
-        <span class="cc-rail-icon" aria-hidden="true">📍</span>
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-map-pin"></use></svg></span>
         <span class="cc-rail-label">Infos pratiques</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:catalog_contactmessage_changelist' %}" data-models="contactmessage">
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-mail"></use></svg></span>
+        <span class="cc-rail-label">Messages</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:catalog_sitesettings_changelist' %}" data-models="sitesettings">
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-settings"></use></svg></span>
+        <span class="cc-rail-label">Réglages</span>
       </a>
     </li>
   </ul>

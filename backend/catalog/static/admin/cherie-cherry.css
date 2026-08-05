@@ -107,12 +107,16 @@ summary:focus-visible {
   color: #ffffff;
 }
 
+/* Titres de contenu (h1/h2 de page, modules, fieldsets, inlines) : on aligne
+   leur police sur le corps du BO (sans-serif hérité) plutôt que la serif de
+   marque. La Playfair reste réservée à l'identité (nom Chérie Cherry, accroche
+   de l'accueil, notes décoratives). */
 #content h1,
 .module h2,
 .module caption,
 fieldset h2,
 .inline-group h2 {
-  font-family: var(--cc-serif);
+  font-family: inherit;
   letter-spacing: 0.3px;
 }
 
@@ -229,7 +233,7 @@ fieldset h2,
   max-width: 62ch;
 }
 .cc-welcome-lead {
-  font-family: var(--cc-serif);
+  font-family: inherit;
   font-size: 1.4rem;
   color: var(--cc-title);
   margin: 0 0 12px;
@@ -278,7 +282,7 @@ fieldset h2,
 #content-related #recent-actions-module h2 {
   background: var(--cc-green);
   color: #ffffff;
-  font-family: var(--cc-serif);
+  font-family: inherit;
 }
 #content-related #recent-actions-module h3 {
   color: var(--cc-green-deep);
@@ -311,24 +315,11 @@ body.change-list .colMS {
   padding: 16px 40px;
   box-shadow: 0 1px 8px rgba(51, 80, 51, 0.15);
 }
-div.breadcrumbs {
-  padding: 12px 40px;
-}
-/* Le fil d'ariane déplacé dans le contenu : discret, au-dessus du titre.
-   (Le <nav> d'origine reste vide en haut, on masque sa barre verte.) */
+/* Fil d'ariane masqué partout : la navigation par catégories (sidebar/rail)
+   joue déjà ce rôle. On masque le <div> natif et le <nav> des versions récentes. */
+div.breadcrumbs,
 nav[aria-label="Breadcrumbs"] {
   display: none;
-}
-div.breadcrumbs.cc-breadcrumb-inline {
-  display: block;
-  background: transparent;
-  color: var(--body-quiet-color);
-  padding: 0 0 6px;
-  margin: 0;
-  font-size: 0.8rem;
-}
-div.breadcrumbs.cc-breadcrumb-inline a {
-  color: var(--cc-green-deep);
 }
 #content {
   padding: 24px 40px 40px;
@@ -420,10 +411,45 @@ div.breadcrumbs.cc-breadcrumb-inline a {
   font-size: 1.1rem;
   line-height: 1;
 }
+/* Icônes SVG (sprite Lucide) : traits fins héritant de la couleur du texte.
+   width/height fixent la taille ; currentColor aligne la teinte sur le lien. */
+.cc-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+}
 .cc-rail-label {
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+}
+
+/* Sous-menu d'une rubrique (ex. Coffee shop → Boissons, Suppléments…).
+   Toujours affiché, en retrait sous la ligne principale de la rubrique. */
+.cc-rail-sub {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 6px;
+}
+.cc-rail-sub a {
+  display: block;
+  padding: 8px 20px 8px 56px;
+  color: var(--cc-cream);
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+}
+.cc-rail-sub a:hover,
+.cc-rail-sub a:focus {
+  background: var(--cc-green);
+  border-left-color: var(--cc-pink-vivid);
 }
 
 /* Formulaires */
@@ -680,4 +706,30 @@ a.button:hover {
   #user-tools .cc-drawer[hidden] {
     display: none;
   }
+}
+
+/* --- Icônes d'action de l'admin natif (Ajouter / Modifier / Supprimer) ---
+   Django les pose en background-image (icon-addlink.svg, etc.). On surcharge
+   ces images par des icônes Lucide encodées en data: URI, teintées à la DA.
+   Comme currentColor n'est pas hérité dans un background, la couleur (vert
+   #406440, rose #d9709c pour la suppression) est codée en dur dans le trait.
+   Le stroke Lucide correspond à ces tracés (fill:none, stroke-width 2). */
+.addlink,
+.changelink,
+.inlinechangelink,
+.deletelink {
+  /* Lucide est en 24×24 ; on cadre à 14px et on recentre verticalement le
+     trait (Django posait ses icônes 14px à 0 1px). */
+  background-size: 14px 14px;
+  background-position: 0 center;
+}
+.addlink {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23406440' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E");
+}
+.changelink,
+.inlinechangelink {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23406440' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E");
+}
+.deletelink {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9709c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6'/%3E%3Cpath d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Cline x1='10' x2='10' y1='11' y2='17'/%3E%3Cline x1='14' x2='14' y1='11' y2='17'/%3E%3C/svg%3E");
 }

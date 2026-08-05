@@ -1,3 +1,5 @@
+import type { IconType } from "react-icons";
+import { LuMail, LuMapPin, LuClock } from "react-icons/lu";
 import ContactForm from "@/components/ContactForm";
 import { fetchOpeningHours, groupOpeningHours } from "@/app/openingHours";
 import { fetchSiteSettings } from "@/app/siteSettings";
@@ -24,10 +26,10 @@ export default async function ContactPage() {
   // On ne montre chaque encart que s'il a une valeur (email/adresse peuvent
   // être vides tant que la proprio ne les a pas remplis).
   const contactInfos = [
-    settings.email && { emoji: "✉️", label: "Email", value: settings.email },
-    adresse && { emoji: "📍", label: "Adresse", value: adresse },
-    horaires && { emoji: "🕒", label: "Horaires", value: horaires },
-  ].filter(Boolean) as { emoji: string; label: string; value: string }[];
+    settings.email && { Icon: LuMail, label: "Email", value: settings.email },
+    adresse && { Icon: LuMapPin, label: "Adresse", value: adresse },
+    horaires && { Icon: LuClock, label: "Horaires", value: horaires },
+  ].filter(Boolean) as { Icon: IconType; label: string; value: string }[];
 
   // Carte Google Maps déduite de l'adresse (pas de champ dédié dans l'admin).
   const mapsSrc = adresse
@@ -51,7 +53,7 @@ export default async function ContactPage() {
               key={info.label}
               className="flex flex-col items-center gap-1 rounded-2xl bg-pink-soft px-4 py-6 text-center"
             >
-              <span className="text-2xl">{info.emoji}</span>
+              <info.Icon className="text-xl text-green" aria-hidden />
               <p className="text-xs uppercase tracking-widest text-green">
                 {info.label}
               </p>
