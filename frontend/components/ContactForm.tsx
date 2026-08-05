@@ -114,11 +114,13 @@ export default function ContactForm() {
       {/*
         Mention RGPD : le visiteur est informé, au moment de l'envoi, de
         l'usage de ses données et du lien vers la politique complète.
+        Base légale = intérêt légitime (répondre à une sollicitation), pas
+        le consentement → on informe, on ne demande pas d'« accepter ».
         (Cookies techniques uniquement : pas de bandeau de consentement requis.)
       */}
       <p className="text-xs text-ink/60">
-        En envoyant ce formulaire, vous acceptez que vos données soient
-        utilisées pour traiter votre demande. Consultez notre{" "}
+        Les informations transmises via ce formulaire sont utilisées
+        uniquement pour traiter votre demande. Consultez notre{" "}
         <Link
           href="/confidentialite"
           className="underline underline-offset-2 hover:text-green"
