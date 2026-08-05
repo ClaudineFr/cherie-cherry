@@ -1,11 +1,56 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
 
+
+class ImagePreviewMixin:
+    """Ajoute un aperçu de l'image (miniature) dans l'admin.
+
+    Les modèles à image (galerie, stories, posts, produits) ont tous un champ
+    ``image``. Plutôt que de recopier la même méthode dans chaque classe admin,
+    on la factorise ici : il suffit de faire hériter la classe admin de ce
+    mixin, puis d'ajouter "thumbnail" à ``list_display`` (liste) et/ou à
+    ``readonly_fields`` (formulaire).
+
+    ``image_field`` : nom du champ image du modèle (par défaut "image"),
+    surchargeable si un modèle nommait son champ autrement.
+    """
+
+    image_field = "image"
+
+    @admin.display(description="aperçu")
+    def thumbnail(self, obj):
+        image = getattr(obj, self.image_field, None)
+        # Pas d'image (champ optionnel non rempli) : on affiche un tiret discret
+        # plutôt qu'une balise <img> cassée.
+        if not image:
+            return "—"
+        # format_html échappe l'URL : pas d'injection possible via le nom de
+        # fichier. object-fit: cover pour un cadrage propre quel que soit le ratio.
+        return format_html(
+            '<img src="{}" style="height:48px;width:48px;object-fit:cover;'
+            'border-radius:8px;" alt="" />',
+            image.url,
+        )
+
+    @admin.display(description="aperçu de l'image")
+    def image_preview(self, obj):
+        """Aperçu plus grand, pour le formulaire d'édition (readonly_fields)."""
+        image = getattr(obj, self.image_field, None)
+        if not image:
+            return "Aucune image pour le moment."
+        return format_html(
+            '<img src="{}" style="max-height:220px;max-width:100%;'
+            'border-radius:12px;" alt="" />',
+            image.url,
+        )
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    # Colonnes affichées dans la liste des produits.
-    list_display = ["name", "category", "price", "stock", "featured"]
+class ProductAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    # Colonnes affichées dans la liste des produits (miniature en tête).
+    list_display = ["thumbnail", "name", "category", "price", "stock", "featured"]
 
     # Cases modifiables directement depuis la liste, sans ouvrir chaque produit.
     list_editable = ["price", "stock", "featured"]
@@ -16,9 +61,14 @@ class ProductAdmin(admin.ModelAdmin):
     # Barre de recherche (par nom).
     search_fields = ["name"]
 
+    # Aperçu de l'image dans le formulaire (l'image reste éditable, l'aperçu
+    # montre celle déjà enregistrée).
+    readonly_fields = ["image_preview"]
+
 @admin.register(GalleryPhoto)
-class GalleryPhotoAdmin(admin.ModelAdmin):
-    list_display = ["alt", "created_at"]
+class GalleryPhotoAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    list_display = ["thumbnail", "alt", "created_at"]
+    readonly_fields = ["image_preview"]
 
 @admin.register(OpeningHours)
 class OpeningHoursAdmin(admin.ModelAdmin):
@@ -29,18 +79,22 @@ class OpeningHoursAdmin(admin.ModelAdmin):
     list_editable = ["opens_at", "closes_at", "closed"]
 
 @admin.register(InstagramStory)
-class InstagramStoryAdmin(admin.ModelAdmin):
-    list_display = ["handle", "order", "created_at"]
+class InstagramStoryAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    list_display = ["thumbnail", "handle", "order", "created_at"]
 
     # L'ordre modifiable directement dans la liste, sans ouvrir chaque story.
     list_editable = ["order"]
 
+    readonly_fields = ["image_preview"]
+
 @admin.register(InstagramPost)
-class InstagramPostAdmin(admin.ModelAdmin):
-    list_display = ["__str__", "order", "link", "created_at"]
+class InstagramPostAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    list_display = ["thumbnail", "__str__", "order", "link", "created_at"]
 
     # L'ordre modifiable directement dans la liste.
     list_editable = ["order"]
+
+    readonly_fields = ["image_preview"]
 
 @admin.register(MenuDrink)
 class MenuDrinkAdmin(admin.ModelAdmin):
@@ -88,13 +142,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
     # Les messages viennent des visiteurs (via le formulaire du site), pas de
     # la proprio. L'admin ne sert donc qu'à LES CONSULTER, en lecture seule.
 
-    # Colonnes de la liste : d'un coup d'œil, qui a écrit, à propos de quoi,
-    # quand, et si c'est déjà lu ou non.
-    list_display = ["name", "subject", "email", "created_at", "is_read"]
-
-    # "lu / non-lu" cochable directement dans la liste, sans ouvrir chaque
-    # message : c'est le seul champ que la proprio a besoin de modifier.
-    list_editable = ["is_read"]
+    # Colonnes de la liste : le statut visuel en tête (pastille « Nouveau »),
+    # puis qui a écrit, à propos de quoi, et quand.
+    list_display = ["status", "name", "subject", "email", "created_at"]
 
     # Filtre lu / non-lu + par date dans la colonne de droite.
     list_filter = ["is_read", "created_at"]
@@ -102,9 +152,42 @@ class ContactMessageAdmin(admin.ModelAdmin):
     # Recherche par nom, email ou sujet.
     search_fields = ["name", "email", "subject"]
 
+    # Tri par défaut : les non-lus d'abord (is_read=False remonte), puis les
+    # plus récents en haut. La proprio voit tout de suite ce qui est nouveau.
+    ordering = ["is_read", "-created_at"]
+
+    # Navigation par date au-dessus de la liste.
+    date_hierarchy = "created_at"
+
+    # Actions groupées : cocher plusieurs messages puis les marquer d'un coup.
+    actions = ["mark_as_read", "mark_as_unread"]
+
     # Tous les champs du message sont en lecture seule quand on l'ouvre :
     # on ne réécrit pas ce qu'un visiteur a envoyé.
     readonly_fields = ["name", "email", "subject", "message", "created_at"]
+
+    @admin.display(description="statut", ordering="is_read")
+    def status(self, obj):
+        # Non lu : pastille rose vive « Nouveau » pour attirer l'œil.
+        # Lu : mention discrète en gris. Le HTML est 100 % statique (aucune
+        # donnée utilisateur interpolée) : mark_safe suffit et est sûr ici.
+        if obj.is_read:
+            return mark_safe('<span style="color:#999;">Lu</span>')
+        return mark_safe(
+            '<span style="display:inline-block;padding:2px 10px;border-radius:999px;'
+            'background:#d9709c;color:#fff;font-weight:600;font-size:0.75rem;">'
+            '● Nouveau</span>'
+        )
+
+    @admin.display(description="Marquer comme lu")
+    def mark_as_read(self, request, queryset):
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f"{updated} message(s) marqué(s) comme lu(s).")
+
+    @admin.display(description="Marquer comme non lu")
+    def mark_as_unread(self, request, queryset):
+        updated = queryset.update(is_read=False)
+        self.message_user(request, f"{updated} message(s) marqué(s) comme non lu(s).")
 
     # On empêche de créer un message à la main depuis l'admin : ils ne
     # doivent arriver que par le formulaire du site.
