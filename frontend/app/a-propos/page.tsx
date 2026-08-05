@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LuFlower, LuCoffee, LuHeart } from "react-icons/lu";
 import { fetchSiteSettings } from "@/app/siteSettings";
 
 export const metadata: Metadata = {
@@ -9,17 +10,17 @@ export const metadata: Metadata = {
 
 const values = [
   {
-    emoji: "🌸",
+    Icon: LuFlower,
     title: "Fait avec soin",
     text: "Pâtisseries maison, pièces chinées une à une : chaque détail est choisi, jamais standardisé.",
   },
   {
-    emoji: "☕",
+    Icon: LuCoffee,
     title: "Le goût avant tout",
     text: "Cafés de spécialité et matcha sélectionnés avec exigence, pour des boissons qu'on prend le temps de savourer.",
   },
   {
-    emoji: "🤍",
+    Icon: LuHeart,
     title: "Un lieu qui rassemble",
     text: "Un coin de Provence où l'on vient pour un café, on repart avec un carnet, et on revient pour l'ambiance.",
   },
@@ -77,7 +78,7 @@ export default async function AProposPage() {
               key={value.title}
               className="flex flex-col items-center gap-2 rounded-2xl bg-pink-soft px-5 py-8 text-center"
             >
-              <span className="text-2xl">{value.emoji}</span>
+              <value.Icon className="text-xl text-green" aria-hidden />
               <p className="font-serif text-lg text-green">{value.title}</p>
               <p className="text-sm text-ink/70">{value.text}</p>
             </div>
@@ -86,7 +87,7 @@ export default async function AProposPage() {
 
         {/* Signature */}
         <p className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-          🍒&nbsp;Chérie Cherry, c&apos;est avant tout un lieu à vivre. Le mieux
+          Chérie Cherry, c&apos;est avant tout un lieu à vivre. Le mieux
           reste encore de pousser la porte&nbsp;: on vous y attend
           {settings.street && `, au ${settings.street}`}
           {settings.city && `, à ${settings.city}`}.
