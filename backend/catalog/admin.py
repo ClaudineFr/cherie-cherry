@@ -1,12 +1,56 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
 
+
+class ImagePreviewMixin:
+    """Ajoute un aperçu de l'image (miniature) dans l'admin.
+
+    Les modèles à image (galerie, stories, posts, produits) ont tous un champ
+    ``image``. Plutôt que de recopier la même méthode dans chaque classe admin,
+    on la factorise ici : il suffit de faire hériter la classe admin de ce
+    mixin, puis d'ajouter "thumbnail" à ``list_display`` (liste) et/ou à
+    ``readonly_fields`` (formulaire).
+
+    ``image_field`` : nom du champ image du modèle (par défaut "image"),
+    surchargeable si un modèle nommait son champ autrement.
+    """
+
+    image_field = "image"
+
+    @admin.display(description="aperçu")
+    def thumbnail(self, obj):
+        image = getattr(obj, self.image_field, None)
+        # Pas d'image (champ optionnel non rempli) : on affiche un tiret discret
+        # plutôt qu'une balise <img> cassée.
+        if not image:
+            return "—"
+        # format_html échappe l'URL : pas d'injection possible via le nom de
+        # fichier. object-fit: cover pour un cadrage propre quel que soit le ratio.
+        return format_html(
+            '<img src="{}" style="height:48px;width:48px;object-fit:cover;'
+            'border-radius:8px;" alt="" />',
+            image.url,
+        )
+
+    @admin.display(description="aperçu de l'image")
+    def image_preview(self, obj):
+        """Aperçu plus grand, pour le formulaire d'édition (readonly_fields)."""
+        image = getattr(obj, self.image_field, None)
+        if not image:
+            return "Aucune image pour le moment."
+        return format_html(
+            '<img src="{}" style="max-height:220px;max-width:100%;'
+            'border-radius:12px;" alt="" />',
+            image.url,
+        )
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    # Colonnes affichées dans la liste des produits.
-    list_display = ["name", "category", "price", "stock", "featured"]
+class ProductAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    # Colonnes affichées dans la liste des produits (miniature en tête).
+    list_display = ["thumbnail", "name", "category", "price", "stock", "featured"]
 
     # Cases modifiables directement depuis la liste, sans ouvrir chaque produit.
     list_editable = ["price", "stock", "featured"]
@@ -17,9 +61,14 @@ class ProductAdmin(admin.ModelAdmin):
     # Barre de recherche (par nom).
     search_fields = ["name"]
 
+    # Aperçu de l'image dans le formulaire (l'image reste éditable, l'aperçu
+    # montre celle déjà enregistrée).
+    readonly_fields = ["image_preview"]
+
 @admin.register(GalleryPhoto)
-class GalleryPhotoAdmin(admin.ModelAdmin):
-    list_display = ["alt", "created_at"]
+class GalleryPhotoAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    list_display = ["thumbnail", "alt", "created_at"]
+    readonly_fields = ["image_preview"]
 
 @admin.register(OpeningHours)
 class OpeningHoursAdmin(admin.ModelAdmin):
@@ -30,18 +79,22 @@ class OpeningHoursAdmin(admin.ModelAdmin):
     list_editable = ["opens_at", "closes_at", "closed"]
 
 @admin.register(InstagramStory)
-class InstagramStoryAdmin(admin.ModelAdmin):
-    list_display = ["handle", "order", "created_at"]
+class InstagramStoryAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    list_display = ["thumbnail", "handle", "order", "created_at"]
 
     # L'ordre modifiable directement dans la liste, sans ouvrir chaque story.
     list_editable = ["order"]
 
+    readonly_fields = ["image_preview"]
+
 @admin.register(InstagramPost)
-class InstagramPostAdmin(admin.ModelAdmin):
-    list_display = ["__str__", "order", "link", "created_at"]
+class InstagramPostAdmin(ImagePreviewMixin, admin.ModelAdmin):
+    list_display = ["thumbnail", "__str__", "order", "link", "created_at"]
 
     # L'ordre modifiable directement dans la liste.
     list_editable = ["order"]
+
+    readonly_fields = ["image_preview"]
 
 @admin.register(MenuDrink)
 class MenuDrinkAdmin(admin.ModelAdmin):
