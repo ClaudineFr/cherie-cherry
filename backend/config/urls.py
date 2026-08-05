@@ -3,6 +3,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+# Le bouton « Voir le site » de l'admin pointe vers le site public (le front),
+# et non vers "/" (le backend, qui n'a pas de page d'accueil). L'URL vient de
+# FRONTEND_URL (voir settings.py) pour s'adapter au local / à la prod.
+admin.site.site_url = settings.FRONTEND_URL
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("catalog.urls")),
