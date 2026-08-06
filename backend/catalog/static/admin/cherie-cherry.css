@@ -227,10 +227,11 @@ fieldset h2,
   display: none;
 }
 
-/* Zone de bienvenue de l'accueil (navigation via la barre latérale) */
+/* Zone de bienvenue de l'accueil (navigation via la barre latérale).
+   .cc-welcome habille #content-main : pas de max-width ici, sinon tout le
+   contenu (stats, cartes) est bridé et laisse un vide à droite. */
 .cc-welcome {
   padding: 8px 0 0;
-  max-width: 62ch;
 }
 .cc-welcome-lead {
   font-family: inherit;
@@ -243,6 +244,192 @@ fieldset h2,
   font-size: 1rem;
   line-height: 1.6;
   margin: 0;
+}
+
+/* Rangée de stats (accueil) */
+.cc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+.cc-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 16px 18px;
+  background: var(--cc-white);
+  border: 1px solid var(--cc-pink);
+  border-radius: var(--cc-radius);
+  box-shadow: var(--cc-shadow);
+  text-align: center;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+/* Pas de soulignement sur la carte (l'admin souligne les liens via un
+   sélecteur a:not(...) assez spécifique : on tranche avec !important). */
+.cc-stat,
+.cc-stat:link,
+.cc-stat:visited,
+.cc-stat:hover,
+.cc-stat:focus {
+  text-decoration: none !important;
+}
+.cc-stat:hover {
+  box-shadow: var(--cc-shadow-hover);
+  transform: translateY(-2px);
+}
+.cc-stat-num {
+  font-family: var(--cc-serif);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--cc-title);
+  text-align: center;
+}
+.cc-stat-label {
+  color: var(--cc-green-deep);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.cc-stat-sub {
+  font-size: 0.8rem;
+}
+.cc-stat-warn {
+  color: var(--cc-pink-deep);
+  font-weight: 600;
+}
+
+/* Raccourcis (accueil) */
+.cc-shortcuts {
+  margin-top: 24px;
+}
+.cc-shortcuts-title {
+  font-family: var(--cc-serif);
+  color: var(--cc-title);
+  font-size: 1.25rem;
+  margin: 0 0 12px;
+}
+.cc-shortcuts-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cc-shortcut {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--cc-green);
+  color: var(--cc-white);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+.cc-shortcut,
+.cc-shortcut:link,
+.cc-shortcut:visited,
+.cc-shortcut:hover,
+.cc-shortcut:focus {
+  text-decoration: none !important;
+  color: var(--cc-white);
+}
+.cc-shortcut:hover {
+  background: var(--cc-green-deep);
+  transform: translateY(-2px);
+}
+
+/* Cartes du tableau de bord (accueil) */
+.cc-card {
+  background: var(--cc-white);
+  border: 1px solid var(--cc-pink);
+  border-radius: var(--cc-radius);
+  box-shadow: var(--cc-shadow);
+  padding: 20px 22px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+.cc-messages-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.cc-card-title {
+  font-family: var(--cc-serif);
+  color: var(--cc-title);
+  font-size: 1.25rem;
+  margin: 0;
+}
+.cc-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--cc-pink-deep);
+  color: var(--cc-white);
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.cc-badge-muted {
+  background: var(--cc-pink-soft);
+  color: var(--cc-green-deep);
+}
+.cc-messages-preview {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+}
+.cc-messages-preview li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--cc-pink-soft);
+}
+.cc-messages-preview li:first-child {
+  border-top: none;
+}
+.cc-messages-preview a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  min-width: 0;
+}
+.cc-msg-name {
+  font-weight: 600;
+  color: var(--cc-green-deep);
+}
+.cc-msg-subject {
+  color: var(--body-fg);
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-msg-date {
+  color: var(--cc-green);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cc-card-empty {
+  color: var(--cc-green);
+  font-weight: 600;
+  margin: 0 0 14px;
+}
+.cc-card-link {
+  display: inline-block;
+  font-weight: 600;
+  text-decoration: none;
+}
+.cc-card-link:hover {
+  color: var(--cc-pink-deep);
 }
 
 /* Cartes de catégorie (barre latérale) */
@@ -295,6 +482,13 @@ fieldset h2,
 }
 #content-related .actionlist li {
   margin-bottom: 8px;
+}
+
+/* Accueil : Django borne .dashboard #content à 600px (largeur fixe), ce qui
+   laisse un grand vide à droite du rail. On rend la largeur fluide pour que le
+   #content occupe tout l'espace restant. */
+.dashboard #content {
+  width: auto;
 }
 
 body.change-list #content-related {
@@ -618,8 +812,12 @@ a.button:hover {
     position: absolute;
     left: 0;
   }
-  .cc-burger-icon::before { top: -7px; }
-  .cc-burger-icon::after { top: 7px; }
+  .cc-burger-icon::before {
+    top: -7px;
+  }
+  .cc-burger-icon::after {
+    top: 7px;
+  }
 
   /* #user-tools contient le hamburger + les liens compte : réparti gauche/droite. */
   #user-tools {
@@ -810,7 +1008,9 @@ a.button:hover {
     cursor: pointer;
   }
   /* Django borde les <a> de #user-tools : neutralisé dans le tiroir. */
-  #cc-drawer a { border-bottom: 0; }
+  #cc-drawer a {
+    border-bottom: 0;
+  }
 
   /* Icône : gabarit fixe qui ne rétrécit pas, pour un alignement identique
      sur TOUTES les lignes (avec ou sans chevron). Un margin-right explicite
@@ -857,7 +1057,10 @@ a.button:hover {
     display: inline-flex;
     transition: transform 0.2s ease;
   }
-  .cc-chevron .cc-icon { width: 18px; height: 18px; }
+  .cc-chevron .cc-icon {
+    width: 18px;
+    height: 18px;
+  }
   .cc-group-toggle[aria-expanded="true"] .cc-chevron {
     transform: rotate(180deg);
   }
