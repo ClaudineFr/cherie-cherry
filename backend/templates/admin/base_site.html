@@ -83,13 +83,62 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
   Panneau des catégories (mobile) : s'ouvre sous la topbar via le hamburger
   (même bouton pour ouvrir/fermer). Les liens sont les mêmes que la sidebar.
   {% endcomment %}
+  {% comment %}
+  Tiroir mobile repensé : panneau latéral qui glisse depuis la gauche par-dessus
+  un overlay assombri. Les grandes rubriques à sous-menu sont des accordéons
+  (bouton + chevron) ; les autres sont des liens directs. Toutes les rubriques
+  sont présentes (dont Messages et Réglages). Le surlignage « actif » est porté
+  par le lien courant (data-models ; le JS cible #cc-drawer [data-models]).
+  {% endcomment %}
+  <div id="cc-overlay" class="cc-overlay" hidden></div>
   <nav id="cc-drawer" class="cc-drawer" aria-label="Catégories" hidden>
-    <ul class="cc-rail-list">
-      <li><a href="{% url 'admin:index' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-home"></use></svg></span><span class="cc-rail-label">Accueil du BO</span></a></li>
-      <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-camera"></use></svg></span><span class="cc-rail-label">Accueil du site</span></a></li>
-      <li><a href="{% url 'admin:catalog_menudrink_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-coffee"></use></svg></span><span class="cc-rail-label">Coffee shop</span></a></li>
-      <li><a href="{% url 'admin:catalog_product_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span><span class="cc-rail-label">Concept store</span></a></li>
-      <li><a href="{% url 'admin:catalog_openinghours_changelist' %}"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-map-pin"></use></svg></span><span class="cc-rail-label">Infos pratiques</span></a></li>
+    <div class="cc-drawer-head">
+      <span class="cc-drawer-title">Chérie Cherry</span>
+      <button type="button" class="cc-drawer-close" aria-label="Fermer le menu">
+        <svg class="cc-icon" aria-hidden="true"><use href="#icon-close"></use></svg>
+      </button>
+    </div>
+    <ul class="cc-drawer-list">
+      <li>
+        <a href="{% url 'admin:index' %}" data-models="index"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-home"></use></svg></span><span class="cc-rail-label">Accueil du BO</span></a>
+      </li>
+      <li class="cc-group">
+        <button type="button" class="cc-group-toggle" aria-expanded="false" aria-controls="cc-sub-home">
+          <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-camera"></use></svg></span>
+          <span class="cc-rail-label">Accueil du site</span>
+          <span class="cc-chevron" aria-hidden="true"><svg class="cc-icon"><use href="#icon-chevron-down"></use></svg></span>
+        </button>
+        <ul id="cc-sub-home" class="cc-drawer-sub" hidden>
+          <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}" data-models="instagramstory">Stories</a></li>
+          <li><a href="{% url 'admin:catalog_instagrampost_changelist' %}" data-models="instagrampost">Posts Instagram</a></li>
+          <li><a href="{% url 'admin:catalog_galleryphoto_changelist' %}" data-models="galleryphoto">Galerie d'ambiance</a></li>
+        </ul>
+      </li>
+      <li class="cc-group">
+        <button type="button" class="cc-group-toggle" aria-expanded="false" aria-controls="cc-sub-coffee">
+          <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-coffee"></use></svg></span>
+          <span class="cc-rail-label">Coffee shop</span>
+          <span class="cc-chevron" aria-hidden="true"><svg class="cc-icon"><use href="#icon-chevron-down"></use></svg></span>
+        </button>
+        <ul id="cc-sub-coffee" class="cc-drawer-sub" hidden>
+          <li><a href="{% url 'admin:catalog_menudrink_changelist' %}" data-models="menudrink">Boissons</a></li>
+          <li><a href="{% url 'admin:catalog_drinkofmonth_changelist' %}" data-models="drinkofmonth">Boisson du mois</a></li>
+          <li><a href="{% url 'admin:catalog_supplement_changelist' %}" data-models="supplement">Suppléments</a></li>
+          <li><a href="{% url 'admin:catalog_drinkofmonthsettings_changelist' %}" data-models="drinkofmonthsettings">Réglages boisson du mois</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="{% url 'admin:catalog_product_changelist' %}" data-models="product"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span><span class="cc-rail-label">Concept store</span></a>
+      </li>
+      <li>
+        <a href="{% url 'admin:catalog_openinghours_changelist' %}" data-models="openinghours"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-map-pin"></use></svg></span><span class="cc-rail-label">Infos pratiques</span></a>
+      </li>
+      <li>
+        <a href="{% url 'admin:catalog_contactmessage_changelist' %}" data-models="contactmessage"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-mail"></use></svg></span><span class="cc-rail-label">Messages</span></a>
+      </li>
+      <li>
+        <a href="{% url 'admin:catalog_sitesettings_changelist' %}" data-models="sitesettings"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-settings"></use></svg></span><span class="cc-rail-label">Réglages</span></a>
+      </li>
     </ul>
   </nav>
 
@@ -143,22 +192,67 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
         });
       }
 
-      // --- Panneau des catégories (mobile) : un seul bouton ouvre/ferme ---
+      // --- Tiroir latéral (mobile) : glisse depuis la gauche + overlay ---
       var burger = document.querySelector(".cc-burger");
       var drawer = document.getElementById("cc-drawer");
-      if (burger && drawer) {
-        var setDrawer = function (open) {
-          if (open) { closeAccount(); }  // ferme le menu compte s'il est ouvert
-          drawer.hidden = !open;
-          burger.setAttribute("aria-expanded", String(open));
-          burger.classList.toggle("is-open", open);
+      var overlay = document.getElementById("cc-overlay");
+      var drawerClose = drawer ? drawer.querySelector(".cc-drawer-close") : null;
+      if (burger && drawer && overlay) {
+        // Durée de la transition CSS (slide/fondu) pour retirer proprement du
+        // DOM après fermeture. Doit rester alignée avec le CSS (0.24s).
+        var ANIM = 240;
+        var closeTimer = null;
+
+        var openDrawer = function () {
+          closeAccount();               // ferme le menu compte s'il est ouvert
+          if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+          overlay.hidden = false;
+          drawer.hidden = false;
+          // Force un reflow pour que la transition parte de l'état fermé.
+          void drawer.offsetWidth;
+          drawer.classList.add("is-open");
+          overlay.classList.add("is-open");
+          burger.setAttribute("aria-expanded", "true");
+          burger.classList.add("is-open");
+          if (drawerClose) { drawerClose.focus(); }
         };
-        closeDrawer = function () { setDrawer(false); };
+
+        var doCloseDrawer = function (giveFocusBack) {
+          drawer.classList.remove("is-open");
+          overlay.classList.remove("is-open");
+          burger.setAttribute("aria-expanded", "false");
+          burger.classList.remove("is-open");
+          // On attend la fin du slide avant de masquer (hidden), sinon la
+          // transition de sortie ne se voit pas.
+          closeTimer = setTimeout(function () {
+            drawer.hidden = true;
+            overlay.hidden = true;
+          }, ANIM);
+          if (giveFocusBack) { burger.focus(); }
+        };
+        // Exposé au reste du script (exclusion mutuelle avec le menu compte).
+        closeDrawer = function () { doCloseDrawer(false); };
+
         burger.addEventListener("click", function () {
-          setDrawer(drawer.hidden);
+          drawer.hidden ? openDrawer() : doCloseDrawer(false);
         });
+        overlay.addEventListener("click", function () { doCloseDrawer(false); });
+        if (drawerClose) {
+          drawerClose.addEventListener("click", function () { doCloseDrawer(true); });
+        }
         document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape" && !drawer.hidden) { setDrawer(false); }
+          if (e.key === "Escape" && !drawer.hidden) { doCloseDrawer(true); }
+        });
+
+        // --- Accordéons des grandes rubriques (Accueil du site, Coffee shop) ---
+        drawer.querySelectorAll(".cc-group-toggle").forEach(function (toggle) {
+          var sub = document.getElementById(toggle.getAttribute("aria-controls"));
+          if (!sub) { return; }
+          toggle.addEventListener("click", function () {
+            var open = toggle.getAttribute("aria-expanded") === "true";
+            toggle.setAttribute("aria-expanded", String(!open));
+            sub.hidden = open;
+          });
         });
       }
 
@@ -168,9 +262,20 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
         var current = match ? match[1] : "index";
         // Cible les entrées cliquables (<a>) ET les titres de groupe non
         // cliquables (<span class="cc-rail-group">) : les deux portent data-models.
-        document.querySelectorAll(".cc-rail [data-models]").forEach(function (el) {
+        // On couvre le rail desktop (.cc-rail) ET le tiroir mobile (#cc-drawer).
+        document.querySelectorAll(".cc-rail [data-models], #cc-drawer [data-models]").forEach(function (el) {
           var models = el.getAttribute("data-models").split(" ");
-          if (models.indexOf(current) !== -1) { el.classList.add("cc-active"); }
+          if (models.indexOf(current) !== -1) {
+            el.classList.add("cc-active");
+            // Dans le tiroir mobile, si l'élément actif est une sous-rubrique,
+            // on ouvre son accordéon parent pour révéler « où l'on est ».
+            var sub = el.closest(".cc-drawer-sub");
+            if (sub && sub.hidden) {
+              sub.hidden = false;
+              var toggle = document.querySelector('[aria-controls="' + sub.id + '"]');
+              if (toggle) { toggle.setAttribute("aria-expanded", "true"); }
+            }
+          }
         });
       };
 

@@ -697,27 +697,222 @@ a.button:hover {
     color: #ffffff;
   }
 
-  /* Panneau des catégories : pleine largeur, ancré sous la topbar. Le panneau
-     est imbriqué dans #user-tools (donc dans #header) : on le sort du flux flex
-     avec position:absolute pour qu'il occupe toute la largeur sous la barre au
-     lieu d'être un simple élément flex dans la rangée. #header est en
-     position:relative, il sert donc d'ancrage. */
-  #user-tools .cc-drawer {
+  /* ===================================================================
+     TIROIR MOBILE — panneau latéral qui glisse + overlay + accordéons
+     =================================================================== */
+
+  /* Voile assombri derrière le panneau. Fondu en opacité ; on le sort du DOM
+     visuel via [hidden] une fois fermé (géré en JS après la transition). */
+  .cc-overlay {
     display: block;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: 100%;
-    margin: 0;
-    z-index: 30;
-    background: var(--cc-green);
-    box-shadow: 0 8px 20px rgba(28, 43, 24, 0.25);
-    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(28, 43, 24, 0.5);
+    opacity: 0;
+    transition: opacity 0.24s ease;
   }
-  #user-tools .cc-drawer[hidden] {
+  .cc-overlay[hidden] {
     display: none;
   }
+  .cc-overlay.is-open {
+    opacity: 1;
+  }
+
+  /* Le panneau : ancré à gauche, hors écran par défaut (translateX -100%),
+     il glisse à 0 quand .is-open. Largeur confortable mais bornée. */
+  #user-tools .cc-drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    margin: 0;
+    z-index: 50;
+    background: var(--cc-green);
+    transform: translateX(-100%);
+    transition: transform 0.24s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #user-tools .cc-drawer.is-open {
+    transform: translateX(0);
+  }
+
+  /* En-tête du panneau : nom de marque (serif) + bouton fermer. */
+  .cc-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 16px 18px 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .cc-drawer-title {
+    font-family: var(--cc-serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+  }
+  .cc-drawer-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  .cc-drawer-close:hover,
+  .cc-drawer-close:focus-visible {
+    background: var(--cc-green-deep);
+  }
+  .cc-drawer-close .cc-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Liste des rubriques. */
+  .cc-drawer-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0 20px;
+  }
+  .cc-drawer-list > li {
+    margin: 0;
+    width: 100%;
+  }
+
+  /* Ligne de rubrique de 1er niveau : lien direct OU bouton d'accordéon.
+     Même gabarit pour les deux, cible tactile confortable (48px+). */
+  .cc-drawer-list > li > a,
+  .cc-group-toggle {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px 22px;
+    color: var(--cc-cream);
+    text-decoration: none;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+  /* Django borde les <a> de #user-tools : neutralisé dans le tiroir. */
+  #cc-drawer a { border-bottom: 0; }
+
+  /* Icône : gabarit fixe qui ne rétrécit pas, pour un alignement identique
+     sur TOUTES les lignes (avec ou sans chevron). Un margin-right explicite
+     garantit l'espace avec le texte même si flex-gap n'est pas honoré. */
+  #cc-drawer .cc-rail-icon {
+    flex: 0 0 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+  }
+  #cc-drawer .cc-rail-icon .cc-icon {
+    width: 20px;
+    height: 20px;
+  }
+  /* Le libellé prend l'espace restant ; le chevron reste calé à droite. */
+  #cc-drawer .cc-rail-label {
+    flex: 1 1 auto;
+  }
+
+  /* Survol : fond appuyé. Le focus CLAVIER a son propre repère (outline
+     ci-dessous) plutôt qu'un fond plein — sinon, sur mobile, le bouton
+     d'accordéon garde ce fond foncé après un tap et ça crée un décalage de
+     couleur avec les autres lignes. */
+  .cc-drawer-list > li > a:hover,
+  .cc-group-toggle:hover {
+    background: var(--cc-green-deep);
+  }
+  .cc-drawer-list > li > a:focus-visible,
+  .cc-group-toggle:focus-visible {
+    outline: 2px solid var(--cc-pink-vivid);
+    outline-offset: -2px;
+  }
+
+  /* Lien de 1er niveau actif : liseré rose + fond appuyé. */
+  .cc-drawer-list > li > a.cc-active {
+    background: var(--cc-green-deep);
+    border-left-color: var(--cc-pink-vivid);
+  }
+
+  /* Chevron de l'accordéon : pivote quand le groupe est ouvert. */
+  .cc-chevron {
+    margin-left: auto;
+    display: inline-flex;
+    transition: transform 0.2s ease;
+  }
+  .cc-chevron .cc-icon { width: 18px; height: 18px; }
+  .cc-group-toggle[aria-expanded="true"] .cc-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Sous-rubriques : fond légèrement plus profond, en retrait sous le groupe.
+     On force la pleine largeur sur ul + li pour que le fond de l'élément actif
+     s'étende jusqu'au bord droit du panneau (les li de #user-tools peuvent
+     sinon se réduire à la largeur de leur contenu). */
+  .cc-drawer-sub {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0 8px;
+    background: rgba(0, 0, 0, 0.12);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .cc-drawer-sub li {
+    width: 100%;
+    margin: 0;
+  }
+  .cc-drawer-sub a {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 22px 12px 62px;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 0.85rem;
+    border-left: 3px solid transparent;
+  }
+  /* Survol : léger éclaircissement. Le focus CLAVIER a son propre outline
+     (plus bas) pour éviter qu'un fond plein reste « collé » après un tap. */
+  .cc-drawer-sub a:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+  }
+  .cc-drawer-sub a:focus-visible {
+    outline: 2px solid var(--cc-pink-vivid);
+    outline-offset: -2px;
+  }
+  /* Sous-rubrique active : liseré rose + fond profond franc (opaque, pour ne
+     pas se mélanger au fond assombri du sous-menu et virer au grisâtre). */
+  .cc-drawer-sub a.cc-active {
+    color: #ffffff;
+    font-weight: 600;
+    border-left-color: var(--cc-pink-vivid);
+    background: var(--cc-green-deep);
+  }
+}
+
+/* Le panneau et l'overlay ne s'affichent qu'en mobile : hors media query,
+   [hidden] les retire complètement (évite tout résidu en desktop). */
+.cc-overlay[hidden],
+.cc-drawer[hidden] {
+  display: none;
 }
 
 /* --- Icônes d'action de l'admin natif (Ajouter / Modifier / Supprimer) ---
