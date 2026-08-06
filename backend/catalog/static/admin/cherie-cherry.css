@@ -385,7 +385,8 @@ nav[aria-label="Breadcrumbs"] {
   margin: 0;
   width: 100%;
 }
-.cc-rail-list a {
+.cc-rail-list a,
+.cc-rail-group {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -399,6 +400,11 @@ nav[aria-label="Breadcrumbs"] {
 }
 .cc-rail-list a:hover {
   background: var(--cc-green-deep);
+}
+/* Titre de groupe (Accueil du site, Coffee shop) : non cliquable — pas de
+   curseur main ni de survol interactif, mais toujours surlignable si actif. */
+.cc-rail-group {
+  cursor: default;
 }
 .cc-rail-list a.cc-active {
   background: var(--cc-green-deep);
@@ -450,6 +456,12 @@ nav[aria-label="Breadcrumbs"] {
 .cc-rail-sub a:focus {
   background: var(--cc-green);
   border-left-color: var(--cc-pink-vivid);
+}
+/* Sous-titre de la page courante : mis en avant (repère précis de la position). */
+.cc-rail-sub a.cc-active {
+  background: var(--cc-green-deep);
+  border-left-color: var(--cc-pink-vivid);
+  font-weight: 600;
 }
 
 /* Formulaires */

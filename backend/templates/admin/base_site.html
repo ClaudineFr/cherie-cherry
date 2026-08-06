@@ -166,9 +166,11 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
       var highlightRail = function () {
         var match = document.body.className.match(/model-([a-z]+)/);
         var current = match ? match[1] : "index";
-        document.querySelectorAll(".cc-rail a[data-models]").forEach(function (a) {
-          var models = a.getAttribute("data-models").split(" ");
-          if (models.indexOf(current) !== -1) { a.classList.add("cc-active"); }
+        // Cible les entrées cliquables (<a>) ET les titres de groupe non
+        // cliquables (<span class="cc-rail-group">) : les deux portent data-models.
+        document.querySelectorAll(".cc-rail [data-models]").forEach(function (el) {
+          var models = el.getAttribute("data-models").split(" ");
+          if (models.indexOf(current) !== -1) { el.classList.add("cc-active"); }
         });
       };
 
