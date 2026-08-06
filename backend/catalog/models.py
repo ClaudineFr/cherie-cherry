@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -119,6 +120,36 @@ class OpeningHours(models.Model):
         # get_day_display() : Django génère ça tout seul à partir des choices.
         # Il renvoie le libellé ("Lundi") plutôt que le numéro (0).
         return self.get_day_display()
+
+    def clean(self):
+        """Cohérence des horaires, vérifiée avant l'enregistrement (admin).
+
+        Trois règles :
+        1. Jour fermé : on vide les heures automatiquement (elles n'ont pas de
+           sens, et le front les masque de toute façon).
+        2. Jour ouvert : les deux heures sont obligatoires.
+        3. Jour ouvert : ouverture et fermeture ne peuvent pas être identiques
+           (durée nulle). On n'impose PAS fermeture > ouverture : un créneau qui
+           passe minuit (ex. 22h–02h) reste valable.
+        """
+        if self.closed:
+            # Nettoyage silencieux : un jour fermé n'a pas d'horaires.
+            self.opens_at = None
+            self.closes_at = None
+            return
+
+        # À partir d'ici, le jour est ouvert.
+        if self.opens_at is None or self.closes_at is None:
+            raise ValidationError(
+                "Pour un jour ouvert, renseignez l'heure d'ouverture ET de "
+                "fermeture, ou cochez « fermé »."
+            )
+
+        if self.opens_at == self.closes_at:
+            raise ValidationError(
+                "L'heure d'ouverture et de fermeture ne peuvent pas être "
+                "identiques."
+            )
 
 class InstagramStory(models.Model):
     """Une « story » Instagram mise en avant sur la page d'accueil.
