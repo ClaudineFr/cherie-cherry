@@ -361,6 +361,221 @@ nav[aria-label="Breadcrumbs"] {
   background: var(--cc-green);
 }
 
+/* Colonne « éditer » (crayon), ajoutée par cc_admin_table.js en fin de tableau.
+   En-tête sans titre, cellule étroite, icône crayon centrée à la DA. */
+#result_list th.cc-edit-col,
+#result_list td.cc-edit-col {
+  width: 44px;
+  text-align: center;
+  white-space: nowrap;
+}
+.cc-edit-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: var(--cc-green-deep);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.cc-edit-link:hover,
+.cc-edit-link:focus-visible {
+  background: var(--cc-pink-soft);
+  color: var(--cc-pink-deep);
+}
+.cc-edit-link .cc-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ===================================================================
+   FILTRES EN MENU DÉROULANT (bouton « Filtres » en haut à droite)
+   ===================================================================
+   Le script cc_admin_filters.js déplace le bloc natif <search
+   id="changelist-filter"> dans un panneau flottant .cc-filters-panel, ancré
+   sous un bouton .cc-filters-toggle. On neutralise ici la mise en page native
+   (colonne réservée à droite) et on habille le bouton + le panneau à la DA. */
+
+/* La changelist n'est plus présentée comme une « carte » (fond blanc + bordure
+   + ombre héritée de .module) : on retire ce cadre pour que la liste respire
+   dans la page. Le tableau (#result_list) garde ses propres styles. */
+#changelist.module {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* Django réserve de la place à droite quand la liste a des filtres
+   (#changelist.filtered). Le panneau étant désormais flottant, on récupère
+   toute la largeur pour le tableau. */
+#changelist.filtered .changelist-form-container,
+#changelist.filtered #changelist-form,
+#changelist.filtered #result_list {
+  margin-right: 0;
+}
+/* La colonne filtre étant sortie du flux (déplacée dans le panneau flottant),
+   on récupère toute la largeur pour le tableau. Django réserve la place de la
+   colonne via `max-width: calc(100% - 270px)` sur le div englobant le
+   formulaire : on neutralise ce plafond. */
+#changelist .changelist-form-container {
+  display: block;
+}
+#changelist .changelist-form-container > div {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Barre du haut : recherche à gauche, bouton Filtres à droite. */
+.cc-toolbar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.cc-toolbar #changelist-search {
+  flex: 1 1 auto;
+  margin: 0;
+}
+.cc-filters {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+/* Le bouton « Filtres » : pastille verte à la DA, cohérent avec les autres
+   boutons de l'admin. */
+.cc-filters-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--cc-green);
+  border-radius: 999px;
+  background: var(--cc-white);
+  color: var(--cc-green-deep);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+.cc-filters-toggle:hover,
+.cc-filters.is-open .cc-filters-toggle {
+  background: var(--cc-green);
+  color: #ffffff;
+  box-shadow: var(--cc-shadow-hover);
+}
+/* Pastille du nombre de filtres actifs. */
+.cc-filters-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--cc-pink-deep);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+/* Chevron : pivote quand le panneau est ouvert. */
+.cc-filters-caret {
+  font-size: 0.8rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.cc-filters.is-open .cc-filters-caret {
+  transform: rotate(180deg);
+}
+
+/* Le panneau : flottant, ancré sous le bouton, aligné à droite. On casse ici
+   tout ce que le CSS natif imposait au bloc filtres (position, largeur…). */
+.cc-filters-panel.cc-filters-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  z-index: 60;
+  width: 280px;
+  max-width: min(92vw, 340px);
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--cc-white);
+  border: 1px solid var(--cc-pink);
+  border-radius: var(--cc-radius);
+  box-shadow: 0 8px 24px rgba(51, 80, 51, 0.22);
+  padding: 8px;
+}
+.cc-filters-panel[hidden] {
+  display: none;
+}
+/* Titre « Filtre » du panneau : discret (le bouton dit déjà « Filtres »).
+   On surcharge la règle globale #changelist-filter h2 (fond vert) via un
+   sélecteur ID pour égaler sa spécificité. */
+#changelist-filter.cc-filters-panel > h2 {
+  background: transparent;
+  color: var(--cc-title);
+  padding: 6px 8px 4px;
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+}
+/* Lien « Afficher les nombres » (facettes) : masqué. Ce lien natif ajoute des
+   compteurs par option (« Bijoux (2) »…) ; la cliente n'en a pas besoin et ça
+   allège le panneau. */
+.cc-filters-panel #changelist-filter-extra-actions {
+  display: none;
+}
+/* Chaque groupe de filtre (Par catégorie, Par coup de cœur…). */
+.cc-filters-panel details {
+  border-top: 1px solid var(--hairline-color);
+  padding: 6px 0;
+}
+.cc-filters-panel details:first-of-type {
+  border-top: none;
+}
+.cc-filters-panel summary {
+  padding: 6px 8px;
+  font-weight: 700;
+  color: var(--cc-green-deep);
+  cursor: pointer;
+  list-style-position: inside;
+}
+.cc-filters-panel ul {
+  margin: 2px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+.cc-filters-panel li {
+  margin: 0;
+}
+.cc-filters-panel li a {
+  display: block;
+  padding: 7px 8px 7px 16px;
+  border-radius: 8px;
+  color: var(--body-fg);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.cc-filters-panel li a:hover {
+  background: var(--cc-pink-soft);
+  color: var(--cc-pink-deep);
+}
+/* Choix actif du filtre : mis en avant (rose). */
+.cc-filters-panel li.selected a {
+  background: var(--cc-pink-soft);
+  color: var(--cc-pink-deep);
+  font-weight: 700;
+}
+
 /* Barre latérale des catégories (desktop) : toujours ouverte (icône + nom).
    On cible aussi #nav-sidebar pour neutraliser le CSS natif de Django qui
    masque la barre (visibility:hidden + left/margin-left négatifs). */
@@ -585,6 +800,138 @@ a.button:hover {
   /* Le rail de catégories est masqué : la navigation passe par le tiroir. */
   #nav-sidebar.cc-rail {
     display: none;
+  }
+
+  /* Barre d'outils en mobile : recherche + bouton Filtres passent en colonne
+     pour ne pas déborder (le bouton « Rechercher » sortait de l'écran). */
+  .cc-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cc-toolbar #changelist-search {
+    width: 100%;
+  }
+  /* Le champ de recherche (size=40) est trop large et pousse le bouton hors
+     écran : on le laisse se réduire dans sa ligne flex. */
+  #changelist-search > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #changelist-search #searchbar {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+  }
+  /* .cc-filters prend toute la largeur pour servir d'ancrage au panneau ;
+     le bouton reste calé à droite via text-align. */
+  .cc-filters {
+    width: 100%;
+    text-align: right;
+  }
+  /* Le panneau des filtres passe en pleine largeur sous la barre (un panneau
+     étroit de 280px ancré à gauche forçait le texte à se couper). */
+  .cc-filters-panel.cc-filters-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+    text-align: left;
+  }
+
+  /* ===================================================================
+     TABLEAUX (changelist) — colonnes secondaires masquées en mobile
+     ===================================================================
+     Django pose deux familles de classes DIFFÉRENTES : .column-<champ> sur
+     le <th> de l'EN-TÊTE, et .field-<champ> sur le <td> du CORPS. Il faut
+     donc cibler les deux, sinon on ne masque que l'en-tête et le corps
+     déborde encore. On garde le nom, le prix et le stock (l'info clé) ; le
+     reste (catégorie, coup de cœur, ordre, date, lien, email, et le statut
+     « Affiché(e) sur le site » available/active) se consulte dans la fiche. */
+  #result_list th.column-category,
+  #result_list td.field-category,
+  #result_list th.column-featured,
+  #result_list td.field-featured,
+  #result_list th.column-order,
+  #result_list td.field-order,
+  #result_list th.column-created_at,
+  #result_list td.field-created_at,
+  #result_list th.column-link,
+  #result_list td.field-link,
+  #result_list th.column-email,
+  #result_list td.field-email,
+  #result_list th.column-available,
+  #result_list td.field-available,
+  #result_list th.column-active,
+  #result_list td.field-active {
+    display: none;
+  }
+
+  /* Le tableau doit se recaler dans la largeur de l'écran (Django lui donne
+     sinon une largeur intrinsèque plus grande que le conteneur). */
+  #result_list {
+    width: 100%;
+    table-layout: fixed;
+  }
+  /* Cellules restantes : autoriser le retour à la ligne (les noms longs ne
+     forcent plus une largeur qui déborde). */
+  #result_list th,
+  #result_list td {
+    white-space: normal;
+    word-break: break-word;
+  }
+  /* Édition en liste (list_editable) sur mobile : un script (cc_admin_table.js)
+     remplace en mobile les <input>/<select> éditables par leur valeur en
+     texte, enveloppée dans un .cc-cell-static. Les champs restent éditables
+     sur desktop ; en mobile on privilégie la lecture (édition dans la fiche).
+     On stylise ici cet affichage texte. */
+  .cc-cell-static {
+    display: inline-block;
+    font-weight: 600;
+    color: var(--cc-green-deep);
+  }
+  /* Un booléen (coup de cœur, dispo, actif…) rendu en pastille oui/non. */
+  .cc-cell-static.cc-bool-true { color: var(--cc-green); }
+  .cc-cell-static.cc-bool-false { color: var(--body-quiet-color); }
+
+  /* Répartition des largeurs (avec table-layout: fixed, sans consigne les
+     colonnes se partagent l'espace à parts égales : la vignette prendrait
+     autant qu'une colonne de texte). On donne peu de place à la case et à la
+     vignette ; le reste se répartit sur nom / prix / stock. */
+  #result_list th.action-checkbox-column,
+  #result_list td.action-checkbox {
+    width: 28px;
+  }
+  #result_list th.column-thumbnail,
+  #result_list td.field-thumbnail {
+    width: 52px;
+  }
+  /* Prix : en mobile c'est du texte court (« 45.00 »), pas besoin de largeur —
+     on resserre pour laisser la place au nom et à la colonne crayon. */
+  #result_list th.column-price,
+  #result_list td.field-price {
+    width: 64px;
+  }
+  /* Colonne crayon : compacte en mobile. */
+  #result_list th.cc-edit-col,
+  #result_list td.cc-edit-col {
+    width: 40px;
+  }
+  /* La vignette elle-même : miniature compacte dans sa colonne étroite. */
+  #result_list td.field-thumbnail img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  /* Cellules restantes : padding horizontal resserré pour que toutes les
+     colonnes (dont la colonne crayon) tiennent sans scroll horizontal. */
+  #result_list tbody td,
+  #result_list tbody th,
+  #result_list thead th {
+    padding: 14px 6px;
   }
 
   /* Le bouton hamburger va tout à gauche (avant #user-tools). */

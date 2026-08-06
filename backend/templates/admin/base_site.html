@@ -21,6 +21,10 @@ admin/base.html pour éviter que le template s'étende lui-même.
 {% block extrahead %}
   {{ block.super }}
   <link rel="stylesheet" href="{% static 'admin/cherie-cherry.css' %}">
+  {# Tableaux : en mobile, les champs éditables en liste passent en texte lisible. #}
+  <script src="{% static 'admin/cc_admin_table.js' %}" defer></script>
+  {# Filtres regroupés derrière un bouton « Filtres » (menu déroulant). #}
+  <script src="{% static 'admin/cc_admin_filters.js' %}" defer></script>
   {% comment %}
   Thème clair uniquement : on impose data-theme="light" et on aligne le
   localStorage pour que le script de thème de l'admin ne repasse jamais en

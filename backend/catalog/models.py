@@ -252,7 +252,7 @@ class MenuDrink(models.Model):
     )
 
     # Décocher pour masquer une boisson sans la supprimer (rupture, saison...).
-    available = models.BooleanField("disponible", default=True)
+    available = models.BooleanField("affichée sur le site", default=True)
 
     class Meta:
         verbose_name = "boisson du menu"
@@ -280,7 +280,7 @@ class DrinkOfMonth(models.Model):
     )
 
     # Décocher pour la retirer du site sans la supprimer.
-    active = models.BooleanField("active", default=True)
+    active = models.BooleanField("affichée sur le site", default=True)
 
     created_at = models.DateTimeField("créé le", auto_now_add=True)
 
@@ -337,7 +337,7 @@ class Supplement(models.Model):
     )
 
     # Décocher pour masquer un supplément sans le supprimer.
-    available = models.BooleanField("disponible", default=True)
+    available = models.BooleanField("affiché sur le site", default=True)
 
     class Meta:
         verbose_name = "supplément"
