@@ -1,8 +1,38 @@
 from django.contrib import admin
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
+
+
+class SingletonAdminMixin:
+    """Édition directe d'un modèle « singleton » (une seule ligne).
+
+    Pour SiteSettings et DrinkOfMonthSettings, la cliente n'a pas à voir une
+    liste d'un seul élément : cliquer sur la rubrique doit l'amener droit au
+    formulaire d'édition. On intercepte donc la vue liste (``changelist_view``)
+    et on redirige vers le formulaire de l'unique ligne, en la créant si elle
+    n'existe pas encore.
+
+    ``has_add_permission`` / ``has_delete_permission`` restent gérés par chaque
+    classe (ajout interdit s'il existe déjà une ligne, suppression interdite).
+    """
+
+    def changelist_view(self, request, extra_context=None):
+        # get_or_create sur pk=None ? Non : on prend la 1re ligne, ou on en
+        # crée une vierge. Les champs sont tous optionnels/à défaut, donc une
+        # ligne « vide » est valide et sera remplie par la cliente.
+        obj = self.model.objects.first()
+        if obj is None:
+            obj = self.model.objects.create()
+        # Nom d'URL de la page de modification : admin:<app>_<model>_change.
+        url = reverse(
+            f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_change",
+            args=[obj.pk],
+        )
+        return redirect(url)
 
 
 class ImagePreviewMixin:
@@ -118,7 +148,7 @@ class DrinkOfMonthAdmin(admin.ModelAdmin):
     search_fields = ["name"]
 
 @admin.register(DrinkOfMonthSettings)
-class DrinkOfMonthSettingsAdmin(admin.ModelAdmin):
+class DrinkOfMonthSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
     list_display = ["__str__", "available_until"]
 
     # On autorise l'ajout SEULEMENT s'il n'y a pas déjà une ligne :
@@ -196,7 +226,7 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
+class SiteSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
     # Regroupe les champs par thème dans le formulaire pour s'y retrouver.
     fieldsets = [
         ("Adresse", {"fields": ["street", "postal_code", "city"]}),
