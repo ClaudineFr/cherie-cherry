@@ -19,26 +19,28 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
       </a>
     </li>
     <li>
-      <a href="{% url 'admin:catalog_instagramstory_changelist' %}" data-models="instagramstory instagrampost galleryphoto">
+      {% comment %}Titre de groupe non cliquable : on accède au contenu par les sous-titres ci-dessous. Le surlignage « actif » est porté par le sous-titre courant (data-models sur chaque sous-lien).{% endcomment %}
+      <span class="cc-rail-group">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-camera"></use></svg></span>
         <span class="cc-rail-label">Accueil du site</span>
-      </a>
+      </span>
       <ul class="cc-rail-sub" aria-label="Accueil du site">
-        <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}">Stories</a></li>
-        <li><a href="{% url 'admin:catalog_instagrampost_changelist' %}">Posts Instagram</a></li>
-        <li><a href="{% url 'admin:catalog_galleryphoto_changelist' %}">Galerie d'ambiance</a></li>
+        <li><a href="{% url 'admin:catalog_instagramstory_changelist' %}" data-models="instagramstory">Stories</a></li>
+        <li><a href="{% url 'admin:catalog_instagrampost_changelist' %}" data-models="instagrampost">Posts Instagram</a></li>
+        <li><a href="{% url 'admin:catalog_galleryphoto_changelist' %}" data-models="galleryphoto">Galerie d'ambiance</a></li>
       </ul>
     </li>
     <li>
-      <a href="{% url 'admin:catalog_menudrink_changelist' %}" data-models="menudrink drinkofmonth drinkofmonthsettings supplement">
+      {% comment %}Titre de groupe non cliquable : on accède au contenu par les sous-titres ci-dessous. Le surlignage « actif » est porté par le sous-titre courant (data-models sur chaque sous-lien).{% endcomment %}
+      <span class="cc-rail-group">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-coffee"></use></svg></span>
         <span class="cc-rail-label">Coffee shop</span>
-      </a>
+      </span>
       <ul class="cc-rail-sub" aria-label="Coffee shop">
-        <li><a href="{% url 'admin:catalog_menudrink_changelist' %}">Boissons</a></li>
-        <li><a href="{% url 'admin:catalog_drinkofmonth_changelist' %}">Boisson du mois</a></li>
-        <li><a href="{% url 'admin:catalog_supplement_changelist' %}">Suppléments</a></li>
-        <li><a href="{% url 'admin:catalog_drinkofmonthsettings_changelist' %}">Réglages boisson du mois</a></li>
+        <li><a href="{% url 'admin:catalog_menudrink_changelist' %}" data-models="menudrink">Boissons</a></li>
+        <li><a href="{% url 'admin:catalog_drinkofmonth_changelist' %}" data-models="drinkofmonth">Boisson du mois</a></li>
+        <li><a href="{% url 'admin:catalog_supplement_changelist' %}" data-models="supplement">Suppléments</a></li>
+        <li><a href="{% url 'admin:catalog_drinkofmonthsettings_changelist' %}" data-models="drinkofmonthsettings">Réglages boisson du mois</a></li>
       </ul>
     </li>
     <li>
