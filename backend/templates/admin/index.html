@@ -16,8 +16,69 @@ récentes » reste dans la colonne de droite.
 {% endcomment %}
 {% block content %}
 <div id="content-main" class="cc-welcome">
-  <p class="cc-welcome-lead">Bienvenue dans votre espace d'administration.</p>
-  <p class="cc-welcome-help">Choisissez une rubrique dans le menu de gauche pour modifier le contenu de votre site&nbsp;: l'accueil, le coffee shop, la boutique ou vos infos pratiques.</p>
+  {# Raccourcis : accès direct aux tâches les plus fréquentes. #}
+  <section class="cc-shortcuts">
+    <h2 class="cc-shortcuts-title">Actions rapides</h2>
+    <div class="cc-shortcuts-grid">
+      <a class="cc-shortcut" href="{% url 'admin:catalog_product_add' %}">+ Ajouter un produit</a>
+      <a class="cc-shortcut" href="{% url 'admin:catalog_galleryphoto_add' %}">+ Ajouter une photo</a>
+      <a class="cc-shortcut" href="{% url 'admin:catalog_menudrink_add' %}">+ Ajouter une boisson</a>
+      <a class="cc-shortcut" href="{% url 'admin:catalog_openinghours_changelist' %}">Modifier les horaires</a>
+    </div>
+  </section>
+
+  {# Rangée de stats : quelques chiffres du site en un coup d'œil. #}
+  <div class="cc-stats">
+    <a class="cc-stat" href="{% url 'admin:catalog_product_changelist' %}">
+      <span class="cc-stat-num">{{ cc_products_count }}</span>
+      <span class="cc-stat-label">Produits en boutique</span>
+      {% if cc_products_out_of_stock %}
+      <span class="cc-stat-sub cc-stat-warn">{{ cc_products_out_of_stock }} en rupture</span>
+      {% endif %}
+    </a>
+    <a class="cc-stat" href="{% url 'admin:catalog_menudrink_changelist' %}">
+      <span class="cc-stat-num">{{ cc_drinks_count }}</span>
+      <span class="cc-stat-label">Boissons au menu</span>
+    </a>
+    <a class="cc-stat" href="{% url 'admin:catalog_galleryphoto_changelist' %}">
+      <span class="cc-stat-num">{{ cc_gallery_count }}</span>
+      <span class="cc-stat-label">Photos dans la galerie</span>
+    </a>
+  </div>
+
+  {# Carte « Messages » : ce qui demande une action de la proprio en priorité. #}
+  <section class="cc-card cc-messages-card">
+    <div class="cc-messages-head">
+      <h2 class="cc-card-title">Messages de contact</h2>
+      {% if cc_unread_count %}
+      <span class="cc-badge">{{ cc_unread_count }} non lu{{ cc_unread_count|pluralize }}</span>
+      {% else %}
+      <span class="cc-badge cc-badge-muted">À jour</span>
+      {% endif %}
+    </div>
+
+    {% if cc_unread_count %}
+    <ul class="cc-messages-preview">
+      {% for msg in cc_unread_preview %}
+      <li>
+        <a href="{% url 'admin:catalog_contactmessage_change' msg.pk %}">
+          <span class="cc-msg-name">{{ msg.name }}</span>
+          <span class="cc-msg-subject">{{ msg.subject }}</span>
+        </a>
+        <span class="cc-msg-date">{{ msg.created_at|date:"j M, H\hi" }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <a class="cc-card-link" href="{% url 'admin:catalog_contactmessage_changelist' %}?is_read__exact=0">
+      Voir les messages non lus →
+    </a>
+    {% else %}
+    <p class="cc-card-empty">✓ Vous êtes à jour, aucun message non lu.</p>
+    <a class="cc-card-link" href="{% url 'admin:catalog_contactmessage_changelist' %}">
+      Voir tous les messages →
+    </a>
+    {% endif %}
+  </section>
 </div>
 {% endblock %}
 

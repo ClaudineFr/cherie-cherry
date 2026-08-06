@@ -242,3 +242,40 @@ class SiteSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
     # Et on interdit la suppression : ces coordonnées doivent toujours exister.
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+# --- Tableau de bord de l'accueil ---------------------------------------
+#
+# La home de l'admin (template admin/index.html) est plutôt vide. On y ajoute
+# une carte « Messages » avec le nombre de messages non lus et un aperçu des
+# derniers. Django ne passe pas ces données au template par défaut : on
+# enveloppe donc la vue index du site admin pour enrichir son contexte.
+#
+# On ne touche QUE l'accueil : les autres pages admin passent par d'autres
+# vues et ne sont pas affectées.
+_default_admin_index = admin.site.index
+
+
+def _dashboard_index(request, extra_context=None):
+    extra_context = extra_context or {}
+
+    # Titre (h1) de la home : « Page d'accueil » au lieu de « Site administration ».
+    extra_context["title"] = "Page d'accueil"
+
+    unread = ContactMessage.objects.filter(is_read=False)
+    extra_context["cc_unread_count"] = unread.count()
+    # Aperçu : les 3 messages non lus les plus récents.
+    extra_context["cc_unread_preview"] = unread.order_by("-created_at")[:3]
+
+    # Rangée de stats : quelques chiffres du site en un coup d'œil.
+    extra_context["cc_products_count"] = Product.objects.count()
+    # Produits en rupture (stock à 0) : à réapprovisionner, donc actionnable.
+    extra_context["cc_products_out_of_stock"] = Product.objects.filter(stock=0).count()
+    # Boissons actuellement proposées au menu.
+    extra_context["cc_drinks_count"] = MenuDrink.objects.filter(available=True).count()
+    extra_context["cc_gallery_count"] = GalleryPhoto.objects.count()
+
+    return _default_admin_index(request, extra_context)
+
+
+admin.site.index = _dashboard_index
