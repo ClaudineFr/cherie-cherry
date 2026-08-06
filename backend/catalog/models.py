@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -170,7 +171,9 @@ class InstagramStory(models.Model):
 
     # Pour ranger les ronds dans l'ordre voulu : plus le nombre est petit,
     # plus le rond apparaît tôt. La proprio ajuste ça depuis l'admin.
-    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+    order = models.PositiveIntegerField(
+        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+    )
 
     created_at = models.DateTimeField("créé le", auto_now_add=True)
 
@@ -204,7 +207,9 @@ class InstagramPost(models.Model):
     link = models.URLField("lien vers le post")
 
     # Pour ranger les posts dans l'ordre voulu (plus petit = affiché en premier).
-    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+    order = models.PositiveIntegerField(
+        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+    )
 
     created_at = models.DateTimeField("créé le", auto_now_add=True)
 
@@ -242,10 +247,12 @@ class MenuDrink(models.Model):
         choices=Category.choices,
     )
 
-    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+    order = models.PositiveIntegerField(
+        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+    )
 
     # Décocher pour masquer une boisson sans la supprimer (rupture, saison...).
-    available = models.BooleanField("disponible", default=True)
+    available = models.BooleanField("affichée sur le site", default=True)
 
     class Meta:
         verbose_name = "boisson du menu"
@@ -268,10 +275,12 @@ class DrinkOfMonth(models.Model):
     price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
 
     # Pour ranger les boissons du mois dans l'ordre voulu (comme les stories).
-    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+    order = models.PositiveIntegerField(
+        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+    )
 
     # Décocher pour la retirer du site sans la supprimer.
-    active = models.BooleanField("active", default=True)
+    active = models.BooleanField("affichée sur le site", default=True)
 
     created_at = models.DateTimeField("créé le", auto_now_add=True)
 
@@ -323,10 +332,12 @@ class Supplement(models.Model):
     price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
 
     # Pour ranger les suppléments dans l'ordre voulu (comme le menu).
-    order = models.PositiveIntegerField("ordre d'affichage", default=0)
+    order = models.PositiveIntegerField(
+        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+    )
 
     # Décocher pour masquer un supplément sans le supprimer.
-    available = models.BooleanField("disponible", default=True)
+    available = models.BooleanField("affiché sur le site", default=True)
 
     class Meta:
         verbose_name = "supplément"
