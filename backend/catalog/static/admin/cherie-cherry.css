@@ -483,6 +483,9 @@ fieldset h2,
 #content-related .actionlist li {
   margin-bottom: 8px;
 }
+#content-related .actionlist li:last-child {
+  margin-bottom: 0;
+}
 
 /* Accueil : Django borne .dashboard #content à 600px (largeur fixe), ce qui
    laisse un grand vide à droite du rail. On rend la largeur fluide pour que le
@@ -525,6 +528,14 @@ nav[aria-label="Breadcrumbs"] {
   box-shadow: var(--cc-shadow);
   background: var(--cc-white);
   border: 1px solid var(--hairline-color);
+}
+/* Desktop : Django met margin-bottom: 30px sur .module, ce qui laisse un vide
+   sous le panneau (ex. « Actions récentes »). On le retire hors mobile. */
+@media (min-width: 641px) {
+  .module,
+  .dashboard .module {
+    margin-bottom: 0;
+  }
 }
 .module caption,
 .module h2,
@@ -1126,6 +1137,82 @@ a.button:hover {
   #result_list tbody th,
   #result_list thead th {
     padding: 14px 6px;
+  }
+
+  /* ===================================================================
+     FORMULAIRES (ajout / modification) — champs pleine largeur en mobile
+     ===================================================================
+     Django met en page les fiches en `.aligned` : le libellé flotte à gauche
+     et l'<input> garde sa largeur intrinsèque (l'attribut HTML `size`). Sur
+     mobile ça donne des champs minuscules (ex. les heures d'ouverture) alors
+     que le reste occupe toute la largeur. On empile libellé puis champ, et on
+     étire les champs sur toute la largeur pour une saisie confortable. */
+  /* Padding intérieur du form-row : on décale le contenu du bord de la carte
+     (un peu plus à gauche pour que libellés et champs « respirent »).
+     Préfixé #content pour passer devant Django `responsive.css` (chargé après
+     nous, il impose son propre padding à spécificité égale). */
+  #content .form-row {
+    padding: 14px 20px;
+  }
+  .aligned label {
+    display: block;
+    width: auto;
+    float: none;
+    padding: 0 0 6px;
+    margin: 0;
+  }
+  /* Les champs de saisie : largeur fluide (width: 100%) mais BORNÉE par un
+     max-width, pour un rendu plus soigné sur mobile (des champs plus courts,
+     pas étirés d'un bord à l'autre). box-sizing pour ne pas déborder ;
+     padding vertical généreux pour une cible tactile confortable.
+
+     ⚠️ Les sélecteurs sont préfixés par #content : le fichier Django
+     `responsive.css` est chargé APRÈS le nôtre et impose « width: 100% » sur
+     ces mêmes champs (`.form-row .vTextField`, même spécificité). En préfixant
+     par l'id #content (présent sur toutes les pages), on passe devant en
+     spécificité sans recourir à !important. */
+  #content .form-row input[type="text"],
+  #content .form-row input[type="password"],
+  #content .form-row input[type="email"],
+  #content .form-row input[type="url"],
+  #content .form-row input[type="number"],
+  #content .form-row input[type="tel"],
+  #content .form-row input[type="time"],
+  #content .form-row input[type="date"],
+  #content .form-row textarea,
+  #content .form-row select,
+  #content .form-row .vTextField,
+  #content .form-row .vTimeField,
+  #content .form-row .vDateField {
+    width: 100%;
+    max-width: 16rem;
+    box-sizing: border-box;
+    padding: 11px 12px;
+  }
+  /* Les champs à valeur COURTE (heure, date, nombre) sont resserrés davantage :
+     inutile de leur donner autant de place qu'un champ texte. */
+  #content .form-row input[type="number"],
+  #content .form-row input[type="time"],
+  #content .form-row input[type="date"],
+  #content .form-row .vTimeField,
+  #content .form-row .vDateField {
+    max-width: 8rem;
+  }
+  /* Les raccourcis « Maintenant | 🕐 » (date/heure) passent SOUS le champ,
+     alignés à droite, plutôt que serrés à côté d'un champ pleine largeur. */
+  .form-row .datetimeshortcuts {
+    display: inline-block;
+    margin: 6px 0 0;
+  }
+  /* Les cases à cocher (ex. « Fermé ») : la case et son libellé restent sur
+     la même ligne (on ne veut pas empiler ni étirer une case à cocher). */
+  .form-row.checkbox-row label,
+  .form-row .checkbox-row label {
+    display: inline;
+    padding: 0;
+  }
+  .form-row input[type="checkbox"] {
+    width: auto;
   }
 
   /* Le bouton hamburger va tout à gauche (avant #user-tools). */
