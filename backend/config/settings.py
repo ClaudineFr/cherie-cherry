@@ -54,6 +54,12 @@ if DEBUG:
 # serveur `npm run dev`.
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
+# Jeton d'aperçu : ajouté à l'URL « Voir le site » quand le front est en mode
+# « coming soon », pour que l'admin voie le VRAI site (les visiteurs voient
+# toujours la page coming soon). Doit être IDENTIQUE au PREVIEW_TOKEN côté
+# frontend (le proxy Next le vérifie). Vide par défaut → pas d'aperçu.
+PREVIEW_TOKEN = os.environ.get("PREVIEW_TOKEN", "")
+
 # Railway sert le site derrière un proxy HTTPS. Ces réglages disent à Django
 # de faire confiance à l'en-tête envoyé par le proxy pour savoir qu'on est en
 # HTTPS, et de n'accepter les requêtes POST de l'admin que depuis nos domaines.
