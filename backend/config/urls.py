@@ -6,7 +6,15 @@ from django.views.static import serve
 # Le bouton « Voir le site » de l'admin pointe vers le site public (le front),
 # et non vers "/" (le backend, qui n'a pas de page d'accueil). L'URL vient de
 # FRONTEND_URL (voir settings.py) pour s'adapter au local / à la prod.
-admin.site.site_url = settings.FRONTEND_URL
+#
+# En mode « coming soon », on ajoute ?preview=<jeton> pour que le proxy Next
+# reconnaisse l'admin et affiche le vrai site (les visiteurs voient toujours la
+# page coming soon). Sans jeton défini, on garde l'URL simple.
+if settings.PREVIEW_TOKEN:
+    _base = settings.FRONTEND_URL.rstrip("/")
+    admin.site.site_url = f"{_base}/?preview={settings.PREVIEW_TOKEN}"
+else:
+    admin.site.site_url = settings.FRONTEND_URL
 
 urlpatterns = [
     path("admin/", admin.site.urls),
