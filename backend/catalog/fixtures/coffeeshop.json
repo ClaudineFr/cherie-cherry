@@ -1,0 +1,178 @@
+[
+{
+  "model": "catalog.menudrink",
+  "pk": 1,
+  "fields": {
+    "name": "Espresso",
+    "description": "",
+    "price": "2.20",
+    "category": "coffee",
+    "order": 0,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 2,
+  "fields": {
+    "name": "Latte / Cappuccino",
+    "description": "",
+    "price": "4.50",
+    "category": "coffee",
+    "order": 1,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 3,
+  "fields": {
+    "name": "Latte caramel beurre salé",
+    "description": "",
+    "price": "5.50",
+    "category": "coffee",
+    "order": 2,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 4,
+  "fields": {
+    "name": "Cold Brew",
+    "description": "Café infusé à froid",
+    "price": "4.50",
+    "category": "coffee",
+    "order": 3,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 5,
+  "fields": {
+    "name": "Spanish Latte",
+    "description": "Espresso, lait, vanille, lait concentré",
+    "price": "5.50",
+    "category": "coffee",
+    "order": 4,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 6,
+  "fields": {
+    "name": "Matcha",
+    "description": "",
+    "price": "4.50",
+    "category": "matcha",
+    "order": 0,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 7,
+  "fields": {
+    "name": "Matcha Latte",
+    "description": "",
+    "price": "5.50",
+    "category": "matcha",
+    "order": 1,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 8,
+  "fields": {
+    "name": "Matcha Latte Fraise",
+    "description": "",
+    "price": "6.50",
+    "category": "matcha",
+    "order": 2,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 9,
+  "fields": {
+    "name": "Ube Latte",
+    "description": "",
+    "price": "4.90",
+    "category": "matcha",
+    "order": 4,
+    "available": true
+  }
+},
+{
+  "model": "catalog.menudrink",
+  "pk": 10,
+  "fields": {
+    "name": "Eau 50cl",
+    "description": "",
+    "price": "1.50",
+    "category": "matcha",
+    "order": 3,
+    "available": true
+  }
+},
+{
+  "model": "catalog.drinkofmonth",
+  "pk": 1,
+  "fields": {
+    "name": "Matcha mangue",
+    "description": "Matcha de cérémonie - Purée de mangue - Lait",
+    "price": "6.90",
+    "order": 0,
+    "active": true,
+    "created_at": "2026-07-30T09:54:40.753Z"
+  }
+},
+{
+  "model": "catalog.drinkofmonth",
+  "pk": 2,
+  "fields": {
+    "name": "Latte tiramisu",
+    "description": "Espresso - Lait - crème de mascarpone à la vanille - Cacao",
+    "price": "6.90",
+    "order": 1,
+    "active": true,
+    "created_at": "2026-07-30T09:55:33.821Z"
+  }
+},
+{
+  "model": "catalog.drinkofmonth",
+  "pk": 3,
+  "fields": {
+    "name": "Citronnade",
+    "description": "Jus de citron frais - eau de fleur d'oranger - Eau - Sucre",
+    "price": "5.50",
+    "order": 2,
+    "active": true,
+    "created_at": "2026-07-30T09:56:29.529Z"
+  }
+},
+{
+  "model": "catalog.supplement",
+  "pk": 1,
+  "fields": {
+    "label": "Lait : avoine, amande, sans lactose",
+    "price": "0.50",
+    "order": 1,
+    "available": true
+  }
+},
+{
+  "model": "catalog.supplement",
+  "pk": 2,
+  "fields": {
+    "label": "Sirop : vanille, caramel, noisette, coco",
+    "price": "0.50",
+    "order": 2,
+    "available": true
+  }
+}
+]
