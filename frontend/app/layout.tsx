@@ -44,7 +44,7 @@ export default function RootLayout({
       lang="fr"
       className={`${geistSans.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="site-body min-h-full flex flex-col">
         <Navbar />
         {children}
         <Footer />

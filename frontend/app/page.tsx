@@ -17,28 +17,28 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="flex-1">
+    <main className="home-page flex-1">
       <LocalBusinessJsonLd settings={settings} hours={hours} />
-      {/* Section hero */}
-      <section className="flex flex-col items-center justify-center gap-6 bg-pink-soft px-6 py-24 text-center">
-        <p className="text-sm uppercase tracking-[0.3em] text-green">
+      {/* Hero */}
+      <section className="home-hero flex flex-col items-center justify-center gap-6 bg-pink-soft px-6 py-24 text-center">
+        <p className="home-hero-eyebrow text-sm uppercase tracking-[0.3em] text-green">
           Carpentras · Provence
         </p>
-        <h1 className="font-serif text-4xl leading-tight text-green sm:text-6xl">
+        <h1 className="home-hero-title font-serif text-4xl leading-tight text-green sm:text-6xl">
           Chérie Cherry
         </h1>
-        <p className="max-w-md text-base text-ink/80">
+        <p className="home-hero-tagline max-w-md text-base text-ink/80">
           Coffee &amp; Matcha Club — un coffee shop et concept store où café,
           déco, papeterie et mode se rencontrent.
         </p>
       </section>
 
-      {/* Section : nos deux univers */}
-      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-        <h2 className="mb-12 text-center font-serif text-2xl text-green md:text-3xl">
+      {/* Nos deux univers */}
+      <section className="home-universes mx-auto max-w-5xl px-6 py-12 md:py-16">
+        <h2 className="home-universes-title mb-12 text-center font-serif text-2xl text-green md:text-3xl">
           Nos deux univers
         </h2>
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="home-universes-grid grid gap-6 sm:grid-cols-2">
           <UniverseCard
             href="/coffee-shop"
             image={coffeeShopImg}
@@ -57,23 +57,23 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Section : stories Instagram mises en avant */}
-      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-        <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
+      {/* Stories Instagram */}
+      <section className="home-stories mx-auto max-w-5xl px-6 py-12 md:py-16">
+        <h2 className="home-stories-title mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           Chérie Cherry &amp; Vous
         </h2>
-        <p className="mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
+        <p className="home-stories-intro mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
           Vos plus beaux moments partagés en boutique.
         </p>
         <InstagramStories />
       </section>
 
-      {/* Section : feed Instagram de la marque */}
-      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-        <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
+      {/* Feed Instagram */}
+      <section className="home-community mx-auto max-w-5xl px-6 py-12 md:py-16">
+        <h2 className="home-community-title mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           Rejoignez la communauté
         </h2>
-        <p className="mx-auto mb-12 text-center text-xs text-ink/70 md:text-sm">
+        <p className="home-community-intro mx-auto mb-12 text-center text-xs text-ink/70 md:text-sm">
           Suivez{" "}
           {settings.instagram_url ? (
             <a
@@ -85,19 +85,21 @@ export default async function Home() {
               @cheriecherry.fr
             </a>
           ) : (
-            <span className="font-medium text-pink-vivid">@cheriecherry.fr</span>
+            <span className="font-medium text-pink-vivid">
+              @cheriecherry.fr
+            </span>
           )}{" "}
           sur Instagram.
         </p>
         <InstagramFeed />
       </section>
 
-      {/* Section galerie / ambiance */}
-      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-        <h2 className="mb-4 text-center font-serif text-2xl text-green md:text-3xl">
+      {/* Galerie / ambiance */}
+      <section className="home-ambiance mx-auto max-w-5xl px-6 py-12 md:py-16">
+        <h2 className="home-ambiance-title mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           L&apos;ambiance
         </h2>
-        <p className="mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
+        <p className="home-ambiance-intro mx-auto mb-12 max-w-md text-center text-sm text-ink/70 md:text-base">
           Un aperçu de notre univers, entre coffee shop et concept store.
         </p>
         <Gallery />

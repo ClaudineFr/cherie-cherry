@@ -13,13 +13,14 @@ export default async function ContactPage() {
   const horaires = ranges
     .map((range) => `${range.days} · ${range.hours}`)
     .join(" — ");
-
-  // Coordonnées éditables depuis l'admin.
   const settings = await fetchSiteSettings();
 
   // Adresse sur une ligne, ex. "7 rue de la République, 84200 Carpentras".
   // On assemble seulement les morceaux renseignés (pas de virgule orpheline).
-  const adresse = [settings.street, `${settings.postal_code} ${settings.city}`.trim()]
+  const adresse = [
+    settings.street,
+    `${settings.postal_code} ${settings.city}`.trim(),
+  ]
     .filter(Boolean)
     .join(", ");
 
@@ -37,46 +38,51 @@ export default async function ContactPage() {
     : null;
 
   return (
-    <main className="flex-1 bg-cream px-6 py-20">
-      <div className="mx-auto max-w-3xl">
-        <p className="text-center text-sm uppercase tracking-[0.3em] text-green">
+    <main className="contact-page flex-1 bg-cream px-6 py-20">
+      <div className="contact-container mx-auto max-w-3xl">
+        <p className="contact-eyebrow text-center text-sm uppercase tracking-[0.3em] text-green">
           Une question ?
         </p>
-        <h1 className="mt-3 text-center font-serif text-4xl text-green">
+        <h1 className="contact-title mt-3 text-center font-serif text-4xl text-green">
           Contactez-nous
         </h1>
 
         {/* Bandeau coordonnées */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="contact-infos mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {contactInfos.map((info) => (
             <div
               key={info.label}
-              className="flex flex-col items-center gap-1 rounded-2xl bg-pink-soft px-4 py-6 text-center"
+              className="contact-info-card flex flex-col items-center gap-1 rounded-2xl bg-pink-soft px-4 py-6 text-center"
             >
-              <info.Icon className="text-xl text-green" aria-hidden />
-              <p className="text-xs uppercase tracking-widest text-green">
+              <info.Icon
+                className="contact-info-icon text-xl text-green"
+                aria-hidden
+              />
+              <p className="contact-info-label text-xs uppercase tracking-widest text-green">
                 {info.label}
               </p>
-              <p className="text-sm text-ink/70">{info.value}</p>
+              <p className="contact-info-value text-sm text-ink/70">
+                {info.value}
+              </p>
             </div>
           ))}
         </div>
 
         {/* Formulaire */}
-        <div className="mt-14">
+        <div className="contact-form-wrapper mt-14">
           <ContactForm />
         </div>
 
-        {/* Carte Google Maps — affichée seulement si l'adresse est renseignée */}
+        {/* Carte Google Maps */}
         {mapsSrc && (
-          <div className="mt-14">
-            <h2 className="mb-4 text-center font-serif text-2xl text-green">
+          <div className="contact-map mt-14">
+            <h2 className="contact-map-title mb-4 text-center font-serif text-2xl text-green">
               Nous trouver
             </h2>
             <iframe
               title={`Carte — Chérie Cherry, ${adresse}`}
               src={mapsSrc}
-              className="h-80 w-full rounded-2xl border-0"
+              className="contact-map-frame h-80 w-full rounded-2xl border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen

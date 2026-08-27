@@ -14,29 +14,28 @@ export default async function InstagramFeed() {
   }
 
   return (
-    // Grille : 2 colonnes sur mobile, 4 dès la tablette (md).
-    <ul className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+    <ul className="instagram-feed mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
       {posts.map((post) => (
-        <li key={post.src}>
+        <li key={post.src} className="instagram-post">
           <a
             href={post.link}
             target="_blank"
             rel="noopener noreferrer"
             // group : permet d'animer l'overlay au survol de tout le lien.
-            className="group relative block aspect-square overflow-hidden rounded-xl"
+            className="instagram-post-link group relative block aspect-square overflow-hidden rounded-xl"
           >
             <Image
               src={post.src}
               alt={post.caption || "Publication Instagram Chérie Cherry"}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="instagram-post-image object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(min-width: 768px) 25vw, 50vw"
             />
 
-            {/* Au survol*/}
-            <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-green/0 opacity-0 transition-all duration-300 group-hover:bg-green/45 group-hover:opacity-100">
+            {/* Overlay au survol */}
+            <span className="instagram-post-overlay absolute inset-0 flex flex-col items-center justify-center gap-1 bg-green/0 opacity-0 transition-all duration-300 group-hover:bg-green/45 group-hover:opacity-100">
               <FaInstagram className="h-6 w-6 text-cream" />
-              <span className="text-xs uppercase tracking-widest text-cream">
+              <span className="instagram-post-overlay-label text-xs uppercase tracking-widest text-cream">
                 Voir
               </span>
             </span>

@@ -22,7 +22,7 @@ export default function UniverseCard({
   return (
     <Link
       href={href}
-      className="group relative flex h-80 flex-col justify-end overflow-hidden rounded-3xl p-8 text-cream"
+      className="universe-card group relative flex h-80 flex-col justify-end overflow-hidden rounded-3xl p-8 text-cream"
     >
       {/* Image de fond */}
       <Image
@@ -31,19 +31,22 @@ export default function UniverseCard({
         fill
         sizes="(max-width: 640px) 100vw, 512px"
         preload={preload}
-        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        className="universe-card-image object-cover transition-transform duration-500 group-hover:scale-105"
       />
-      {/* Voile sombre pour la lisibilité du texte */}
-      <div className="absolute inset-0 bg-green/50" />
+      {/* Voile sombre */}
+      <div className="universe-card-overlay absolute inset-0 bg-green/50" />
 
-      {/* Contenu au-dessus du voile */}
-      <div className="relative flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.25em] text-cream/80">
+      <div className="universe-card-content relative flex flex-col gap-2">
+        <p className="universe-card-eyebrow text-xs uppercase tracking-[0.25em] text-cream/80">
           {eyebrow}
         </p>
-        <h3 className="font-serif text-3xl text-cream">{title}</h3>
-        <p className="max-w-xs text-sm text-cream/90">{description}</p>
-        <span className="mt-2 text-sm uppercase tracking-widest">
+        <h3 className="universe-card-title font-serif text-3xl text-cream">
+          {title}
+        </h3>
+        <p className="universe-card-description max-w-xs text-sm text-cream/90">
+          {description}
+        </p>
+        <span className="universe-card-cta mt-2 text-sm uppercase tracking-widest">
           Découvrir →
         </span>
       </div>

@@ -3,8 +3,6 @@
 // Ce n'est PAS un vrai feed Instagram live : ce sont des posts que le client
 // réplique à la main depuis l'admin. Chaque post renvoie vers la vraie publi.
 // Même principe que stories.ts et gallery.ts.
-
-// L'URL vient d'une variable d'environnement (voir .env.local).
 const API_URL = process.env.API_POSTS_URL;
 
 // Un post tel que l'affichage l'attend.
@@ -14,8 +12,6 @@ export type Post = {
   caption: string;
   link: string;
 };
-
-// La forme brute renvoyée par l'API.
 type ApiPost = {
   id: number;
   image: string;
@@ -34,7 +30,6 @@ export async function fetchPosts(): Promise<Post[]> {
   }
 
   const res = await fetch(API_URL, {
-    // Pas de cache : on veut le feed à jour à chaque visite.
     cache: "no-store",
   });
 

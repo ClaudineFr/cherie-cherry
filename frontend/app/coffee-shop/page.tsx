@@ -10,50 +10,48 @@ export default async function CoffeeShopPage() {
   const drinksOfMonthNote = await fetchDrinksOfMonthNote();
 
   return (
-    <main className="flex-1 bg-cream px-6 py-20">
-      <div className="mx-auto max-w-3xl">
+    <main className="coffee-shop-page flex-1 bg-cream px-6 py-20">
+      <div className="coffee-shop-container mx-auto max-w-3xl">
         {/* En-tête */}
-        <div className="text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-green">
+        <div className="coffee-shop-header text-center">
+          <p className="coffee-shop-eyebrow text-sm uppercase tracking-[0.3em] text-green">
             Coffee &amp; Matcha Club
           </p>
-          <h1 className="mt-3 font-serif text-4xl text-green">
+          <h1 className="coffee-shop-title mt-3 font-serif text-4xl text-green">
             Le coffee shop
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-base text-ink/70">
+          <p className="coffee-shop-intro mx-auto mt-4 max-w-md text-base text-ink/70">
             {servingNote}
           </p>
         </div>
 
-        {/* Encart « Boissons du mois » : mis en avant, affiché seulement s'il
-            y a au moins une création à montrer. */}
+        {/* Boissons du mois */}
         {drinksOfMonth.length > 0 && (
-          <div className="mt-16 rounded-2xl bg-pink-soft px-6 py-8 sm:px-10">
-            <h2 className="text-center font-serif text-2xl text-green">
+          <div className="drinks-of-month mt-16 rounded-2xl bg-pink-soft px-6 py-8 sm:px-10">
+            <h2 className="drinks-of-month-title text-center font-serif text-2xl text-green">
               Les boissons du mois
             </h2>
-            {/* Phrase « durée limitée » : affichée seulement si une date de fin
-                a été choisie dans l'admin. */}
+            {/* « Durée limitée » : seulement si une date de fin est saisie dans l'admin. */}
             {drinksOfMonthNote && (
-              <p className="mt-2 text-center text-xs italic text-green/70">
+              <p className="drinks-of-month-note mt-2 text-center text-xs italic text-green/70">
                 {drinksOfMonthNote}
               </p>
             )}
-            <ul className="mt-6 flex flex-col gap-4">
+            <ul className="drinks-of-month-list mt-6 flex flex-col gap-4">
               {drinksOfMonth.map((drink) => (
                 <li
                   key={drink.name}
-                  className="flex items-baseline justify-between gap-4 border-b border-green/10 pb-3 last:border-none last:pb-0"
+                  className="drink-row flex items-baseline justify-between gap-4 border-b border-green/10 pb-3 last:border-none last:pb-0"
                 >
-                  <span>
-                    <span className="text-ink">{drink.name}</span>
+                  <span className="drink-label">
+                    <span className="drink-name text-ink">{drink.name}</span>
                     {drink.description && (
-                      <span className="ml-2 text-sm text-ink/50">
+                      <span className="drink-description ml-2 text-sm text-ink/50">
                         {drink.description}
                       </span>
                     )}
                   </span>
-                  <span className="whitespace-nowrap text-green">
+                  <span className="drink-price whitespace-nowrap text-green">
                     {drink.price}
                   </span>
                 </li>
@@ -63,27 +61,27 @@ export default async function CoffeeShopPage() {
         )}
 
         {/* Menu par catégories */}
-        <div className="mt-16 flex flex-col gap-12 px-4 sm:px-8">
+        <div className="coffee-shop-menu mt-16 flex flex-col gap-12 px-4 sm:px-8">
           {menu.map((section) => (
-            <div key={section.category}>
-              <h2 className="mb-6 font-serif text-2xl text-green">
+            <div key={section.category} className="menu-section">
+              <h2 className="menu-section-title mb-6 font-serif text-2xl text-green">
                 {section.category}
               </h2>
-              <ul className="flex flex-col gap-4">
+              <ul className="menu-section-list flex flex-col gap-4">
                 {section.items.map((drink) => (
                   <li
                     key={drink.name}
-                    className="flex items-baseline justify-between gap-4 border-b border-green/10 pb-3"
+                    className="drink-row flex items-baseline justify-between gap-4 border-b border-green/10 pb-3"
                   >
-                    <span>
-                      <span className="text-ink">{drink.name}</span>
+                    <span className="drink-label">
+                      <span className="drink-name text-ink">{drink.name}</span>
                       {drink.description && (
-                        <span className="ml-2 text-sm text-ink/50">
+                        <span className="drink-description ml-2 text-sm text-ink/50">
                           {drink.description}
                         </span>
                       )}
                     </span>
-                    <span className="whitespace-nowrap text-green">
+                    <span className="drink-price whitespace-nowrap text-green">
                       {drink.price}
                     </span>
                   </li>
@@ -93,26 +91,26 @@ export default async function CoffeeShopPage() {
           ))}
         </div>
 
-        {/* Encart suppléments : affiché seulement s'il y a au moins un
-            supplément (géré depuis l'admin). */}
+        {/* Suppléments */}
         {supplements.length > 0 && (
-          <div className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-            <p className="mb-2 uppercase tracking-widest text-green">
+          <div className="supplements mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
+            <p className="supplements-title mb-2 uppercase tracking-widest text-green">
               Suppléments
             </p>
-            <ul className="flex flex-col gap-1">
+            <ul className="supplements-list flex flex-col gap-1">
               {supplements.map((line) => (
-                <li key={line}>{line}</li>
+                <li key={line} className="supplements-item">
+                  {line}
+                </li>
               ))}
             </ul>
           </div>
         )}
 
         {/* Note pâtisseries */}
-        <p className="mt-6 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-          Nos pâtisseries et gâteaux sont{" "}
-          <strong>faites maison </strong> et la carte change au fil des saisons
-          et de l&apos;inspiration du jour.
+        <p className="coffee-shop-pastry-note mt-6 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
+          Nos pâtisseries et gâteaux sont <strong>faites maison </strong> et la
+          carte change au fil des saisons et de l&apos;inspiration du jour.
         </p>
       </div>
     </main>

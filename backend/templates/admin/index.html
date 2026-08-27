@@ -83,8 +83,8 @@ récentes » reste dans la colonne de droite.
 {% endblock %}
 
 {% block sidebar %}
-<div id="content-related">
-    <div class="module" id="recent-actions-module">
+<div id="content-related" class="cc-sidebar">
+    <div class="module cc-recent-actions" id="recent-actions-module">
         <h2>{% translate 'Recent actions' %}</h2>
         <h3>{% translate 'My actions' %}</h3>
             {% load log %}
@@ -92,7 +92,7 @@ récentes » reste dans la colonne de droite.
             {% if not admin_log %}
             <p>{% translate 'None available' %}</p>
             {% else %}
-            <ul class="actionlist">
+            <ul class="actionlist cc-recent-actions-list">
             {% for entry in admin_log %}
             <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
                 <span class="visually-hidden">{% if entry.is_addition %}{% translate 'Added:' %}{% elif entry.is_change %}{% translate 'Changed:' %}{% elif entry.is_deletion %}{% translate 'Deleted:' %}{% endif %}</span>

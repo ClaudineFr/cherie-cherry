@@ -6,7 +6,15 @@ const BASE_URL = "https://www.cheriecherry.fr";
 
 // schema.org attend les jours en abréviations anglaises à 2 lettres.
 // Notre API numérote 0 = lundi … 6 = dimanche.
-const DAY_CODES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const DAY_CODES = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 // "10:30:00" (format API) → "10:30" (format attendu par schema.org).
 function toHm(time: string): string {

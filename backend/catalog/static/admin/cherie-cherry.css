@@ -76,7 +76,6 @@ summary:focus-visible {
   outline-offset: 2px;
   border-radius: 4px;
 }
-/* Sur fond vert (en-tête), le focus passe en clair pour rester visible. */
 #header a:focus-visible,
 #header button:focus-visible {
   outline-color: #ffffff;
@@ -89,7 +88,6 @@ summary:focus-visible {
   }
 }
 
-/* Typo serif */
 #site-name a {
   font-family: var(--cc-serif);
   font-size: 1.6rem;
@@ -107,10 +105,8 @@ summary:focus-visible {
   color: #ffffff;
 }
 
-/* Titres de contenu (h1/h2 de page, modules, fieldsets, inlines) : on aligne
-   leur police sur le corps du BO (sans-serif hérité) plutôt que la serif de
-   marque. La Playfair reste réservée à l'identité (nom Chérie Cherry, accroche
-   de l'accueil, notes décoratives). */
+/* La serif de marque reste réservée à l'identité : les titres de contenu
+   héritent du sans-serif du BO. */
 #content h1,
 .module h2,
 .module caption,
@@ -120,7 +116,6 @@ fieldset h2,
   letter-spacing: 0.3px;
 }
 
-/* Menu du haut : pastilles */
 #user-tools {
   display: flex;
   align-items: center;
@@ -178,7 +173,6 @@ fieldset h2,
   border-color: var(--cc-pink-deep);
 }
 
-/* Menu déroulant « Mon compte » */
 .cc-account {
   position: relative;
   display: inline-block;
@@ -217,19 +211,15 @@ fieldset h2,
   color: var(--cc-pink-deep);
 }
 
-/* Hamburger + panneau mobile (masqués sur desktop) */
 .cc-burger,
 .cc-drawer {
   display: none;
 }
-/* Sur desktop, les icônes des liens compte sont masquées (on montre le texte). */
 .cc-ico {
   display: none;
 }
 
-/* Zone de bienvenue de l'accueil (navigation via la barre latérale).
-   .cc-welcome habille #content-main : pas de max-width ici, sinon tout le
-   contenu (stats, cartes) est bridé et laisse un vide à droite. */
+/* Pas de max-width sur #content-main : brider ici briderait stats et cartes. */
 .cc-welcome {
   padding: 8px 0 0;
 }
@@ -246,7 +236,6 @@ fieldset h2,
   margin: 0;
 }
 
-/* Rangée de stats (accueil) */
 .cc-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -301,7 +290,6 @@ fieldset h2,
   font-weight: 600;
 }
 
-/* Raccourcis (accueil) */
 .cc-shortcuts {
   margin-top: 24px;
 }
@@ -341,7 +329,6 @@ fieldset h2,
   transform: translateY(-2px);
 }
 
-/* Cartes du tableau de bord (accueil) */
 .cc-card {
   background: var(--cc-white);
   border: 1px solid var(--cc-pink);
@@ -432,7 +419,6 @@ fieldset h2,
   color: var(--cc-pink-deep);
 }
 
-/* Cartes de catégorie (barre latérale) */
 .cc-category,
 .cc-category table {
   width: 100%;
@@ -455,7 +441,6 @@ fieldset h2,
   text-transform: none;
 }
 
-/* Panneau « Actions récentes » */
 #content-related {
   margin-top: 0;
 }
@@ -487,9 +472,7 @@ fieldset h2,
   margin-bottom: 0;
 }
 
-/* Accueil : Django borne .dashboard #content à 600px (largeur fixe), ce qui
-   laisse un grand vide à droite du rail. On rend la largeur fluide pour que le
-   #content occupe tout l'espace restant. */
+/* Django borne .dashboard #content à 600px : on repasse en largeur fluide. */
 .dashboard #content {
   width: auto;
 }
@@ -507,7 +490,6 @@ body.change-list .colMS {
   margin-bottom: 20px;
 }
 
-/* Mise en page & espacements */
 #header {
   padding: 16px 40px;
   box-shadow: 0 1px 8px rgba(51, 80, 51, 0.15);
@@ -545,7 +527,6 @@ nav[aria-label="Breadcrumbs"] {
   letter-spacing: 0.6px;
 }
 
-/* Listes */
 #result_list tbody td,
 #result_list tbody th {
   padding: 12px 10px;
@@ -599,14 +580,10 @@ nav[aria-label="Breadcrumbs"] {
 /* ===================================================================
    FILTRES EN MENU DÉROULANT (bouton « Filtres » en haut à droite)
    ===================================================================
-   Le script cc_admin_filters.js déplace le bloc natif <search
-   id="changelist-filter"> dans un panneau flottant .cc-filters-panel, ancré
-   sous un bouton .cc-filters-toggle. On neutralise ici la mise en page native
-   (colonne réservée à droite) et on habille le bouton + le panneau à la DA. */
+   cc_admin_filters.js déplace le bloc natif <search id="changelist-filter">
+   dans un panneau flottant .cc-filters-panel, sous .cc-filters-toggle. */
 
-/* La changelist n'est plus présentée comme une « carte » (fond blanc + bordure
-   + ombre héritée de .module) : on retire ce cadre pour que la liste respire
-   dans la page. Le tableau (#result_list) garde ses propres styles. */
+/* Retire le cadre .module hérité : #result_list a ses propres styles. */
 #changelist.module {
   background: transparent;
   border: none;
@@ -615,18 +592,15 @@ nav[aria-label="Breadcrumbs"] {
   overflow: visible;
 }
 
-/* Django réserve de la place à droite quand la liste a des filtres
-   (#changelist.filtered). Le panneau étant désormais flottant, on récupère
-   toute la largeur pour le tableau. */
+/* Django réserve de la place à droite via #changelist.filtered : inutile, le
+   panneau est flottant. */
 #changelist.filtered .changelist-form-container,
 #changelist.filtered #changelist-form,
 #changelist.filtered #result_list {
   margin-right: 0;
 }
-/* La colonne filtre étant sortie du flux (déplacée dans le panneau flottant),
-   on récupère toute la largeur pour le tableau. Django réserve la place de la
-   colonne via `max-width: calc(100% - 270px)` sur le div englobant le
-   formulaire : on neutralise ce plafond. */
+/* Django plafonne le div du formulaire à `calc(100% - 270px)` pour la colonne
+   filtre : neutralisé, elle est sortie du flux. */
 #changelist .changelist-form-container {
   display: block;
 }
@@ -635,7 +609,6 @@ nav[aria-label="Breadcrumbs"] {
   width: 100%;
 }
 
-/* Barre du haut : recherche à gauche, bouton Filtres à droite. */
 .cc-toolbar {
   display: flex;
   align-items: flex-start;
@@ -652,8 +625,6 @@ nav[aria-label="Breadcrumbs"] {
   flex: 0 0 auto;
 }
 
-/* Le bouton « Filtres » : pastille verte à la DA, cohérent avec les autres
-   boutons de l'admin. */
 .cc-filters-toggle {
   display: inline-flex;
   align-items: center;
@@ -677,7 +648,6 @@ nav[aria-label="Breadcrumbs"] {
   color: #ffffff;
   box-shadow: var(--cc-shadow-hover);
 }
-/* Pastille du nombre de filtres actifs. */
 .cc-filters-count {
   display: inline-flex;
   align-items: center;
@@ -691,7 +661,6 @@ nav[aria-label="Breadcrumbs"] {
   font-size: 0.72rem;
   font-weight: 700;
 }
-/* Chevron : pivote quand le panneau est ouvert. */
 .cc-filters-caret {
   font-size: 0.8rem;
   line-height: 1;
@@ -722,9 +691,7 @@ nav[aria-label="Breadcrumbs"] {
 .cc-filters-panel[hidden] {
   display: none;
 }
-/* Titre « Filtre » du panneau : discret (le bouton dit déjà « Filtres »).
-   On surcharge la règle globale #changelist-filter h2 (fond vert) via un
-   sélecteur ID pour égaler sa spécificité. */
+/* Sélecteur ID pour égaler la spécificité de #changelist-filter h2. */
 #changelist-filter.cc-filters-panel > h2 {
   background: transparent;
   color: var(--cc-title);
@@ -733,13 +700,10 @@ nav[aria-label="Breadcrumbs"] {
   font-size: 0.9rem;
   letter-spacing: 0.3px;
 }
-/* Lien « Afficher les nombres » (facettes) : masqué. Ce lien natif ajoute des
-   compteurs par option (« Bijoux (2) »…) ; la cliente n'en a pas besoin et ça
-   allège le panneau. */
+/* Facettes natives masquées : compteurs inutiles ici. */
 .cc-filters-panel #changelist-filter-extra-actions {
   display: none;
 }
-/* Chaque groupe de filtre (Par catégorie, Par coup de cœur…). */
 .cc-filters-panel details {
   border-top: 1px solid var(--hairline-color);
   padding: 6px 0;
@@ -774,16 +738,14 @@ nav[aria-label="Breadcrumbs"] {
   background: var(--cc-pink-soft);
   color: var(--cc-pink-deep);
 }
-/* Choix actif du filtre : mis en avant (rose). */
 .cc-filters-panel li.selected a {
   background: var(--cc-pink-soft);
   color: var(--cc-pink-deep);
   font-weight: 700;
 }
 
-/* Barre latérale des catégories (desktop) : toujours ouverte (icône + nom).
-   On cible aussi #nav-sidebar pour neutraliser le CSS natif de Django qui
-   masque la barre (visibility:hidden + left/margin-left négatifs). */
+/* #nav-sidebar est ciblé pour neutraliser le CSS natif qui masque la barre
+   (visibility:hidden + left/margin-left négatifs). */
 .cc-rail,
 #nav-sidebar.cc-rail {
   position: relative;
@@ -821,8 +783,6 @@ nav[aria-label="Breadcrumbs"] {
 .cc-rail-list a:hover {
   background: var(--cc-green-deep);
 }
-/* Titre de groupe (Accueil du site, Coffee shop) : non cliquable — pas de
-   curseur main ni de survol interactif, mais toujours surlignable si actif. */
 .cc-rail-group {
   cursor: default;
 }
@@ -855,8 +815,6 @@ nav[aria-label="Breadcrumbs"] {
   letter-spacing: 0.04em;
 }
 
-/* Sous-menu d'une rubrique (ex. Coffee shop → Boissons, Suppléments…).
-   Toujours affiché, en retrait sous la ligne principale de la rubrique. */
 .cc-rail-sub {
   list-style: none;
   margin: 0;
@@ -877,14 +835,12 @@ nav[aria-label="Breadcrumbs"] {
   background: var(--cc-green);
   border-left-color: var(--cc-pink-vivid);
 }
-/* Sous-titre de la page courante : mis en avant (repère précis de la position). */
 .cc-rail-sub a.cc-active {
   background: var(--cc-green-deep);
   border-left-color: var(--cc-pink-vivid);
   font-weight: 600;
 }
 
-/* Formulaires */
 .form-row {
   padding: 14px 16px;
 }
@@ -928,7 +884,6 @@ fieldset.module {
   border: 1px solid var(--hairline-color);
 }
 
-/* Boutons */
 .button,
 input[type="submit"],
 input[type="button"],
@@ -958,7 +913,6 @@ a.button:hover {
   padding: 14px 16px;
 }
 
-/* Page de login */
 .login {
   background: var(--cc-pink-soft);
 }
@@ -988,7 +942,6 @@ a.button:hover {
   min-width: 60%;
 }
 
-/* Responsive mobile : hamburger à gauche (tiroir catégories) + icônes compte */
 @media (max-width: 640px) {
   #header {
     flex-direction: row !important;
@@ -997,12 +950,10 @@ a.button:hover {
     position: relative;
     padding: 12px 14px;
   }
-  /* Le nom de marque laisse la place au hamburger à gauche. */
   #site-name {
     display: none;
   }
 
-  /* Le rail de catégories est masqué : la navigation passe par le tiroir. */
   #nav-sidebar.cc-rail {
     display: none;
   }
@@ -1028,8 +979,6 @@ a.button:hover {
     min-width: 0;
     width: auto;
   }
-  /* .cc-filters prend toute la largeur pour servir d'ancrage au panneau ;
-     le bouton reste calé à droite via text-align. */
   .cc-filters {
     width: 100%;
     text-align: right;
@@ -1048,12 +997,9 @@ a.button:hover {
   /* ===================================================================
      TABLEAUX (changelist) — colonnes secondaires masquées en mobile
      ===================================================================
-     Django pose deux familles de classes DIFFÉRENTES : .column-<champ> sur
-     le <th> de l'EN-TÊTE, et .field-<champ> sur le <td> du CORPS. Il faut
-     donc cibler les deux, sinon on ne masque que l'en-tête et le corps
-     déborde encore. On garde le nom, le prix et le stock (l'info clé) ; le
-     reste (catégorie, coup de cœur, ordre, date, lien, email, et le statut
-     « Affiché(e) sur le site » available/active) se consulte dans la fiche. */
+     Django pose deux familles de classes DIFFÉRENTES : .column-<champ> sur le
+     <th> de l'en-tête, .field-<champ> sur le <td> du corps. Cibler les deux,
+     sinon seul l'en-tête est masqué et le corps déborde. */
   #result_list th.column-category,
   #result_list td.field-category,
   #result_list th.column-featured,
@@ -1079,31 +1025,23 @@ a.button:hover {
     width: 100%;
     table-layout: fixed;
   }
-  /* Cellules restantes : autoriser le retour à la ligne (les noms longs ne
-     forcent plus une largeur qui déborde). */
   #result_list th,
   #result_list td {
     white-space: normal;
     word-break: break-word;
   }
-  /* Édition en liste (list_editable) sur mobile : un script (cc_admin_table.js)
-     remplace en mobile les <input>/<select> éditables par leur valeur en
-     texte, enveloppée dans un .cc-cell-static. Les champs restent éditables
-     sur desktop ; en mobile on privilégie la lecture (édition dans la fiche).
-     On stylise ici cet affichage texte. */
+  /* cc_admin_table.js remplace en mobile les champs list_editable par leur
+     valeur en texte, dans un .cc-cell-static. */
   .cc-cell-static {
     display: inline-block;
     font-weight: 600;
     color: var(--cc-green-deep);
   }
-  /* Un booléen (coup de cœur, dispo, actif…) rendu en pastille oui/non. */
   .cc-cell-static.cc-bool-true { color: var(--cc-green); }
   .cc-cell-static.cc-bool-false { color: var(--body-quiet-color); }
 
-  /* Répartition des largeurs (avec table-layout: fixed, sans consigne les
-     colonnes se partagent l'espace à parts égales : la vignette prendrait
-     autant qu'une colonne de texte). On donne peu de place à la case et à la
-     vignette ; le reste se répartit sur nom / prix / stock. */
+  /* Avec table-layout: fixed et sans consigne, les colonnes se partagent
+     l'espace à parts égales : la vignette prendrait autant que du texte. */
   #result_list th.action-checkbox-column,
   #result_list td.action-checkbox {
     width: 28px;
@@ -1112,18 +1050,14 @@ a.button:hover {
   #result_list td.field-thumbnail {
     width: 52px;
   }
-  /* Prix : en mobile c'est du texte court (« 45.00 »), pas besoin de largeur —
-     on resserre pour laisser la place au nom et à la colonne crayon. */
   #result_list th.column-price,
   #result_list td.field-price {
     width: 64px;
   }
-  /* Colonne crayon : compacte en mobile. */
   #result_list th.cc-edit-col,
   #result_list td.cc-edit-col {
     width: 40px;
   }
-  /* La vignette elle-même : miniature compacte dans sa colonne étroite. */
   #result_list td.field-thumbnail img {
     width: 40px;
     height: 40px;
@@ -1131,8 +1065,6 @@ a.button:hover {
     border-radius: 8px;
   }
 
-  /* Cellules restantes : padding horizontal resserré pour que toutes les
-     colonnes (dont la colonne crayon) tiennent sans scroll horizontal. */
   #result_list tbody td,
   #result_list tbody th,
   #result_list thead th {
@@ -1142,15 +1074,11 @@ a.button:hover {
   /* ===================================================================
      FORMULAIRES (ajout / modification) — champs pleine largeur en mobile
      ===================================================================
-     Django met en page les fiches en `.aligned` : le libellé flotte à gauche
-     et l'<input> garde sa largeur intrinsèque (l'attribut HTML `size`). Sur
-     mobile ça donne des champs minuscules (ex. les heures d'ouverture) alors
-     que le reste occupe toute la largeur. On empile libellé puis champ, et on
-     étire les champs sur toute la largeur pour une saisie confortable. */
-  /* Padding intérieur du form-row : on décale le contenu du bord de la carte
-     (un peu plus à gauche pour que libellés et champs « respirent »).
-     Préfixé #content pour passer devant Django `responsive.css` (chargé après
-     nous, il impose son propre padding à spécificité égale). */
+     Django met les fiches en `.aligned` : libellé flottant à gauche, <input>
+     à sa largeur intrinsèque (attribut HTML `size`) — donc minuscule en
+     mobile. On empile libellé puis champ. */
+  /* Préfixé #content pour passer devant Django `responsive.css` (chargé après
+     nous, il impose son padding à spécificité égale). */
   #content .form-row {
     padding: 14px 20px;
   }
@@ -1161,16 +1089,9 @@ a.button:hover {
     padding: 0 0 6px;
     margin: 0;
   }
-  /* Les champs de saisie : largeur fluide (width: 100%) mais BORNÉE par un
-     max-width, pour un rendu plus soigné sur mobile (des champs plus courts,
-     pas étirés d'un bord à l'autre). box-sizing pour ne pas déborder ;
-     padding vertical généreux pour une cible tactile confortable.
-
-     ⚠️ Les sélecteurs sont préfixés par #content : le fichier Django
-     `responsive.css` est chargé APRÈS le nôtre et impose « width: 100% » sur
-     ces mêmes champs (`.form-row .vTextField`, même spécificité). En préfixant
-     par l'id #content (présent sur toutes les pages), on passe devant en
-     spécificité sans recourir à !important. */
+  /* ⚠️ Préfixés #content : Django `responsive.css` est chargé APRÈS le nôtre et
+     impose « width: 100% » sur ces mêmes champs (`.form-row .vTextField`, même
+     spécificité). L'id nous fait passer devant sans !important. */
   #content .form-row input[type="text"],
   #content .form-row input[type="password"],
   #content .form-row input[type="email"],
@@ -1189,8 +1110,6 @@ a.button:hover {
     box-sizing: border-box;
     padding: 11px 12px;
   }
-  /* Les champs à valeur COURTE (heure, date, nombre) sont resserrés davantage :
-     inutile de leur donner autant de place qu'un champ texte. */
   #content .form-row input[type="number"],
   #content .form-row input[type="time"],
   #content .form-row input[type="date"],
@@ -1198,14 +1117,10 @@ a.button:hover {
   #content .form-row .vDateField {
     max-width: 8rem;
   }
-  /* Les raccourcis « Maintenant | 🕐 » (date/heure) passent SOUS le champ,
-     alignés à droite, plutôt que serrés à côté d'un champ pleine largeur. */
   .form-row .datetimeshortcuts {
     display: inline-block;
     margin: 6px 0 0;
   }
-  /* Les cases à cocher (ex. « Fermé ») : la case et son libellé restent sur
-     la même ligne (on ne veut pas empiler ni étirer une case à cocher). */
   .form-row.checkbox-row label,
   .form-row .checkbox-row label {
     display: inline;
@@ -1215,7 +1130,6 @@ a.button:hover {
     width: auto;
   }
 
-  /* Le bouton hamburger va tout à gauche (avant #user-tools). */
   .cc-burger {
     order: -1;
     display: inline-flex;
@@ -1253,7 +1167,6 @@ a.button:hover {
     top: 7px;
   }
 
-  /* #user-tools contient le hamburger + les liens compte : réparti gauche/droite. */
   #user-tools {
     display: flex;
     align-items: center;
@@ -1266,7 +1179,6 @@ a.button:hover {
     gap: 4px;
   }
 
-  /* Les liens compte deviennent des icônes (on masque le texte). */
   .cc-ico {
     display: inline;
     font-size: 1.15rem;
@@ -1286,10 +1198,8 @@ a.button:hover {
   #user-tools .cc-userlinks > #logout-form button {
     color: #ffffff;
   }
-  /* Le déroulant « Mon compte » : au lieu du petit popover, on le passe en
-     panneau pleine largeur ancré sous la topbar (comme le tiroir des
-     catégories). .cc-account reste statique pour ne pas servir d'ancrage ;
-     c'est #header (position:relative) qui ancre le panneau. */
+  /* .cc-account reste statique pour ne pas servir d'ancrage : c'est #header
+     (position:relative) qui ancre ce panneau pleine largeur. */
   .cc-account {
     position: static;
   }
@@ -1307,7 +1217,6 @@ a.button:hover {
     background: var(--cc-green);
     box-shadow: 0 8px 20px rgba(28, 43, 24, 0.25);
   }
-  /* Un intitulé « Mon compte » en tête du panneau, pour le contexte. */
   #user-tools .cc-account-menu::before {
     content: "Mon compte";
     display: block;
@@ -1333,8 +1242,6 @@ a.button:hover {
      TIROIR MOBILE — panneau latéral qui glisse + overlay + accordéons
      =================================================================== */
 
-  /* Voile assombri derrière le panneau. Fondu en opacité ; on le sort du DOM
-     visuel via [hidden] une fois fermé (géré en JS après la transition). */
   .cc-overlay {
     display: block;
     position: fixed;
@@ -1351,8 +1258,6 @@ a.button:hover {
     opacity: 1;
   }
 
-  /* Le panneau : ancré à gauche, hors écran par défaut (translateX -100%),
-     il glisse à 0 quand .is-open. Largeur confortable mais bornée. */
   #user-tools .cc-drawer {
     display: flex;
     flex-direction: column;
@@ -1373,7 +1278,6 @@ a.button:hover {
     transform: translateX(0);
   }
 
-  /* En-tête du panneau : nom de marque (serif) + bouton fermer. */
   .cc-drawer-head {
     display: flex;
     align-items: center;
@@ -1410,7 +1314,6 @@ a.button:hover {
     height: 22px;
   }
 
-  /* Liste des rubriques. */
   .cc-drawer-list {
     list-style: none;
     margin: 0;
@@ -1421,8 +1324,6 @@ a.button:hover {
     width: 100%;
   }
 
-  /* Ligne de rubrique de 1er niveau : lien direct OU bouton d'accordéon.
-     Même gabarit pour les deux, cible tactile confortable (48px+). */
   .cc-drawer-list > li > a,
   .cc-group-toggle {
     display: flex;
@@ -1446,9 +1347,6 @@ a.button:hover {
     border-bottom: 0;
   }
 
-  /* Icône : gabarit fixe qui ne rétrécit pas, pour un alignement identique
-     sur TOUTES les lignes (avec ou sans chevron). Un margin-right explicite
-     garantit l'espace avec le texte même si flex-gap n'est pas honoré. */
   #cc-drawer .cc-rail-icon {
     flex: 0 0 24px;
     display: inline-flex;
@@ -1460,15 +1358,12 @@ a.button:hover {
     width: 20px;
     height: 20px;
   }
-  /* Le libellé prend l'espace restant ; le chevron reste calé à droite. */
   #cc-drawer .cc-rail-label {
     flex: 1 1 auto;
   }
 
-  /* Survol : fond appuyé. Le focus CLAVIER a son propre repère (outline
-     ci-dessous) plutôt qu'un fond plein — sinon, sur mobile, le bouton
-     d'accordéon garde ce fond foncé après un tap et ça crée un décalage de
-     couleur avec les autres lignes. */
+  /* Focus clavier traité par un outline, pas un fond plein : sinon l'accordéon
+     garde un fond foncé après un tap sur mobile. */
   .cc-drawer-list > li > a:hover,
   .cc-group-toggle:hover {
     background: var(--cc-green-deep);
@@ -1479,13 +1374,11 @@ a.button:hover {
     outline-offset: -2px;
   }
 
-  /* Lien de 1er niveau actif : liseré rose + fond appuyé. */
   .cc-drawer-list > li > a.cc-active {
     background: var(--cc-green-deep);
     border-left-color: var(--cc-pink-vivid);
   }
 
-  /* Chevron de l'accordéon : pivote quand le groupe est ouvert. */
   .cc-chevron {
     margin-left: auto;
     display: inline-flex;
@@ -1499,10 +1392,8 @@ a.button:hover {
     transform: rotate(180deg);
   }
 
-  /* Sous-rubriques : fond légèrement plus profond, en retrait sous le groupe.
-     On force la pleine largeur sur ul + li pour que le fond de l'élément actif
-     s'étende jusqu'au bord droit du panneau (les li de #user-tools peuvent
-     sinon se réduire à la largeur de leur contenu). */
+  /* Pleine largeur forcée sur ul + li : les li de #user-tools se réduisent
+     sinon à la largeur de leur contenu. */
   .cc-drawer-sub {
     list-style: none;
     margin: 0;
@@ -1535,8 +1426,6 @@ a.button:hover {
     outline: 2px solid var(--cc-pink-vivid);
     outline-offset: -2px;
   }
-  /* Sous-rubrique active : liseré rose + fond profond franc (opaque, pour ne
-     pas se mélanger au fond assombri du sous-menu et virer au grisâtre). */
   .cc-drawer-sub a.cc-active {
     color: #ffffff;
     font-weight: 600;
@@ -1553,11 +1442,9 @@ a.button:hover {
 }
 
 /* --- Icônes d'action de l'admin natif (Ajouter / Modifier / Supprimer) ---
-   Django les pose en background-image (icon-addlink.svg, etc.). On surcharge
-   ces images par des icônes Lucide encodées en data: URI, teintées à la DA.
-   Comme currentColor n'est pas hérité dans un background, la couleur (vert
-   #406440, rose #d9709c pour la suppression) est codée en dur dans le trait.
-   Le stroke Lucide correspond à ces tracés (fill:none, stroke-width 2). */
+   Django les pose en background-image : on les remplace par des icônes Lucide
+   en data: URI. currentColor n'étant pas hérité dans un background, la couleur
+   est codée en dur dans le trait. */
 .addlink,
 .changelink,
 .inlinechangelink,

@@ -1,7 +1,5 @@
 // Les « boissons du mois » : des créations éphémères mises en avant, gérées
 // depuis l'admin Django (modèle DrinkOfMonth, séparé du menu permanent).
-
-// L'URL vient d'une variable d'environnement (voir .env.local).
 const API_URL = process.env.API_DRINKS_OF_MONTH_URL;
 const SETTINGS_URL = process.env.API_DRINKS_OF_MONTH_SETTINGS_URL;
 
@@ -15,15 +13,11 @@ export type DrinkOfMonth = {
   order: number;
   active: boolean;
 };
-
-// La forme utilisée par la page (prix déjà mis en forme "5,90 €").
 export type DrinkOfMonthItem = {
   name: string;
   description?: string;
   price: string;
 };
-
-// Transforme "5.90" en "5,90 €" (virgule française + symbole euro).
 function formatPrice(price: string): string {
   return `${price.replace(".", ",")} €`;
 }
@@ -40,7 +34,6 @@ export async function fetchDrinksOfMonth(): Promise<DrinkOfMonthItem[]> {
 
   try {
     const res = await fetch(API_URL, {
-      // Pas de cache : on veut les boissons du mois à jour à chaque visite.
       cache: "no-store",
     });
     if (!res.ok) {
@@ -97,7 +90,10 @@ export async function fetchDrinksOfMonthNote(): Promise<string | null> {
 
     return `Durée limitée jusqu'au ${formatDay(data.available_until)}`;
   } catch (err) {
-    console.error("Impossible de joindre l'API réglages boissons du mois :", err);
+    console.error(
+      "Impossible de joindre l'API réglages boissons du mois :",
+      err,
+    );
     return null;
   }
 }
