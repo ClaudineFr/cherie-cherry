@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { FaBars, FaXmark } from "react-icons/fa6";
 import logo from "@/public/logo-mark.png";
+import CartLink from "./CartLink";
 
 const links = [
   { href: "/", label: "Accueil" },
@@ -59,6 +60,9 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
+
+        {/* Le panier ferme le menu mobile au clic, comme les autres liens. */}
+        <CartLink onNavigate={() => setIsOpen(false)} />
       </div>
     </nav>
   );

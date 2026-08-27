@@ -52,6 +52,7 @@ export async function fetchProducts(): Promise<Product[]> {
     category: CATEGORY_LABELS[item.category] ?? "Bijoux", // repli si catégorie inconnue
     description: item.description || undefined,
     price: Number(item.price), // "45.00" (chaîne) -> 45 (nombre)
+    stock: item.stock,
     featured: item.featured,
     image: item.image,
   }));
