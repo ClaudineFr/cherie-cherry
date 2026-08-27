@@ -38,7 +38,6 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
 
   try {
     const res = await fetch(API_URL, {
-      // Pas de cache : on veut les coordonnées à jour à chaque visite.
       cache: "no-store",
     });
     if (!res.ok) {

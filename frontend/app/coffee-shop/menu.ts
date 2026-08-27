@@ -1,8 +1,6 @@
 // La carte n'est plus écrite en dur ici : les boissons viennent de l'API
 // Django (comme les horaires, la galerie, etc.). On les récupère puis on les
 // regroupe par catégorie pour l'affichage.
-
-// L'URL vient d'une variable d'environnement (voir .env.local).
 const API_URL = process.env.API_MENU_URL;
 const SUPPLEMENTS_URL = process.env.API_SUPPLEMENTS_URL;
 
@@ -44,8 +42,6 @@ const CATEGORY_LABELS: Record<MenuDrink["category"], string> = {
   coffee: "Coffee",
   matcha: "Matcha & more",
 };
-
-// Transforme "4.50" en "4,50 €" (virgule française + symbole euro).
 function formatPrice(price: string): string {
   return `${price.replace(".", ",")} €`;
 }
@@ -60,7 +56,6 @@ async function fetchDrinks(): Promise<MenuDrink[]> {
 
   try {
     const res = await fetch(API_URL, {
-      // Pas de cache : on veut la carte à jour à chaque visite.
       cache: "no-store",
     });
     if (!res.ok) {
@@ -103,8 +98,6 @@ export async function fetchMenu(): Promise<MenuCategory[]> {
 }
 
 // --- Les suppléments, côté API ---
-
-// Un supplément tel que l'API le renvoie.
 type Supplement = {
   id: number;
   label: string;

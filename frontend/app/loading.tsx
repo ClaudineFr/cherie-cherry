@@ -6,9 +6,7 @@ import Loader from "@/components/Loader";
 export default function Loading() {
   return (
     <main className="home-page is-loading flex-1">
-      {/* Le hero est entièrement statique : on l'affiche tel quel, à l'identique
-          de la vraie page. Le visiteur voit donc immédiatement le nom du lieu,
-          et seul le bas de page attend l'API. */}
+      {/* Hero statique affiché tel quel : seul le bas de page attend l'API. */}
       <section className="home-hero flex flex-col items-center justify-center gap-6 bg-pink-soft px-6 py-24 text-center">
         <p className="home-hero-eyebrow text-sm uppercase tracking-[0.3em] text-green">
           Carpentras · Provence

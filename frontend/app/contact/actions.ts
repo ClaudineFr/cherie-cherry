@@ -5,8 +5,6 @@
 // SUR LE SERVEUR, jamais dans le navigateur. C'est ce qui nous permet de lire
 // API_CONTACT_URL (une variable d'env serveur, sans NEXT_PUBLIC_) et de garder
 // l'URL de l'API invisible côté client.
-
-// L'URL de l'API Django à qui on poste le message (voir .env.local).
 const API_URL = process.env.API_CONTACT_URL;
 
 // La forme de l'état qu'on renvoie au formulaire.
@@ -48,7 +46,6 @@ export async function sendContactMessage(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-      // Un POST n'est jamais mis en cache, mais on est explicite.
       cache: "no-store",
     });
   } catch {
@@ -75,7 +72,5 @@ export async function sendContactMessage(
       message: "Une erreur est survenue. Réessayez plus tard.",
     };
   }
-
-  // 201 : le message est enregistré.
   return { ok: true };
 }

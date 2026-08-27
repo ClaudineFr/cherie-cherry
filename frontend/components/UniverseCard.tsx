@@ -33,10 +33,9 @@ export default function UniverseCard({
         preload={preload}
         className="universe-card-image object-cover transition-transform duration-500 group-hover:scale-105"
       />
-      {/* Voile sombre pour la lisibilité du texte */}
+      {/* Voile sombre */}
       <div className="universe-card-overlay absolute inset-0 bg-green/50" />
 
-      {/* Contenu au-dessus du voile */}
       <div className="universe-card-content relative flex flex-col gap-2">
         <p className="universe-card-eyebrow text-xs uppercase tracking-[0.25em] text-cream/80">
           {eyebrow}

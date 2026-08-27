@@ -5,8 +5,6 @@ import { useActionState } from "react";
 
 import Loader from "@/components/Loader";
 import { sendContactMessage, type ContactState } from "@/app/contact/actions";
-
-// État initial : rien n'a encore été soumis.
 const initialState: ContactState = {};
 
 export default function ContactForm() {
@@ -86,12 +84,8 @@ export default function ContactForm() {
         )}
       </div>
 
-      {/*
-        Honeypot anti-spam : un champ que les humains ne voient pas
-        (aria-hidden + tabIndex -1 pour ne pas l'atteindre au clavier, et
-        caché visuellement). Les bots, eux, le remplissent → Django rejette.
-        On NE met PAS `required` dessus, sinon on bloquerait les humains.
-      */}
+      {/* Honeypot anti-spam : invisible aux humains, rempli par les bots →
+          Django rejette. Surtout PAS `required` : on bloquerait les humains. */}
       <div className="contact-form-honeypot hidden" aria-hidden="true">
         <label>
           Ne pas remplir ce champ
@@ -109,20 +103,13 @@ export default function ContactForm() {
         disabled={pending}
         className="contact-form-submit inline-flex items-center justify-center gap-2 self-start rounded-full bg-green px-6 py-3 text-sm uppercase tracking-widest text-cream transition-opacity hover:opacity-80 disabled:opacity-50"
       >
-        {/* Pendant l'envoi : petit anneau qui tourne à gauche du texte.
-            label={null} → l'anneau seul, le texte du bouton suffit à dire
-            ce qui se passe. */}
+        {/* label={null} : le texte du bouton dit déjà ce qui se passe. */}
         {pending && <Loader size="sm" label={null} />}
         {pending ? "Envoi en cours…" : "Envoyer"}
       </button>
 
-      {/*
-        Mention RGPD : le visiteur est informé, au moment de l'envoi, de
-        l'usage de ses données et du lien vers la politique complète.
-        Base légale = intérêt légitime (répondre à une sollicitation), pas
-        le consentement → on informe, on ne demande pas d'« accepter ».
-        (Cookies techniques uniquement : pas de bandeau de consentement requis.)
-      */}
+      {/* Mention RGPD. Base légale = intérêt légitime, pas le consentement :
+          on informe, on ne demande pas d'« accepter ». */}
       <p className="contact-form-rgpd text-xs text-ink/60">
         Les informations transmises via ce formulaire sont utilisées
         uniquement pour traiter votre demande. Consultez notre{" "}

@@ -14,7 +14,6 @@ export default async function InstagramFeed() {
   }
 
   return (
-    // Grille : 2 colonnes sur mobile, 4 dès la tablette (md).
     <ul className="instagram-feed mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
       {posts.map((post) => (
         <li key={post.src} className="instagram-post">
@@ -33,7 +32,7 @@ export default async function InstagramFeed() {
               sizes="(min-width: 768px) 25vw, 50vw"
             />
 
-            {/* Au survol*/}
+            {/* Overlay au survol */}
             <span className="instagram-post-overlay absolute inset-0 flex flex-col items-center justify-center gap-1 bg-green/0 opacity-0 transition-all duration-300 group-hover:bg-green/45 group-hover:opacity-100">
               <FaInstagram className="h-6 w-6 text-cream" />
               <span className="instagram-post-overlay-label text-xs uppercase tracking-widest text-cream">

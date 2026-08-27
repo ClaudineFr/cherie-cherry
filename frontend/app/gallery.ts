@@ -18,8 +18,6 @@ type ApiPhoto = {
   image: string;
   alt: string;
 };
-
-// Va chercher les photos sur l'API et les convertit au format `Photo`.
 export async function fetchGallery(): Promise<Photo[]> {
   if (!API_URL) {
     throw new Error(
@@ -28,7 +26,6 @@ export async function fetchGallery(): Promise<Photo[]> {
   }
 
   const res = await fetch(API_URL, {
-    // Pas de cache : on veut la galerie à jour à chaque visite.
     cache: "no-store",
   });
 

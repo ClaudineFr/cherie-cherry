@@ -24,7 +24,6 @@ export async function fetchOpeningHours(): Promise<OpeningHours[]> {
 
   try {
     const res = await fetch(API_URL, {
-      // Pas de cache : on veut les horaires à jour à chaque visite.
       cache: "no-store",
     });
     if (!res.ok) {
@@ -41,8 +40,6 @@ export async function fetchOpeningHours(): Promise<OpeningHours[]> {
 }
 
 // --- Mise en forme pour l'affichage ---
-
-// Transforme "10:30:00" en "10h30", et "19:00:00" en "19h00".
 function formatTime(time: string): string {
   const [hours, minutes] = time.split(":");
   return `${hours}h${minutes}`;

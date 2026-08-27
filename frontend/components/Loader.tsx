@@ -19,8 +19,6 @@ type LoaderProps = {
   /** Classes Tailwind supplémentaires (marges, hauteur du conteneur…). */
   className?: string;
 };
-
-// Diamètre de l'anneau + épaisseur du trait, par taille.
 const sizes = {
   sm: "h-4 w-4 border-2",
   md: "h-8 w-8 border-2",
@@ -41,18 +39,14 @@ export default function Loader({
       aria-live="polite"
       className={`loader loader--${size} flex flex-col items-center justify-center ${label ? "gap-3" : ""} ${className}`}
     >
-      {/* L'anneau : un cercle dont on ne colore que le haut du trait
-          (border-t-pink-vivid). En tournant, on ne voit donc qu'un arc rose
-          glisser sur un anneau vert pâle.
-          motion-reduce:animate-none → l'anneau ne tourne pas si la personne a
-          demandé moins d'animations dans les réglages de son système. */}
+      {/* Seul le haut du trait est coloré : en tournant, un arc rose glisse sur
+          l'anneau. motion-reduce:animate-none respecte prefers-reduced-motion. */}
       <span
         aria-hidden="true"
         className={`loader-ring inline-block animate-spin rounded-full border-green/15 border-t-pink-vivid motion-reduce:animate-none ${sizes[size]}`}
       />
 
-      {/* Le texte : visible si `label` est fourni, sinon masqué à l'écran mais
-          toujours lu par les lecteurs d'écran (sr-only). */}
+      {/* Sans `label`, le texte reste lu par les lecteurs d'écran (sr-only). */}
       {label ? (
         <p className="loader-label text-sm tracking-wide text-green/70">{label}</p>
       ) : (

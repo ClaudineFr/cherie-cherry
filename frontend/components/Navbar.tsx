@@ -29,7 +29,7 @@ export default function Navbar() {
         />
       </Link>
 
-      {/* Bouton burger : visible uniquement sur mobile (caché à partir de sm:) */}
+      {/* Burger (mobile) */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}

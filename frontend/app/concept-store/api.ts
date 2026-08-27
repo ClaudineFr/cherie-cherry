@@ -35,7 +35,6 @@ export async function fetchProducts(): Promise<Product[]> {
     );
   }
   const res = await fetch(API_URL, {
-    // Ne pas mettre en cache : on veut les prix/stock à jour à chaque visite.
     cache: "no-store",
   });
 
@@ -44,8 +43,6 @@ export async function fetchProducts(): Promise<Product[]> {
   }
 
   const data: ApiProduct[] = await res.json();
-
-  // Conversion API -> format du front.
   return data.map((item) => ({
     id: item.id,
     name: item.name,

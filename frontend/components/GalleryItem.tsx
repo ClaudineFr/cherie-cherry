@@ -25,8 +25,6 @@ export default function GalleryItem({ photo, index }: GalleryItemProps) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
-    // Animation désactivée (déjà visible) : rien à observer.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // L'IntersectionObserver prévient quand l'élément entre dans l'écran.

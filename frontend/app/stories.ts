@@ -13,8 +13,6 @@ export type Story = {
   src: string;
   handle: string;
 };
-
-// La forme brute renvoyée par l'API.
 type ApiStory = {
   id: number;
   image: string;
@@ -32,7 +30,6 @@ export async function fetchStories(): Promise<Story[]> {
   }
 
   const res = await fetch(API_URL, {
-    // Pas de cache : on veut les stories à jour à chaque visite.
     cache: "no-store",
   });
 

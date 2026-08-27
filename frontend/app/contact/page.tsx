@@ -13,8 +13,6 @@ export default async function ContactPage() {
   const horaires = ranges
     .map((range) => `${range.days} · ${range.hours}`)
     .join(" — ");
-
-  // Coordonnées éditables depuis l'admin.
   const settings = await fetchSiteSettings();
 
   // Adresse sur une ligne, ex. "7 rue de la République, 84200 Carpentras".
@@ -67,7 +65,7 @@ export default async function ContactPage() {
           <ContactForm />
         </div>
 
-        {/* Carte Google Maps — affichée seulement si l'adresse est renseignée */}
+        {/* Carte Google Maps */}
         {mapsSrc && (
           <div className="contact-map mt-14">
             <h2 className="contact-map-title mb-4 text-center font-serif text-2xl text-green">

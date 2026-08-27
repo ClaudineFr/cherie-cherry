@@ -19,7 +19,7 @@ export default async function Home() {
   return (
     <main className="home-page flex-1">
       <LocalBusinessJsonLd settings={settings} hours={hours} />
-      {/* Section hero */}
+      {/* Hero */}
       <section className="home-hero flex flex-col items-center justify-center gap-6 bg-pink-soft px-6 py-24 text-center">
         <p className="home-hero-eyebrow text-sm uppercase tracking-[0.3em] text-green">
           Carpentras · Provence
@@ -33,7 +33,7 @@ export default async function Home() {
         </p>
       </section>
 
-      {/* Section : nos deux univers */}
+      {/* Nos deux univers */}
       <section className="home-universes mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="home-universes-title mb-12 text-center font-serif text-2xl text-green md:text-3xl">
           Nos deux univers
@@ -57,7 +57,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Section : stories Instagram mises en avant */}
+      {/* Stories Instagram */}
       <section className="home-stories mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="home-stories-title mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           Chérie Cherry &amp; Vous
@@ -68,7 +68,7 @@ export default async function Home() {
         <InstagramStories />
       </section>
 
-      {/* Section : feed Instagram de la marque */}
+      {/* Feed Instagram */}
       <section className="home-community mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="home-community-title mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           Rejoignez la communauté
@@ -92,7 +92,7 @@ export default async function Home() {
         <InstagramFeed />
       </section>
 
-      {/* Section galerie / ambiance */}
+      {/* Galerie / ambiance */}
       <section className="home-ambiance mx-auto max-w-5xl px-6 py-12 md:py-16">
         <h2 className="home-ambiance-title mb-4 text-center font-serif text-2xl text-green md:text-3xl">
           L&apos;ambiance

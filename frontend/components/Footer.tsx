@@ -8,8 +8,6 @@ import { fetchSiteSettings } from "@/app/siteSettings";
 export default async function Footer() {
   // On récupère les horaires puis on les regroupe (jours identiques fusionnés).
   const hours = groupOpeningHours(await fetchOpeningHours());
-
-  // Les coordonnées éditables depuis l'admin (adresse, réseaux sociaux).
   const settings = await fetchSiteSettings();
 
   return (
@@ -18,14 +16,13 @@ export default async function Footer() {
         {/* Contact */}
         <div className="footer-contact flex flex-col items-center gap-2 text-xs text-cream/80">
           <p className="footer-column-title mb-2 uppercase tracking-widest text-cream">Contact</p>
-          {/* Adresse : chaque ligne ne s'affiche que si elle est renseignée. */}
           {settings.street && <p>{settings.street}</p>}
           {(settings.postal_code || settings.city) && (
             <p>
               {settings.postal_code} {settings.city}
             </p>
           )}
-          {/* Horaires : une ligne par plage de jours regroupée */}
+          {/* Horaires */}
           <div className="footer-hours mt-2 flex flex-col gap-0.5">
             <p className="footer-column-title uppercase tracking-widest text-cream">Horaires</p>
             {hours.map((range) => (
@@ -36,7 +33,7 @@ export default async function Footer() {
           </div>
         </div>
 
-        {/* Bloc central : le nom + baseline, mis en avant */}
+        {/* Bloc central */}
         <div className="footer-brand flex flex-col items-center gap-2">
           <p className="footer-brand-name font-serif text-xl leading-none">Chérie Cherry</p>
           <p className="footer-brand-baseline mt-1 text-[0.65rem] uppercase tracking-[0.25em] text-cream/70">
@@ -54,7 +51,6 @@ export default async function Footer() {
             Nous suivre
           </p>
           <div className="footer-social-links flex gap-3">
-            {/* Chaque réseau ne s'affiche que si son lien est renseigné. */}
             {settings.instagram_url && (
               <a
                 href={settings.instagram_url}
@@ -81,14 +77,14 @@ export default async function Footer() {
         </div>
       </div>
 
-      {/* Barre copyright séparée — empilée sur mobile, en ligne sur sm+ */}
+      {/* Barre copyright */}
       <div className="footer-bottom border-t border-cream/15 py-4 text-xs text-cream/50">
         <div className="footer-bottom-inner flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-2">
           <span>© 2026 Chérie Cherry. Tous droits réservés.</span>
           <span aria-hidden="true" className="hidden sm:inline">
             ·
           </span>
-          {/* Liens légaux : côte à côte sous le copyright sur mobile */}
+          {/* Liens légaux */}
           <span className="footer-legal-links flex items-center gap-2">
             <Link
               href="/mentions-legales"

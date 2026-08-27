@@ -25,15 +25,13 @@ export default async function CoffeeShopPage() {
           </p>
         </div>
 
-        {/* Encart « Boissons du mois » : mis en avant, affiché seulement s'il
-            y a au moins une création à montrer. */}
+        {/* Boissons du mois */}
         {drinksOfMonth.length > 0 && (
           <div className="drinks-of-month mt-16 rounded-2xl bg-pink-soft px-6 py-8 sm:px-10">
             <h2 className="drinks-of-month-title text-center font-serif text-2xl text-green">
               Les boissons du mois
             </h2>
-            {/* Phrase « durée limitée » : affichée seulement si une date de fin
-                a été choisie dans l'admin. */}
+            {/* « Durée limitée » : seulement si une date de fin est saisie dans l'admin. */}
             {drinksOfMonthNote && (
               <p className="drinks-of-month-note mt-2 text-center text-xs italic text-green/70">
                 {drinksOfMonthNote}
@@ -93,8 +91,7 @@ export default async function CoffeeShopPage() {
           ))}
         </div>
 
-        {/* Encart suppléments : affiché seulement s'il y a au moins un
-            supplément (géré depuis l'admin). */}
+        {/* Suppléments */}
         {supplements.length > 0 && (
           <div className="supplements mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
             <p className="supplements-title mb-2 uppercase tracking-widest text-green">

@@ -27,7 +27,6 @@ const values = [
 ];
 
 export default async function AProposPage() {
-  // Adresse éditable depuis l'admin, glissée dans la phrase de signature.
   const settings = await fetchSiteSettings();
 
   return (

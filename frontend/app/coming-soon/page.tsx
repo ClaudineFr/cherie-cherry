@@ -8,7 +8,6 @@ import { fetchSiteSettings } from "@/app/siteSettings";
 // Footer du layout racine : le visiteur ne voit qu'elle.
 // L'affichage est piloté par le proxy (proxy.ts) via la variable COMING_SOON.
 export default async function ComingSoonPage() {
-  // Liens réseaux éditables depuis l'admin.
   const settings = await fetchSiteSettings();
 
   return (
@@ -33,8 +32,7 @@ export default async function ComingSoonPage() {
         </p>
       </div>
 
-      {/* Réseaux sociaux, mêmes liens et style que le footer.
-          Chaque icône n'apparaît que si son lien est renseigné. */}
+      {/* Réseaux sociaux (mêmes liens que le footer) */}
       <div className="coming-soon-social flex gap-3">
         {settings.instagram_url && (
           <a

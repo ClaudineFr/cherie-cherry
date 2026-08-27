@@ -35,8 +35,6 @@ export default function ProductGrid({ products }: { products: Product[] }) {
       return false;
     return true;
   });
-
-  // Remet tous les filtres à leur valeur de départ.
   const clearAll = () => {
     setCategory("all");
     setPriceIndex("all");
@@ -50,14 +48,12 @@ export default function ProductGrid({ products }: { products: Product[] }) {
     `filter-option${active ? " filter-option--active" : ""} w-full rounded-lg px-3 py-1 text-left text-[0.7rem] transition ${
       active ? "font-medium text-green" : "text-ink/60 hover:text-green"
     }`;
-
-  // Petit titre de section dans la sidebar.
   const sectionTitle =
     "filter-group-title mb-2 text-[0.65rem] uppercase tracking-[0.2em] text-green/70";
 
   return (
     <div className="product-grid-layout grid grid-cols-1 gap-10 md:grid-cols-[16rem_1fr]">
-      {/* --- Colonne de filtres (sidebar) --- */}
+      {/* Colonne de filtres */}
       <aside className="product-filters h-fit rounded-2xl border border-green/10 bg-cream px-5 py-5">
         <div className="product-filters-header flex items-baseline justify-between border-b border-green/10 pb-3">
           <p className="product-filters-title font-serif text-lg text-green">Filtres</p>
@@ -70,7 +66,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           </button>
         </div>
 
-        {/* search */}
+        {/* Recherche */}
         <input
           type="search"
           value={search}
@@ -139,7 +135,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
         </div>
       </aside>
 
-      {/* --- Colonne de produits --- */}
+      {/* Colonne de produits */}
       <div className="product-results">
         {filtered.length > 0 ? (
           <ul className="product-list grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">

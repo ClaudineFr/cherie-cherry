@@ -6,7 +6,7 @@ export default function Loading() {
   return (
     <main className="concept-store-page is-loading flex-1 bg-cream px-6 py-20">
       <div className="concept-store-container mx-auto max-w-5xl">
-        {/* Même en-tête que la vraie page, pour éviter tout "saut" visuel */}
+        {/* Même en-tête que la vraie page : évite un saut visuel. */}
         <div className="concept-store-header text-center">
           <p className="concept-store-eyebrow text-sm uppercase tracking-[0.3em] text-green">
             Concept store
@@ -18,7 +18,7 @@ export default function Loading() {
           </p>
         </div>
 
-        {/* Grille de cartes "fantômes" qui pulsent le temps du chargement */}
+        {/* Cartes fantômes */}
         <div className="product-list-skeleton mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <div

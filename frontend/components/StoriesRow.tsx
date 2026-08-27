@@ -11,8 +11,6 @@ export default function StoriesRow({ stories }: { stories: Story[] }) {
   const rowRef = useRef<HTMLUListElement>(null);
 
   const [showRight, setShowRight] = useState(true);
-
-  // Recalcule le voile de droite à partir de la position de scroll actuelle.
   function updateVeil() {
     const el = rowRef.current;
     if (!el) return;
