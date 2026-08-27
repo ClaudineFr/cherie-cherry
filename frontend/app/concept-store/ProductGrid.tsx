@@ -56,7 +56,9 @@ export default function ProductGrid({ products }: { products: Product[] }) {
       {/* Colonne de filtres */}
       <aside className="product-filters h-fit rounded-2xl border border-green/10 bg-cream px-5 py-5">
         <div className="product-filters-header flex items-baseline justify-between border-b border-green/10 pb-3">
-          <p className="product-filters-title font-serif text-lg text-green">Filtres</p>
+          <p className="product-filters-title font-serif text-lg text-green">
+            Filtres
+          </p>
           <button
             type="button"
             onClick={clearAll}

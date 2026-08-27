@@ -41,8 +41,8 @@ export default async function AProposPage() {
             À propos de Chérie Cherry
           </h1>
           <p className="about-intro mx-auto mt-4 max-w-md text-base text-ink/70">
-            Un coffee shop et concept store né d&apos;une envie simple :
-            réunir sous un même toit tout ce qu&apos;on aime.
+            Un coffee shop et concept store né d&apos;une envie simple : réunir
+            sous un même toit tout ce qu&apos;on aime.
           </p>
         </div>
 
@@ -50,23 +50,25 @@ export default async function AProposPage() {
         <div className="about-story mt-16 flex flex-col gap-6 text-base leading-relaxed text-ink/80">
           <p className="about-story-paragraph">
             {/* TODO : à remplacer par la vraie histoire de la fondatrice */}
-            Chérie Cherry est né en plein cœur de Carpentras, de l&apos;envie
-            de créer un endroit à son image : chaleureux, féminin et un brin
+            Chérie Cherry est né en plein cœur de Carpentras, de l&apos;envie de
+            créer un endroit à son image : chaleureux, féminin et un brin
             gourmand. L&apos;idée&nbsp;? Un lieu où l&apos;on peut aussi bien
             s&apos;attabler autour d&apos;un matcha latte que dénicher la petite
             pièce déco qui manquait à la maison.
           </p>
           <p className="about-story-paragraph">
-            D&apos;un côté, le <strong className="text-green">coffee shop</strong>
+            D&apos;un côté, le{" "}
+            <strong className="text-green">coffee shop</strong>
             &nbsp;: cafés de spécialité, matcha et pâtisseries faites maison, à
             déguster sur place dans un décor pensé comme un cocon. De
             l&apos;autre, le{" "}
             <strong className="text-green">concept store</strong>&nbsp;: déco,
-            papeterie et prêt-à-porter féminin, chinés et sélectionnés avec soin.
+            papeterie et prêt-à-porter féminin, chinés et sélectionnés avec
+            soin.
           </p>
           <p className="about-story-paragraph">
-            Deux univers, une même signature&nbsp;: le plaisir des jolies choses,
-            faites et choisies avec attention.
+            Deux univers, une même signature&nbsp;: le plaisir des jolies
+            choses, faites et choisies avec attention.
           </p>
         </div>
 
@@ -77,17 +79,24 @@ export default async function AProposPage() {
               key={value.title}
               className="about-value-card flex flex-col items-center gap-2 rounded-2xl bg-pink-soft px-5 py-8 text-center"
             >
-              <value.Icon className="about-value-icon text-xl text-green" aria-hidden />
-              <p className="about-value-title font-serif text-lg text-green">{value.title}</p>
-              <p className="about-value-text text-sm text-ink/70">{value.text}</p>
+              <value.Icon
+                className="about-value-icon text-xl text-green"
+                aria-hidden
+              />
+              <p className="about-value-title font-serif text-lg text-green">
+                {value.title}
+              </p>
+              <p className="about-value-text text-sm text-ink/70">
+                {value.text}
+              </p>
             </div>
           ))}
         </div>
 
         {/* Signature */}
         <p className="about-signature mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-          Chérie Cherry, c&apos;est avant tout un lieu à vivre. Le mieux
-          reste encore de pousser la porte&nbsp;: on vous y attend
+          Chérie Cherry, c&apos;est avant tout un lieu à vivre. Le mieux reste
+          encore de pousser la porte&nbsp;: on vous y attend
           {settings.street && `, au ${settings.street}`}
           {settings.city && `, à ${settings.city}`}.
         </p>

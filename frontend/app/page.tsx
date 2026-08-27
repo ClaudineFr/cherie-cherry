@@ -85,7 +85,9 @@ export default async function Home() {
               @cheriecherry.fr
             </a>
           ) : (
-            <span className="font-medium text-pink-vivid">@cheriecherry.fr</span>
+            <span className="font-medium text-pink-vivid">
+              @cheriecherry.fr
+            </span>
           )}{" "}
           sur Instagram.
         </p>

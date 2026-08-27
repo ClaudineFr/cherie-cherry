@@ -32,7 +32,9 @@ const EMPTY: SiteSettings = {
 // null) : en cas de souci, c'est l'objet vide ci-dessus.
 export async function fetchSiteSettings(): Promise<SiteSettings> {
   if (!API_URL) {
-    console.error("API_SETTINGS_URL n'est pas définie. Vérifie ton .env.local.");
+    console.error(
+      "API_SETTINGS_URL n'est pas définie. Vérifie ton .env.local.",
+    );
     return EMPTY;
   }
 

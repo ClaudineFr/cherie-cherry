@@ -15,7 +15,9 @@ export default async function Footer() {
       <div className="footer-columns mx-auto grid max-w-4xl gap-10 px-8 py-14 text-center sm:grid-cols-3 sm:items-start sm:gap-8">
         {/* Contact */}
         <div className="footer-contact flex flex-col items-center gap-2 text-xs text-cream/80">
-          <p className="footer-column-title mb-2 uppercase tracking-widest text-cream">Contact</p>
+          <p className="footer-column-title mb-2 uppercase tracking-widest text-cream">
+            Contact
+          </p>
           {settings.street && <p>{settings.street}</p>}
           {(settings.postal_code || settings.city) && (
             <p>
@@ -24,7 +26,9 @@ export default async function Footer() {
           )}
           {/* Horaires */}
           <div className="footer-hours mt-2 flex flex-col gap-0.5">
-            <p className="footer-column-title uppercase tracking-widest text-cream">Horaires</p>
+            <p className="footer-column-title uppercase tracking-widest text-cream">
+              Horaires
+            </p>
             {hours.map((range) => (
               <p key={range.days}>
                 {range.days} {range.hours}
@@ -35,7 +39,9 @@ export default async function Footer() {
 
         {/* Bloc central */}
         <div className="footer-brand flex flex-col items-center gap-2">
-          <p className="footer-brand-name font-serif text-xl leading-none">Chérie Cherry</p>
+          <p className="footer-brand-name font-serif text-xl leading-none">
+            Chérie Cherry
+          </p>
           <p className="footer-brand-baseline mt-1 text-[0.65rem] uppercase tracking-[0.25em] text-cream/70">
             Coffee &amp; Matcha Club
           </p>

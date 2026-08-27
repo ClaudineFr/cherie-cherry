@@ -17,7 +17,10 @@ export default async function ContactPage() {
 
   // Adresse sur une ligne, ex. "7 rue de la République, 84200 Carpentras".
   // On assemble seulement les morceaux renseignés (pas de virgule orpheline).
-  const adresse = [settings.street, `${settings.postal_code} ${settings.city}`.trim()]
+  const adresse = [
+    settings.street,
+    `${settings.postal_code} ${settings.city}`.trim(),
+  ]
     .filter(Boolean)
     .join(", ");
 
@@ -51,11 +54,16 @@ export default async function ContactPage() {
               key={info.label}
               className="contact-info-card flex flex-col items-center gap-1 rounded-2xl bg-pink-soft px-4 py-6 text-center"
             >
-              <info.Icon className="contact-info-icon text-xl text-green" aria-hidden />
+              <info.Icon
+                className="contact-info-icon text-xl text-green"
+                aria-hidden
+              />
               <p className="contact-info-label text-xs uppercase tracking-widest text-green">
                 {info.label}
               </p>
-              <p className="contact-info-value text-sm text-ink/70">{info.value}</p>
+              <p className="contact-info-value text-sm text-ink/70">
+                {info.value}
+              </p>
             </div>
           ))}
         </div>

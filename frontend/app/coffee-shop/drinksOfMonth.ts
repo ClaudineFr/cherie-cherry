@@ -90,7 +90,10 @@ export async function fetchDrinksOfMonthNote(): Promise<string | null> {
 
     return `Durée limitée jusqu'au ${formatDay(data.available_until)}`;
   } catch (err) {
-    console.error("Impossible de joindre l'API réglages boissons du mois :", err);
+    console.error(
+      "Impossible de joindre l'API réglages boissons du mois :",
+      err,
+    );
     return null;
   }
 }

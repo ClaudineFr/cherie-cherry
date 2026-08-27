@@ -18,48 +18,46 @@ export default async function Image() {
   );
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: CREAM,
+        fontFamily: "Playfair",
+      }}
+    >
       <div
         style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          background: CREAM,
-          fontFamily: "Playfair",
+          fontSize: 128,
+          color: PINK_DEEP,
+          letterSpacing: -1,
         }}
       >
-        <div
-          style={{
-            fontSize: 128,
-            color: PINK_DEEP,
-            letterSpacing: -1,
-          }}
-        >
-          Chérie Cherry
-        </div>
-        <div
-          style={{
-            marginTop: 18,
-            fontSize: 40,
-            color: GREEN,
-          }}
-        >
-          Coffee shop &amp; concept store
-        </div>
-        <div
-          style={{
-            marginTop: 40,
-            width: 120,
-            height: 4,
-            background: GREEN,
-            borderRadius: 2,
-          }}
-        />
+        Chérie Cherry
       </div>
-    ),
+      <div
+        style={{
+          marginTop: 18,
+          fontSize: 40,
+          color: GREEN,
+        }}
+      >
+        Coffee shop &amp; concept store
+      </div>
+      <div
+        style={{
+          marginTop: 40,
+          width: 120,
+          height: 4,
+          background: GREEN,
+          borderRadius: 2,
+        }}
+      />
+    </div>,
     {
       ...size,
       fonts: [

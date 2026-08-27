@@ -41,7 +41,9 @@ export default function ContactForm() {
             className="contact-form-input contact-form-input--name rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
           />
           {fieldError("name") && (
-            <p className="contact-form-error text-xs text-red-600">{fieldError("name")}</p>
+            <p className="contact-form-error text-xs text-red-600">
+              {fieldError("name")}
+            </p>
           )}
         </div>
         <div className="contact-form-field contact-form-field--email flex flex-col gap-1">
@@ -53,7 +55,9 @@ export default function ContactForm() {
             className="contact-form-input contact-form-input--email rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
           />
           {fieldError("email") && (
-            <p className="contact-form-error text-xs text-red-600">{fieldError("email")}</p>
+            <p className="contact-form-error text-xs text-red-600">
+              {fieldError("email")}
+            </p>
           )}
         </div>
       </div>
@@ -67,7 +71,9 @@ export default function ContactForm() {
           className="contact-form-input contact-form-input--subject rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
         />
         {fieldError("subject") && (
-          <p className="contact-form-error text-xs text-red-600">{fieldError("subject")}</p>
+          <p className="contact-form-error text-xs text-red-600">
+            {fieldError("subject")}
+          </p>
         )}
       </div>
 
@@ -80,7 +86,9 @@ export default function ContactForm() {
           className="contact-form-input contact-form-input--message rounded-xl border border-green/20 bg-white px-4 py-3 text-sm outline-none focus:border-green"
         />
         {fieldError("message") && (
-          <p className="contact-form-error text-xs text-red-600">{fieldError("message")}</p>
+          <p className="contact-form-error text-xs text-red-600">
+            {fieldError("message")}
+          </p>
         )}
       </div>
 
@@ -95,7 +103,9 @@ export default function ContactForm() {
 
       {/* Erreur globale (panne réseau, honeypot déclenché, etc.). */}
       {state.message && (
-        <p className="contact-form-error contact-form-error--global text-sm text-red-600">{state.message}</p>
+        <p className="contact-form-error contact-form-error--global text-sm text-red-600">
+          {state.message}
+        </p>
       )}
 
       <button
@@ -111,8 +121,8 @@ export default function ContactForm() {
       {/* Mention RGPD. Base légale = intérêt légitime, pas le consentement :
           on informe, on ne demande pas d'« accepter ». */}
       <p className="contact-form-rgpd text-xs text-ink/60">
-        Les informations transmises via ce formulaire sont utilisées
-        uniquement pour traiter votre demande. Consultez notre{" "}
+        Les informations transmises via ce formulaire sont utilisées uniquement
+        pour traiter votre demande. Consultez notre{" "}
         <Link
           href="/confidentialite"
           className="underline underline-offset-2 hover:text-green"

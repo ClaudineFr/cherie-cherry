@@ -35,18 +35,24 @@ export default function MentionsLegalesPage() {
               <li>Raison sociale&nbsp;: [À COMPLÉTER]</li>
               <li>Forme juridique&nbsp;: [À COMPLÉTER — ex. SARL, SAS, EI]</li>
               <li>Capital social&nbsp;: [À COMPLÉTER, le cas échéant]</li>
-              <li>Siège social&nbsp;: 7 rue de la République, 84200 Carpentras</li>
+              <li>
+                Siège social&nbsp;: 7 rue de la République, 84200 Carpentras
+              </li>
               <li>SIRET&nbsp;: [À COMPLÉTER]</li>
               <li>Numéro de TVA intracommunautaire&nbsp;: [À COMPLÉTER]</li>
               <li>Téléphone&nbsp;: [À COMPLÉTER]</li>
               <li>Email&nbsp;: contact@cheriecherry.fr</li>
-              <li>Directeur / directrice de la publication&nbsp;: [À COMPLÉTER]</li>
+              <li>
+                Directeur / directrice de la publication&nbsp;: [À COMPLÉTER]
+              </li>
             </ul>
           </section>
 
           {/* Hébergeur */}
           <section className="legal-section">
-            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">Hébergeur</h2>
+            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">
+              Hébergeur
+            </h2>
             <p>Le site est hébergé par&nbsp;:</p>
             <ul className="legal-list mt-3 flex flex-col gap-1">
               {/* TODO : renseigner l'hébergeur réel (ex. Vercel, OVH…) */}
@@ -62,18 +68,19 @@ export default function MentionsLegalesPage() {
               Propriété intellectuelle
             </h2>
             <p>
-              L&apos;ensemble des contenus présents sur ce site (textes,
-              images, logo, éléments graphiques et mise en page) est la
-              propriété de Chérie Cherry, sauf mention contraire, et est
-              protégé par le droit d&apos;auteur. Toute reproduction ou
-              utilisation, totale ou partielle, sans autorisation préalable est
-              interdite.
+              L&apos;ensemble des contenus présents sur ce site (textes, images,
+              logo, éléments graphiques et mise en page) est la propriété de
+              Chérie Cherry, sauf mention contraire, et est protégé par le droit
+              d&apos;auteur. Toute reproduction ou utilisation, totale ou
+              partielle, sans autorisation préalable est interdite.
             </p>
           </section>
 
           {/* Contact */}
           <section className="legal-section">
-            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">Contact</h2>
+            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">
+              Contact
+            </h2>
             <p>
               Pour toute question relative au site, vous pouvez nous écrire à
               l&apos;adresse{" "}

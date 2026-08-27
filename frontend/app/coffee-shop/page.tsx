@@ -99,7 +99,9 @@ export default async function CoffeeShopPage() {
             </p>
             <ul className="supplements-list flex flex-col gap-1">
               {supplements.map((line) => (
-                <li key={line} className="supplements-item">{line}</li>
+                <li key={line} className="supplements-item">
+                  {line}
+                </li>
               ))}
             </ul>
           </div>
@@ -107,9 +109,8 @@ export default async function CoffeeShopPage() {
 
         {/* Note pâtisseries */}
         <p className="coffee-shop-pastry-note mt-6 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-          Nos pâtisseries et gâteaux sont{" "}
-          <strong>faites maison </strong> et la carte change au fil des saisons
-          et de l&apos;inspiration du jour.
+          Nos pâtisseries et gâteaux sont <strong>faites maison </strong> et la
+          carte change au fil des saisons et de l&apos;inspiration du jour.
         </p>
       </div>
     </main>

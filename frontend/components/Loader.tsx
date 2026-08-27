@@ -48,7 +48,9 @@ export default function Loader({
 
       {/* Sans `label`, le texte reste lu par les lecteurs d'écran (sr-only). */}
       {label ? (
-        <p className="loader-label text-sm tracking-wide text-green/70">{label}</p>
+        <p className="loader-label text-sm tracking-wide text-green/70">
+          {label}
+        </p>
       ) : (
         <span className="loader-label sr-only">Chargement…</span>
       )}

@@ -40,8 +40,12 @@ export default function UniverseCard({
         <p className="universe-card-eyebrow text-xs uppercase tracking-[0.25em] text-cream/80">
           {eyebrow}
         </p>
-        <h3 className="universe-card-title font-serif text-3xl text-cream">{title}</h3>
-        <p className="universe-card-description max-w-xs text-sm text-cream/90">{description}</p>
+        <h3 className="universe-card-title font-serif text-3xl text-cream">
+          {title}
+        </h3>
+        <p className="universe-card-description max-w-xs text-sm text-cream/90">
+          {description}
+        </p>
         <span className="universe-card-cta mt-2 text-sm uppercase tracking-widest">
           Découvrir →
         </span>

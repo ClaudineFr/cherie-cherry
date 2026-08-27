@@ -73,8 +73,8 @@ export default function ConfidentialitePage() {
               Pourquoi ces données&nbsp;?
             </h2>
             <p>
-              Ces informations servent uniquement à traiter votre demande et à
-              y répondre. La base légale de ce traitement est l&apos;intérêt
+              Ces informations servent uniquement à traiter votre demande et à y
+              répondre. La base légale de ce traitement est l&apos;intérêt
               légitime de Chérie Cherry à répondre aux sollicitations qui lui
               sont adressées.
             </p>
@@ -88,8 +88,8 @@ export default function ConfidentialitePage() {
             <p>
               {/* TODO : ajuster la durée réellement pratiquée */}
               Vos données sont conservées le temps nécessaire au traitement de
-              votre demande, puis supprimées dans un délai de [À COMPLÉTER —
-              ex. 12 mois] après notre dernier échange.
+              votre demande, puis supprimées dans un délai de [À COMPLÉTER — ex.
+              12 mois] après notre dernier échange.
             </p>
           </section>
 
@@ -107,18 +107,22 @@ export default function ConfidentialitePage() {
 
           {/* Cookies */}
           <section className="privacy-section">
-            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">Cookies</h2>
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">
+              Cookies
+            </h2>
             <p>
               Ce site n&apos;utilise aucun cookie de suivi, de publicité ni de
               mesure d&apos;audience. Seuls les cookies strictement nécessaires
-              à son bon fonctionnement peuvent être utilisés, sans traitement
-              de vos données personnelles à des fins de profilage.
+              à son bon fonctionnement peuvent être utilisés, sans traitement de
+              vos données personnelles à des fins de profilage.
             </p>
           </section>
 
           {/* Vos droits */}
           <section className="privacy-section">
-            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">Vos droits</h2>
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">
+              Vos droits
+            </h2>
             <p>
               Conformément au Règlement général sur la protection des données
               (RGPD), vous disposez d&apos;un droit d&apos;accès, de
@@ -134,8 +138,8 @@ export default function ConfidentialitePage() {
             </p>
             <p className="mt-3">
               Si vous estimez, après nous avoir contactés, que vos droits ne
-              sont pas respectés, vous pouvez adresser une réclamation à la
-              CNIL (
+              sont pas respectés, vous pouvez adresser une réclamation à la CNIL
+              (
               <a
                 href="https://www.cnil.fr"
                 target="_blank"

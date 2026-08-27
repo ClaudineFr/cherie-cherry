@@ -20,7 +20,11 @@ export default function Navbar() {
 
   return (
     <nav className="navbar relative flex items-center justify-between bg-green px-8 py-5 text-cream">
-      <Link href="/" aria-label="Chérie Cherry — accueil" className="navbar-logo shrink-0">
+      <Link
+        href="/"
+        aria-label="Chérie Cherry — accueil"
+        className="navbar-logo shrink-0"
+      >
         <Image
           src={logo}
           alt="Chérie Cherry"

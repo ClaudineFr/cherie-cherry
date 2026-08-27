@@ -23,8 +23,12 @@ export default function CategoryCard({
         priority={priority}
       />
       <div className="category-card-content flex flex-col gap-2 px-6 py-6">
-        <h3 className="category-card-title font-serif text-xl text-green">{title}</h3>
-        <p className="category-card-description text-sm text-ink/70">{description}</p>
+        <h3 className="category-card-title font-serif text-xl text-green">
+          {title}
+        </h3>
+        <p className="category-card-description text-sm text-ink/70">
+          {description}
+        </p>
       </div>
     </div>
   );
