@@ -111,7 +111,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={pending}
-        className="contact-form-submit inline-flex items-center justify-center gap-2 self-start rounded-full bg-green px-6 py-3 text-sm uppercase tracking-widest text-cream transition-opacity hover:opacity-80 disabled:opacity-50"
+        className="contact-form-submit inline-flex items-center justify-center gap-2 self-center rounded-full bg-green px-6 py-3 text-sm uppercase tracking-widest text-cream transition-opacity hover:opacity-80 disabled:opacity-50"
       >
         {/* label={null} : le texte du bouton dit déjà ce qui se passe. */}
         {pending && <Loader size="sm" label={null} />}
