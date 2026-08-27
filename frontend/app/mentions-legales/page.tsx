@@ -8,30 +8,30 @@ export const metadata: Metadata = {
 
 export default function MentionsLegalesPage() {
   return (
-    <main className="flex-1 bg-cream px-6 py-20">
-      <div className="mx-auto max-w-3xl">
+    <main className="legal-page flex-1 bg-cream px-6 py-20">
+      <div className="legal-container mx-auto max-w-3xl">
         {/* En-tête */}
-        <div className="text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-green">
+        <div className="legal-header text-center">
+          <p className="legal-eyebrow text-sm uppercase tracking-[0.3em] text-green">
             Informations légales
           </p>
-          <h1 className="mt-3 font-serif text-4xl text-green">
+          <h1 className="legal-title mt-3 font-serif text-4xl text-green">
             Mentions légales
           </h1>
         </div>
 
         {/* Sections légales */}
-        <div className="mt-16 flex flex-col gap-12 text-sm leading-relaxed text-ink/80">
+        <div className="legal-sections mt-16 flex flex-col gap-12 text-sm leading-relaxed text-ink/80">
           {/* Éditeur du site */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">
+          <section className="legal-section">
+            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">
               Éditeur du site
             </h2>
             <p>
               {/* TODO : remplacer chaque [À COMPLÉTER] par les vraies informations */}
               Le site <strong>cheriecherry.fr</strong> est édité par&nbsp;:
             </p>
-            <ul className="mt-3 flex flex-col gap-1">
+            <ul className="legal-list mt-3 flex flex-col gap-1">
               <li>Raison sociale&nbsp;: [À COMPLÉTER]</li>
               <li>Forme juridique&nbsp;: [À COMPLÉTER — ex. SARL, SAS, EI]</li>
               <li>Capital social&nbsp;: [À COMPLÉTER, le cas échéant]</li>
@@ -45,10 +45,10 @@ export default function MentionsLegalesPage() {
           </section>
 
           {/* Hébergeur */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">Hébergeur</h2>
+          <section className="legal-section">
+            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">Hébergeur</h2>
             <p>Le site est hébergé par&nbsp;:</p>
-            <ul className="mt-3 flex flex-col gap-1">
+            <ul className="legal-list mt-3 flex flex-col gap-1">
               {/* TODO : renseigner l'hébergeur réel (ex. Vercel, OVH…) */}
               <li>Nom&nbsp;: [À COMPLÉTER — ex. Vercel Inc., OVH…]</li>
               <li>Adresse&nbsp;: [À COMPLÉTER]</li>
@@ -57,8 +57,8 @@ export default function MentionsLegalesPage() {
           </section>
 
           {/* Propriété intellectuelle */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">
+          <section className="legal-section">
+            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">
               Propriété intellectuelle
             </h2>
             <p>
@@ -72,14 +72,14 @@ export default function MentionsLegalesPage() {
           </section>
 
           {/* Contact */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">Contact</h2>
+          <section className="legal-section">
+            <h2 className="legal-section-title mb-4 font-serif text-2xl text-green">Contact</h2>
             <p>
               Pour toute question relative au site, vous pouvez nous écrire à
               l&apos;adresse{" "}
               <a
                 href="mailto:contact@cheriecherry.fr"
-                className="text-green underline underline-offset-2"
+                className="legal-link text-green underline underline-offset-2"
               >
                 contact@cheriecherry.fr
               </a>

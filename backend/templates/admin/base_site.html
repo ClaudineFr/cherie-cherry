@@ -77,7 +77,7 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
       {# target=_blank : ouvre le site public dans un nouvel onglet (la proprio garde l'admin ouvert) ; rel=noopener : bonne pratique de sécu. #}
       <a class="cc-viewsite" href="{{ site_url }}" target="_blank" rel="noopener" title="Voir le site" aria-label="Voir le site"><span class="cc-ico" aria-hidden="true"><svg class="cc-icon"><use href="#icon-external-link"></use></svg></span><span class="cc-txt">Voir le site</span></a>
     {% endif %}
-    <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+    <form id="logout-form" class="cc-logout" method="post" action="{% url 'admin:logout' %}">
       {% csrf_token %}
       <button type="submit" title="{% translate 'Log out' %}" aria-label="{% translate 'Log out' %}"><span class="cc-ico" aria-hidden="true"><svg class="cc-icon"><use href="#icon-log-out"></use></svg></span><span class="cc-txt">{% translate 'Log out' %}</span></button>
     </form>
@@ -302,8 +302,8 @@ Sur l'accueil, c'est le template index.html qui fournit ce bloc (même rendu).
 
 {% block sidebar %}
   {% if user.is_authenticated %}
-  <div id="content-related">
-    <div class="module" id="recent-actions-module">
+  <div id="content-related" class="cc-sidebar">
+    <div class="module cc-recent-actions" id="recent-actions-module">
       <h2>{% translate 'Recent actions' %}</h2>
       <h3>{% translate 'My actions' %}</h3>
       {% load log %}
@@ -311,7 +311,7 @@ Sur l'accueil, c'est le template index.html qui fournit ce bloc (même rendu).
       {% if not admin_log %}
         <p>{% translate 'None available' %}</p>
       {% else %}
-        <ul class="actionlist">
+        <ul class="actionlist cc-recent-actions-list">
           {% for entry in admin_log %}
             <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
               <span class="visually-hidden">{% if entry.is_addition %}{% translate 'Added:' %}{% elif entry.is_change %}{% translate 'Changed:' %}{% elif entry.is_deletion %}{% translate 'Deleted:' %}{% endif %}</span>

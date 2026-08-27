@@ -8,27 +8,27 @@ export const metadata: Metadata = {
 
 export default function ConfidentialitePage() {
   return (
-    <main className="flex-1 bg-cream px-6 py-20">
-      <div className="mx-auto max-w-3xl">
+    <main className="privacy-page flex-1 bg-cream px-6 py-20">
+      <div className="privacy-container mx-auto max-w-3xl">
         {/* En-tête */}
-        <div className="text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-green">
+        <div className="privacy-header text-center">
+          <p className="privacy-eyebrow text-sm uppercase tracking-[0.3em] text-green">
             Vos données personnelles
           </p>
-          <h1 className="mt-3 font-serif text-4xl text-green">
+          <h1 className="privacy-title mt-3 font-serif text-4xl text-green">
             Politique de confidentialité
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-base text-ink/70">
+          <p className="privacy-intro mx-auto mt-4 max-w-md text-base text-ink/70">
             Chérie Cherry attache de l&apos;importance à la protection de vos
             données. Voici comment elles sont traitées.
           </p>
         </div>
 
         {/* Sections */}
-        <div className="mt-16 flex flex-col gap-12 text-sm leading-relaxed text-ink/80">
+        <div className="privacy-sections mt-16 flex flex-col gap-12 text-sm leading-relaxed text-ink/80">
           {/* Responsable du traitement */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">
+          <section className="privacy-section">
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">
               Responsable du traitement
             </h2>
             <p>
@@ -39,7 +39,7 @@ export default function ConfidentialitePage() {
               question, vous pouvez écrire à{" "}
               <a
                 href="mailto:contact@cheriecherry.fr"
-                className="text-green underline underline-offset-2"
+                className="privacy-link text-green underline underline-offset-2"
               >
                 contact@cheriecherry.fr
               </a>
@@ -48,15 +48,15 @@ export default function ConfidentialitePage() {
           </section>
 
           {/* Données collectées */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">
+          <section className="privacy-section">
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">
               Données collectées
             </h2>
             <p>
               Nous collectons uniquement les données que vous nous transmettez
               volontairement via le formulaire de contact&nbsp;:
             </p>
-            <ul className="mt-3 flex list-disc flex-col gap-1 pl-5">
+            <ul className="privacy-list mt-3 flex list-disc flex-col gap-1 pl-5">
               <li>votre nom&nbsp;;</li>
               <li>votre adresse email&nbsp;;</li>
               <li>l&apos;objet et le contenu de votre message.</li>
@@ -68,8 +68,8 @@ export default function ConfidentialitePage() {
           </section>
 
           {/* Finalité et base légale */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">
+          <section className="privacy-section">
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">
               Pourquoi ces données&nbsp;?
             </h2>
             <p>
@@ -81,8 +81,8 @@ export default function ConfidentialitePage() {
           </section>
 
           {/* Durée de conservation */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">
+          <section className="privacy-section">
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">
               Durée de conservation
             </h2>
             <p>
@@ -94,8 +94,8 @@ export default function ConfidentialitePage() {
           </section>
 
           {/* Destinataires */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">
+          <section className="privacy-section">
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">
               Qui a accès à vos données&nbsp;?
             </h2>
             <p>
@@ -106,8 +106,8 @@ export default function ConfidentialitePage() {
           </section>
 
           {/* Cookies */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">Cookies</h2>
+          <section className="privacy-section">
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">Cookies</h2>
             <p>
               Ce site n&apos;utilise aucun cookie de suivi, de publicité ni de
               mesure d&apos;audience. Seuls les cookies strictement nécessaires
@@ -117,8 +117,8 @@ export default function ConfidentialitePage() {
           </section>
 
           {/* Vos droits */}
-          <section>
-            <h2 className="mb-4 font-serif text-2xl text-green">Vos droits</h2>
+          <section className="privacy-section">
+            <h2 className="privacy-section-title mb-4 font-serif text-2xl text-green">Vos droits</h2>
             <p>
               Conformément au Règlement général sur la protection des données
               (RGPD), vous disposez d&apos;un droit d&apos;accès, de
@@ -126,7 +126,7 @@ export default function ConfidentialitePage() {
               données. Pour exercer ces droits, écrivez-nous à{" "}
               <a
                 href="mailto:contact@cheriecherry.fr"
-                className="text-green underline underline-offset-2"
+                className="privacy-link text-green underline underline-offset-2"
               >
                 contact@cheriecherry.fr
               </a>
@@ -140,7 +140,7 @@ export default function ConfidentialitePage() {
                 href="https://www.cnil.fr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-green underline underline-offset-2"
+                className="privacy-link text-green underline underline-offset-2"
               >
                 www.cnil.fr
               </a>

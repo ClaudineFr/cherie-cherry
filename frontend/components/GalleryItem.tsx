@@ -48,7 +48,7 @@ export default function GalleryItem({ photo, index }: GalleryItemProps) {
     <figure
       ref={ref}
       style={{ transitionDelay: `${index * 80}ms` }}
-      className={`mb-4 transition-all duration-700 ease-out ${
+      className={`gallery-item mb-4 transition-all duration-700 ease-out ${
         visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
       }`}
     >
@@ -60,7 +60,7 @@ export default function GalleryItem({ photo, index }: GalleryItemProps) {
         // `h-auto` laisse ensuite le vrai ratio s'appliquer une fois chargé.
         width={600}
         height={800}
-        className="h-auto w-full rounded-2xl"
+        className="gallery-item-image h-auto w-full rounded-2xl"
         sizes="(min-width: 1024px) 33vw, 50vw"
       />
     </figure>

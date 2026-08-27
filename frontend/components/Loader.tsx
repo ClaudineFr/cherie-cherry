@@ -39,7 +39,7 @@ export default function Loader({
     <div
       role="status"
       aria-live="polite"
-      className={`flex flex-col items-center justify-center ${label ? "gap-3" : ""} ${className}`}
+      className={`loader loader--${size} flex flex-col items-center justify-center ${label ? "gap-3" : ""} ${className}`}
     >
       {/* L'anneau : un cercle dont on ne colore que le haut du trait
           (border-t-pink-vivid). En tournant, on ne voit donc qu'un arc rose
@@ -48,15 +48,15 @@ export default function Loader({
           demandé moins d'animations dans les réglages de son système. */}
       <span
         aria-hidden="true"
-        className={`inline-block animate-spin rounded-full border-green/15 border-t-pink-vivid motion-reduce:animate-none ${sizes[size]}`}
+        className={`loader-ring inline-block animate-spin rounded-full border-green/15 border-t-pink-vivid motion-reduce:animate-none ${sizes[size]}`}
       />
 
       {/* Le texte : visible si `label` est fourni, sinon masqué à l'écran mais
           toujours lu par les lecteurs d'écran (sr-only). */}
       {label ? (
-        <p className="text-sm tracking-wide text-green/70">{label}</p>
+        <p className="loader-label text-sm tracking-wide text-green/70">{label}</p>
       ) : (
-        <span className="sr-only">Chargement…</span>
+        <span className="loader-label sr-only">Chargement…</span>
       )}
     </div>
   );

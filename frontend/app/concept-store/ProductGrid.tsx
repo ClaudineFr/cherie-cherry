@@ -47,24 +47,24 @@ export default function ProductGrid({ products }: { products: Product[] }) {
   // Style d'une ligne de filtre dans la sidebar (actif / inactif).
   // La ligne active passe en vert ; sinon elle s'éclaire au survol.
   const row = (active: boolean) =>
-    `w-full rounded-lg px-3 py-1 text-left text-[0.7rem] transition ${
+    `filter-option${active ? " filter-option--active" : ""} w-full rounded-lg px-3 py-1 text-left text-[0.7rem] transition ${
       active ? "font-medium text-green" : "text-ink/60 hover:text-green"
     }`;
 
   // Petit titre de section dans la sidebar.
   const sectionTitle =
-    "mb-2 text-[0.65rem] uppercase tracking-[0.2em] text-green/70";
+    "filter-group-title mb-2 text-[0.65rem] uppercase tracking-[0.2em] text-green/70";
 
   return (
-    <div className="grid grid-cols-1 gap-10 md:grid-cols-[16rem_1fr]">
+    <div className="product-grid-layout grid grid-cols-1 gap-10 md:grid-cols-[16rem_1fr]">
       {/* --- Colonne de filtres (sidebar) --- */}
-      <aside className="h-fit rounded-2xl border border-green/10 bg-cream px-5 py-5">
-        <div className="flex items-baseline justify-between border-b border-green/10 pb-3">
-          <p className="font-serif text-lg text-green">Filtres</p>
+      <aside className="product-filters h-fit rounded-2xl border border-green/10 bg-cream px-5 py-5">
+        <div className="product-filters-header flex items-baseline justify-between border-b border-green/10 pb-3">
+          <p className="product-filters-title font-serif text-lg text-green">Filtres</p>
           <button
             type="button"
             onClick={clearAll}
-            className="text-[0.7rem] uppercase tracking-wider text-ink/40 transition hover:text-green"
+            className="product-filters-clear text-[0.7rem] uppercase tracking-wider text-ink/40 transition hover:text-green"
           >
             Tout effacer
           </button>
@@ -76,13 +76,13 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un produit…"
-          className="mt-4 w-full rounded-full border border-green/20 bg-cream px-4 py-1.5 text-[0.7rem] text-ink outline-none placeholder:text-ink/40 focus:border-green/50"
+          className="product-filters-search mt-4 w-full rounded-full border border-green/20 bg-cream px-4 py-1.5 text-[0.7rem] text-ink outline-none placeholder:text-ink/40 focus:border-green/50"
         />
 
         {/* Filtre par catégorie */}
-        <div className="mt-4 border-t border-green/10 pt-4">
+        <div className="filter-group filter-group--category mt-4 border-t border-green/10 pt-4">
           <p className={sectionTitle}>Catégorie</p>
-          <div className="flex flex-col gap-0.5">
+          <div className="filter-options flex flex-col gap-0.5">
             <button
               type="button"
               onClick={() => setCategory("all")}
@@ -104,9 +104,9 @@ export default function ProductGrid({ products }: { products: Product[] }) {
         </div>
 
         {/* Filtre par prix */}
-        <div className="mt-4 border-t border-green/10 pt-4">
+        <div className="filter-group filter-group--price mt-4 border-t border-green/10 pt-4">
           <p className={sectionTitle}>Prix</p>
-          <div className="flex flex-col gap-0.5">
+          <div className="filter-options flex flex-col gap-0.5">
             <button
               type="button"
               onClick={() => setPriceIndex("all")}
@@ -128,7 +128,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
         </div>
 
         {/* Coups de cœur */}
-        <div className="mt-4 border-t border-green/10 pt-4">
+        <div className="filter-group filter-group--featured mt-4 border-t border-green/10 pt-4">
           <button
             type="button"
             onClick={() => setFeaturedOnly((v) => !v)}
@@ -140,41 +140,41 @@ export default function ProductGrid({ products }: { products: Product[] }) {
       </aside>
 
       {/* --- Colonne de produits --- */}
-      <div>
+      <div className="product-results">
         {filtered.length > 0 ? (
-          <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="product-list grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((product) => (
               <li
                 key={product.id ?? product.name}
-                className="flex flex-col rounded-2xl border border-green/10 bg-cream p-5"
+                className="product-card flex flex-col rounded-2xl border border-green/10 bg-cream p-5"
               >
-                <div className="relative mb-4 aspect-square overflow-hidden rounded-xl bg-pink">
+                <div className="product-card-media relative mb-4 aspect-square overflow-hidden rounded-xl bg-pink">
                   {product.image && (
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      className="object-cover"
+                      className="product-card-image object-cover"
                     />
                   )}
                   {product.featured && (
-                    <span className="absolute left-3 top-3 rounded-full bg-green px-3 py-1 text-xs text-cream">
+                    <span className="product-card-badge absolute left-3 top-3 rounded-full bg-green px-3 py-1 text-xs text-cream">
                       Coup de cœur
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="font-serif text-lg text-green">
+                <div className="product-card-heading flex items-baseline justify-between gap-3">
+                  <h3 className="product-card-name font-serif text-lg text-green">
                     {product.name}
                   </h3>
-                  <span className="whitespace-nowrap text-green">
+                  <span className="product-card-price whitespace-nowrap text-green">
                     {product.price} €
                   </span>
                 </div>
                 {product.description && (
-                  <p className="mt-1 text-sm text-ink/50">
+                  <p className="product-card-description mt-1 text-sm text-ink/50">
                     {product.description}
                   </p>
                 )}
@@ -182,16 +182,16 @@ export default function ProductGrid({ products }: { products: Product[] }) {
             ))}
           </ul>
         ) : products.length === 0 ? (
-          <div className="rounded-2xl border border-green/10 bg-cream px-6 py-16 text-center">
-            <p className="font-serif text-xl text-green">
+          <div className="product-empty rounded-2xl border border-green/10 bg-cream px-6 py-16 text-center">
+            <p className="product-empty-title font-serif text-xl text-green">
               La boutique se remplit bientôt
             </p>
-            <p className="mt-2 text-sm text-ink/50">
+            <p className="product-empty-text mt-2 text-sm text-ink/50">
               De jolies choses arrivent très prochainement. Revenez vite&nbsp;!
             </p>
           </div>
         ) : (
-          <p className="text-center text-ink/50">
+          <p className="product-no-results text-center text-ink/50">
             Aucun produit ne correspond à ces filtres.
           </p>
         )}
