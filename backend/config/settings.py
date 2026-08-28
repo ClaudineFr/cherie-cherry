@@ -244,3 +244,38 @@ STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 # L'adresse vers laquelle Stripe renvoie le client après paiement est
 # FRONTEND_URL, déjà définie plus haut pour le bouton « Voir le site » de
 # l'admin. On ne la redéfinit pas ici.
+
+
+# --- Envoi des emails -----------------------------------------------------
+#
+# Les confirmations de commande partent par Resend, en SMTP (pas de
+# bibliothèque supplémentaire : Django sait faire).
+#
+# Pourquoi pas une simple boîte Gmail ? Parce qu'un message envoyé depuis
+# Gmail mais signé « @cheriecherry.fr » est massivement classé en indésirable.
+# Resend signe les messages au nom du domaine, ce qui règle le problème — à
+# condition d'avoir vérifié le domaine chez eux (quelques enregistrements DNS).
+#
+# Sans RESEND_API_KEY (en développement), les emails s'affichent dans la
+# console au lieu d'être envoyés : on voit leur contenu sans rien expédier.
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+
+if RESEND_API_KEY:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.resend.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = "resend"
+    EMAIL_HOST_PASSWORD = RESEND_API_KEY
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# L'expéditeur affiché. Le domaine doit être vérifié chez Resend, sinon
+# l'envoi est refusé.
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL", "Chérie Cherry <commandes@cheriecherry.fr>"
+)
+
+# Où prévenir la propriétaire d'une nouvelle commande. Si vide, on retombe
+# sur l'email de contact saisi dans l'admin (SiteSettings).
+SHOP_OWNER_EMAIL = os.environ.get("SHOP_OWNER_EMAIL", "")

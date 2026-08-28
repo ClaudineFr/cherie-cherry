@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from . import emails
 from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings, AboutPage, AboutValue
 
 
@@ -398,6 +399,43 @@ class OrderAdmin(admin.ModelAdmin):
     # à la main.
     def has_add_permission(self, request):
         return False
+
+    def save_model(self, request, obj, form, change):
+        """Prévient le client quand sa commande passe à « prête à retirer ».
+
+        On lit l'ancien statut AVANT d'enregistrer : sans ça, impossible de
+        distinguer un passage à « prête » d'un simple enregistrement d'une
+        commande déjà prête — et le client recevrait le même email à chaque
+        fois que la propriétaire ouvre puis sauvegarde la fiche.
+        """
+        ancien_statut = None
+        if change and obj.pk:
+            ancien_statut = (
+                Order.objects.filter(pk=obj.pk)
+                .values_list("status", flat=True)
+                .first()
+            )
+
+        super().save_model(request, obj, form, change)
+
+        vient_de_passer_a_prete = (
+            obj.status == Order.Status.READY
+            and ancien_statut != Order.Status.READY
+        )
+        if vient_de_passer_a_prete:
+            if emails.commande_prete(obj):
+                self.message_user(
+                    request, f"{obj.first_name} a été prévenu(e) par email."
+                )
+            else:
+                # Envoi raté : on le dit, plutôt que de laisser la
+                # propriétaire croire que son client est au courant.
+                self.message_user(
+                    request,
+                    "L'email n'a pas pu être envoyé — prévenez le client "
+                    "autrement.",
+                    level="warning",
+                )
 
 
 @admin.register(LegalSettings)
