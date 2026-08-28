@@ -3,6 +3,7 @@ import { Geist, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { CartProvider } from "@/components/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,9 +46,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        {children}
-        <Footer />
+        {/* Le panier enveloppe tout le site : la navbar affiche son compteur,
+            et n'importe quelle page peut y ajouter un produit. */}
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

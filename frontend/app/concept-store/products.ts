@@ -12,6 +12,9 @@ export type Product = {
   category: Category;
   description?: string;
   price: number;
+  // Nombre d'exemplaires disponibles. Sert à ne pas laisser commander
+  // un article épuisé. Absent sur les produits d'exemple ci-dessous.
+  stock?: number;
   featured?: boolean;
   image?: string | null;
 };

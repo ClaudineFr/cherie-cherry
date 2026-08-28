@@ -5,6 +5,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { categories, type Category, type Product } from "./products";
+import AddToCartButton from "@/components/AddToCartButton";
 
 // `test` renvoie true si le prix du produit entre dans la tranche.
 const priceRanges = [
@@ -178,6 +179,23 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                     {product.description}
                   </p>
                 )}
+
+                {/* mt-auto pousse le bouton en bas : toutes les cartes d'une
+                    même rangée alignent leur bouton, quelle que soit la
+                    longueur de la description. */}
+                <div className="mt-auto">
+                  {product.id !== undefined && (
+                    <AddToCartButton
+                      product={{
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.image,
+                        stock: product.stock ?? 0,
+                      }}
+                    />
+                  )}
+                </div>
               </li>
             ))}
           </ul>
