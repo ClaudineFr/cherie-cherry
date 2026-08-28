@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils.text import slugify
+
 
 
 class Product(models.Model):
@@ -19,6 +21,17 @@ class Product(models.Model):
         CLOTHING = "clothing", "Vêtements"
 
     name = models.CharField("nom", max_length=120)
+
+    # L'identifiant du produit dans l'URL : /concept-store/collier-dore-fin
+    # Rempli automatiquement à partir du nom (voir save() plus bas), donc la
+    # unique = deux produits ne peuvent pas se partager la même URL.
+    slug = models.SlugField(
+        "identifiant URL",
+        max_length=140,
+        unique=True,
+        blank=True,
+    )
+
 
     category = models.CharField(
         "catégorie",
@@ -57,6 +70,77 @@ class Product(models.Model):
     def __str__(self):
         # Ce que Django affichera pour représenter un produit (ex. dans l'admin).
         return self.name
+
+    def save(self, *args, **kwargs):
+        """Fabrique le slug à partir du nom si la cliente n'en a pas mis.
+
+        slugify("Collier doré fin") donne "collier-dore-fin" : minuscules,
+        accents retirés, espaces en tirets.
+
+        Le suffixe numérique gère le cas de deux produits homonymes : sans
+        lui, le second enregistrement planterait sur la contrainte unique.
+        """
+        if not self.slug:
+            base = slugify(self.name)
+            candidate = base
+            counter = 2
+            # exclude(pk=...) : en modification, on ne se compare pas à soi-même.
+            while (
+                Product.objects.filter(slug=candidate)
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                candidate = f"{base}-{counter}"
+                counter += 1
+            self.slug = candidate
+        super().save(*args, **kwargs)
+
+class ProductImage(models.Model):
+    """Une photo supplémentaire pour un produit.
+
+    Le champ `image` de Product reste la photo principale (celle de la
+    grille). Ce modèle-ci permet d'en ajouter d'autres, affichées en galerie
+    sur la fiche produit. La cliente les gère depuis la fiche du produit
+    dans l'admin, sans passer par une rubrique séparée.
+    """
+
+    # ForeignKey = le lien vers le produit. C'est ce qui fait qu'un produit
+    # peut avoir PLUSIEURS photos (relation « un à plusieurs »).
+    #
+    # on_delete=CASCADE : si le produit est supprimé, ses photos le sont
+    # aussi. Sans ça on garderait des photos orphelines pointant dans le vide.
+    #
+    # related_name="images" : le nom du chemin inverse. Il permet d'écrire
+    # `mon_produit.images.all()` pour récupérer les photos d'un produit.
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images",
+        verbose_name="produit",
+    )
+
+    image = models.ImageField("image", upload_to="products/")
+
+    alt = models.CharField(
+        "texte alternatif",
+        max_length=200,
+        blank=True,
+        help_text="Décrit la photo pour les lecteurs d'écran. "
+        "Si vide, le nom du produit est utilisé.",
+    )
+
+    order = models.PositiveIntegerField(
+        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+    )
+
+    class Meta:
+        verbose_name = "photo du produit"
+        verbose_name_plural = "photos du produit"
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.alt or f"Photo de {self.product.name}"
+
 
 
 

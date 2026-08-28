@@ -6,8 +6,19 @@ export const categories = ["Bijoux", "Papeterie", "Sacs", "Vêtements"] as const
 
 export type Category = (typeof categories)[number];
 
+// Une photo supplémentaire, affichée en galerie sur la fiche produit.
+export type ProductImage = {
+  id: number;
+  image: string;
+  alt?: string;
+  order: number;
+};
+
 export type Product = {
   id?: number;
+  // L'identifiant du produit dans l'URL (/concept-store/collier-dore-fin).
+  // Absent sur les produits d'exemple plus bas, qui ne viennent pas de l'API.
+  slug?: string;
   name: string;
   category: Category;
   description?: string;
@@ -16,7 +27,10 @@ export type Product = {
   // un article épuisé. Absent sur les produits d'exemple ci-dessous.
   stock?: number;
   featured?: boolean;
+  // La photo principale, celle de la grille.
   image?: string | null;
+  // Les photos supplémentaires, pour la galerie de la fiche produit.
+  images?: ProductImage[];
 };
 
 export const products: Product[] = [

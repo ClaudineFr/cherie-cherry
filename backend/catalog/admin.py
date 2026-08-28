@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage
 
 
 class SingletonAdminMixin:
@@ -77,6 +77,24 @@ class ImagePreviewMixin:
             image.url,
         )
 
+class ProductImageInline(admin.TabularInline):
+    """Les photos éditées directement dans la fiche du produit.
+
+    « Inline » = un modèle lié qu'on édite depuis le formulaire du parent,
+    au lieu d'une rubrique séparée dans le menu. Pour la cliente c'est bien
+    plus naturel : elle ouvre un produit et gère ses photos au même endroit.
+    """
+
+    model = ProductImage
+    # TabularInline = une ligne par photo (compact). L'autre option,
+    # StackedInline, empile un formulaire complet par photo (plus aéré,
+    # mais vite très long dès qu'il y a plusieurs images).
+
+    # Nombre de formulaires vides proposés pour ajouter de nouvelles photos.
+    extra = 1
+
+    fields = ["image", "alt", "order"]
+
 @admin.register(Product)
 class ProductAdmin(ImagePreviewMixin, admin.ModelAdmin):
     # Colonnes affichées dans la liste des produits (miniature en tête).
@@ -94,6 +112,9 @@ class ProductAdmin(ImagePreviewMixin, admin.ModelAdmin):
     # Aperçu de l'image dans le formulaire (l'image reste éditable, l'aperçu
     # montre celle déjà enregistrée).
     readonly_fields = ["image_preview"]
+
+    # Les photos supplémentaires s'éditent dans la fiche du produit.
+    inlines = [ProductImageInline]
 
 @admin.register(GalleryPhoto)
 class GalleryPhotoAdmin(ImagePreviewMixin, admin.ModelAdmin):
