@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/CartContext";
+import QuantityPicker from "@/components/QuantityPicker";
 
 // Affiche le contenu du panier. Version simple pour l'instant : la gestion
 // fine des quantités et le passage au paiement viendront ensuite.
 export default function CartSummary() {
-  const { lines, total, count, removeLine, isReady } = useCart();
+  const { lines, total, count, removeLine, setQuantity, isReady } = useCart();
 
   // Le panier n'est lu qu'une fois la page arrivée dans le navigateur.
   // Sans ce garde-fou, on afficherait brièvement « panier vide » à tout
@@ -37,7 +38,7 @@ export default function CartSummary() {
     <div className="rounded-2xl border border-green/10 bg-cream px-6 py-6">
       <ul className="divide-y divide-green/10">
         {lines.map((line) => (
-          <li key={line.id} className="flex items-center gap-4 py-4">
+          <li key={line.id} className="flex items-start gap-4 py-4">
             <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-pink">
               {line.image && (
                 <Image
@@ -52,9 +53,26 @@ export default function CartSummary() {
 
             <div className="min-w-0 flex-1">
               <p className="font-serif text-lg text-green">{line.name}</p>
-              <p className="text-sm text-ink/50">
-                {line.quantity} × {line.price.toFixed(2)} €
-              </p>
+              <p className="text-sm text-ink/50">{line.price.toFixed(2)} €</p>
+
+              <div className="mt-2">
+                <QuantityPicker
+                  quantity={line.quantity}
+                  max={line.stock}
+                  onChange={(q) => setQuantity(line.id, q)}
+                  label={line.name}
+                />
+              </div>
+
+              {/* On prévient quand le + est bloqué, sinon le bouton grisé
+                  reste inexpliqué. */}
+              {line.quantity >= line.stock && (
+                <p className="mt-1 text-[0.7rem] text-ink/40">
+                  Dernier{line.stock > 1 ? "s" : ""} exemplaire
+                  {line.stock > 1 ? "s" : ""} disponible
+                  {line.stock > 1 ? "s" : ""}
+                </p>
+              )}
             </div>
 
             <span className="whitespace-nowrap text-green">
