@@ -486,8 +486,23 @@ class SiteSettings(models.Model):
     instagram_url = models.URLField("lien Instagram", blank=True)
     tiktok_url = models.URLField("lien TikTok", blank=True)
 
-    # --- Livraison ---
-    # Modifiables par la cliente : elle ajustera après ses premiers envois.
+    class Meta:
+        verbose_name = "coordonnées du site"
+        verbose_name_plural = "coordonnées du site"
+
+    def __str__(self):
+        return "Coordonnées du site"
+
+
+class ShippingSettings(models.Model):
+    """Les tarifs d'expédition de la boutique en ligne.
+
+    Séparé de SiteSettings : là-bas ce sont les coordonnées affichées sur le
+    site, ici un réglage de la boutique, que la cliente ajustera après ses
+    premiers envois. Les garder ensemble mélangeait deux sujets sans rapport.
+
+    Singleton : une seule ligne.
+    """
 
     shipping_fee = models.DecimalField(
         "frais de livraison (€)",
@@ -495,7 +510,8 @@ class SiteSettings(models.Model):
         decimal_places=2,
         default=Decimal("5.90"),
         validators=[MinValueValidator(Decimal("0"))],
-        help_text="Montant facturé pour une livraison à domicile.",
+        help_text="Montant facturé pour une livraison à domicile. "
+        "Le retrait en boutique reste toujours gratuit.",
     )
 
     free_shipping_from = models.DecimalField(
@@ -505,15 +521,16 @@ class SiteSettings(models.Model):
         null=True,
         blank=True,
         validators=[MinValueValidator(Decimal("0"))],
-        help_text="Laisser vide pour ne jamais offrir la livraison.",
+        help_text="À partir de ce montant d'achat, la livraison est offerte. "
+        "Laisser vide pour la facturer systématiquement.",
     )
 
     class Meta:
-        verbose_name = "coordonnées du site"
-        verbose_name_plural = "coordonnées du site"
+        verbose_name = "livraison"
+        verbose_name_plural = "livraison"
 
     def __str__(self):
-        return "Coordonnées du site"
+        return "Réglages de livraison"
 
 
 class LegalSettings(models.Model):

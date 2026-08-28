@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 from . import emails
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, Order, OrderItem, LegalSettings, AboutPage
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, Order, OrderItem, LegalSettings, AboutPage, ShippingSettings
 from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer, SiteSettingsSerializer, CheckoutSerializer, LegalSettingsSerializer, AboutPageSerializer
 
 # Tous les endpoints ci-dessous sont en LECTURE SEULE
@@ -187,9 +187,11 @@ class CheckoutView(APIView):
             (p.price * demandes[p.id] for p in produits), Decimal("0")
         )
 
-        reglages = SiteSettings.objects.first() or SiteSettings()
         frais = Decimal("0")
         if data["delivery_method"] == Order.Delivery.HOME:
+            # Pas de ligne en base : on prend les valeurs par défaut du modèle
+            # plutôt que d'échouer.
+            reglages = ShippingSettings.objects.first() or ShippingSettings()
             frais = reglages.shipping_fee or Decimal("0")
             seuil = reglages.free_shipping_from
             if seuil is not None and total_articles >= seuil:
