@@ -1,22 +1,41 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    """Une photo de galerie d'un produit, en JSON."""
+
+    class Meta:
+        model = ProductImage
+        fields = ["id", "image", "alt", "order"]
+
 
 class ProductSerializer(serializers.ModelSerializer):
     """Décrit comment un Product est transformé en JSON (et inversement)."""
+
+    # Les photos liées à ce produit. On réutilise le serializer ci-dessus.
+    #
+    # many=True : c'est une liste (un produit a plusieurs photos).
+    # read_only=True : l'API ne sert qu'à lire, la cliente passe par l'admin.
+    #
+    # Le nom `images` doit correspondre au related_name de la ForeignKey :
+    # c'est comme ça que DRF sait où aller chercher les photos.
+    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
         # Les champs qu'on expose dans l'API.
         fields = [
             "id",
+            "slug",
             "name",
             "category",
             "description",
             "price",
             "stock",
             "featured",
-            "image"
+            "image",
+            "images",
         ]
 
 
