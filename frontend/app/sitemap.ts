@@ -16,6 +16,7 @@ const routes: {
   { path: "/contact", changeFrequency: "monthly", priority: 0.7 },
   { path: "/mentions-legales", changeFrequency: "yearly", priority: 0.2 },
   { path: "/confidentialite", changeFrequency: "yearly", priority: 0.2 },
+  { path: "/cgv", changeFrequency: "yearly", priority: 0.2 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

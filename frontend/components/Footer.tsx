@@ -103,6 +103,13 @@ export default async function Footer() {
             >
               Confidentialité
             </Link>
+            <span aria-hidden="true">·</span>
+            <Link
+              href="/cgv"
+              className="underline underline-offset-2 transition-opacity hover:opacity-70"
+            >
+              CGV
+            </Link>
           </span>
         </div>
       </div>
