@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { fetchLegalSettings, ouACompleter } from "../legalSettings";
-import { fetchSiteSettings } from "../siteSettings";
+import {
+  adresseEnLigne,
+  emailOuACompleter,
+  fetchSiteSettings,
+} from "../siteSettings";
 
 export const metadata: Metadata = {
   title: "Mentions légales",
@@ -45,9 +49,7 @@ export default async function MentionsLegalesPage() {
               {legal.share_capital && (
                 <li>Capital social&nbsp;: {legal.share_capital}</li>
               )}
-              <li>
-                Siège social&nbsp;: 7 rue de la République, 84200 Carpentras
-              </li>
+              <li>Siège social&nbsp;: {adresseEnLigne(site)}</li>
               <li>SIRET&nbsp;: {ouACompleter(legal.siret)}</li>
               {legal.vat_number && (
                 <li>
@@ -55,7 +57,7 @@ export default async function MentionsLegalesPage() {
                 </li>
               )}
               <li>Téléphone&nbsp;: {ouACompleter(site.phone)}</li>
-              <li>Email&nbsp;: contact@cheriecherry.fr</li>
+              <li>Email&nbsp;: {emailOuACompleter(site)}</li>
               <li>
                 Directeur / directrice de la publication&nbsp;:{" "}
                 {ouACompleter(legal.publication_director)}
@@ -95,10 +97,10 @@ export default async function MentionsLegalesPage() {
               Pour toute question relative au site, vous pouvez nous écrire à
               l&apos;adresse{" "}
               <a
-                href="mailto:contact@cheriecherry.fr"
+                href={`mailto:${site.email}`}
                 className="text-green underline underline-offset-2"
               >
-                contact@cheriecherry.fr
+                {emailOuACompleter(site)}
               </a>
               .
             </p>

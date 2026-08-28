@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { fetchLegalSettings, ouACompleter } from "../legalSettings";
+import {
+  adresseEnLigne,
+  emailOuACompleter,
+  fetchSiteSettings,
+} from "../siteSettings";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
@@ -8,7 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ConfidentialitePage() {
-  const legal = await fetchLegalSettings();
+  const [legal, site] = await Promise.all([
+    fetchLegalSettings(),
+    fetchSiteSettings(),
+  ]);
 
   return (
     <main className="flex-1 bg-cream px-6 py-20">
@@ -37,13 +45,13 @@ export default async function ConfidentialitePage() {
             <p>
               Les données collectées via ce site sont traitées par Chérie
               Cherry, {ouACompleter(legal.company_name)}, dont le siège social
-              est situé au 7 rue de la République, 84200 Carpentras. Pour toute
-              question, vous pouvez écrire à{" "}
+              est situé au {adresseEnLigne(site)}. Pour toute question, vous
+              pouvez écrire à{" "}
               <a
-                href="mailto:contact@cheriecherry.fr"
+                href={`mailto:${site.email}`}
                 className="text-green underline underline-offset-2"
               >
-                contact@cheriecherry.fr
+                {emailOuACompleter(site)}
               </a>
               .
             </p>
@@ -126,10 +134,10 @@ export default async function ConfidentialitePage() {
               rectification, d&apos;effacement et d&apos;opposition sur vos
               données. Pour exercer ces droits, écrivez-nous à{" "}
               <a
-                href="mailto:contact@cheriecherry.fr"
+                href={`mailto:${site.email}`}
                 className="text-green underline underline-offset-2"
               >
-                contact@cheriecherry.fr
+                {emailOuACompleter(site)}
               </a>
               .
             </p>

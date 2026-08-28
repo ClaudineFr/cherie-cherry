@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { fetchLegalSettings, formatDate, ouACompleter } from "../legalSettings";
+import {
+  adresseEnLigne,
+  emailOuACompleter,
+  fetchSiteSettings,
+} from "../siteSettings";
 
 export const metadata: Metadata = {
   title: "Conditions générales de vente",
@@ -16,7 +21,10 @@ export const metadata: Metadata = {
 // entreprise. Les informations qui lui sont propres (raison sociale, SIRET,
 // délais, médiateur) viennent de l'admin, via LegalSettings.
 export default async function CGVPage() {
-  const legal = await fetchLegalSettings();
+  const [legal, site] = await Promise.all([
+    fetchLegalSettings(),
+    fetchSiteSettings(),
+  ]);
 
   const section = "mb-4 font-serif text-2xl text-green";
   const sousTitre = "mt-6 mb-2 font-medium text-green";
@@ -46,9 +54,9 @@ export default async function CGVPage() {
             <ul className="mt-3 flex flex-col gap-1">
               <li>
                 Le vendeur&nbsp;: {ouACompleter(legal.company_name)}, dont le
-                siège social est situé 7 rue de la République, 84200 Carpentras,
-                immatriculée sous le numéro SIRET {ouACompleter(legal.siret)},
-                ci-après «&nbsp;le Vendeur&nbsp;»&nbsp;;
+                siège social est situé {adresseEnLigne(site)}, immatriculée sous
+                le numéro SIRET {ouACompleter(legal.siret)}, ci-après «&nbsp;le
+                Vendeur&nbsp;»&nbsp;;
               </li>
               <li>
                 Toute personne physique non commerçante effectuant un achat sur
@@ -144,10 +152,10 @@ export default async function CGVPage() {
             <h3 className={sousTitre}>Retrait en boutique</h3>
             <p>
               Le retrait est gratuit. La commande est mise à disposition à
-              l’adresse du magasin, 7 rue de la République, 84200 Carpentras,
-              aux horaires d’ouverture. Le Client est prévenu dès que sa
-              commande est prête et dispose de{" "}
-              {ouACompleter(legal.pickup_delay)} pour venir la récupérer.
+              l’adresse du magasin, {adresseEnLigne(site)}, aux horaires
+              d’ouverture. Le Client est prévenu dès que sa commande est prête
+              et dispose de {ouACompleter(legal.pickup_delay)} pour venir la
+              récupérer.
             </p>
 
             <h3 className={sousTitre}>Livraison à domicile</h3>
@@ -187,7 +195,7 @@ export default async function CGVPage() {
             <p className="mt-3">
               Pour exercer ce droit, le Client notifie sa décision par une
               déclaration dénuée d’ambiguïté, par email à
-              contact@cheriecherry.fr ou par courrier à l’adresse du siège.
+              {emailOuACompleter(site)} ou par courrier à l’adresse du siège.
             </p>
             <p className="mt-3">
               Les produits doivent être retournés dans leur état d’origine,
@@ -244,8 +252,8 @@ export default async function CGVPage() {
             <h2 className={section}>10. Réclamations et litiges</h2>
             <p>
               Pour toute réclamation, le Client peut écrire à
-              contact@cheriecherry.fr. Les présentes conditions sont soumises au
-              droit français.
+              {emailOuACompleter(site)}. Les présentes conditions sont soumises
+              au droit français.
             </p>
             <p className="mt-3">
               Conformément à l’article L.612-1 du code de la consommation, le
