@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order
 
 class ProductImageSerializer(serializers.ModelSerializer):
     """Une photo de galerie d'un produit, en JSON."""
@@ -179,3 +179,68 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
             "instagram_url",
             "tiktok_url",
         ]
+
+class CheckoutLineSerializer(serializers.Serializer):
+    """Une ligne du panier telle que le navigateur l'envoie.
+
+    Serializer « nu » (pas de ModelSerializer) : ça ne correspond à aucune
+    table, c'est juste la forme attendue des données entrantes.
+
+    On ne reçoit QUE l'identifiant du produit et la quantité. Surtout pas le
+    prix : il sera relu en base. Un prix venant du navigateur est une donnée
+    que n'importe qui peut modifier avant l'envoi.
+    """
+
+    product_id = serializers.IntegerField(min_value=1)
+    quantity = serializers.IntegerField(min_value=1, max_value=99)
+
+
+class CheckoutSerializer(serializers.Serializer):
+    """Ce que le formulaire de commande envoie pour lancer le paiement."""
+
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=80)
+    last_name = serializers.CharField(max_length=80)
+    phone = serializers.CharField(max_length=30, required=False, allow_blank=True)
+
+    delivery_method = serializers.ChoiceField(choices=Order.Delivery.choices)
+
+    # Adresse : facultative ici, car inutile pour un retrait. La cohérence
+    # est vérifiée dans validate() ci-dessous.
+    address_line1 = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    address_line2 = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    postal_code = serializers.CharField(max_length=10, required=False, allow_blank=True)
+    city = serializers.CharField(max_length=100, required=False, allow_blank=True)
+
+    # allow_empty=False : on refuse un panier vide.
+    items = CheckoutLineSerializer(many=True, allow_empty=False)
+
+    def validate(self, data):
+        """Vérifie la cohérence de l'ensemble, une fois chaque champ validé.
+
+        validate() (sans suffixe) voit TOUS les champs à la fois, contrairement
+        à validate_<champ> qui n'en voit qu'un. C'est ce qu'il faut ici, car la
+        règle dépend de deux champs : l'adresse n'est exigée que si le mode
+        de livraison est « à domicile ».
+        """
+        if data["delivery_method"] == Order.Delivery.HOME:
+            manquants = [
+                champ
+                for champ in ("address_line1", "postal_code", "city")
+                if not data.get(champ)
+            ]
+            if manquants:
+                raise serializers.ValidationError(
+                    {champ: "Ce champ est requis pour une livraison." for champ in manquants}
+                )
+
+        # Un même produit ne doit pas apparaître deux fois : sinon le stock
+        # serait vérifié ligne par ligne, et deux lignes de 3 passeraient
+        # alors qu'il ne reste que 5 exemplaires.
+        ids = [ligne["product_id"] for ligne in data["items"]]
+        if len(ids) != len(set(ids)):
+            raise serializers.ValidationError(
+                {"items": "Un même produit ne peut pas figurer sur deux lignes."}
+            )
+
+        return data
