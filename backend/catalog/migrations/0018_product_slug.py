@@ -41,10 +41,19 @@ class Migration(migrations.Migration):
         # 1. On ajoute la colonne SANS contrainte d'unicité : à ce stade tous
         #    les produits existants auraient le même slug vide, ce qui la
         #    violerait immédiatement.
+        #
+        #    On la déclare en CharField, et non en SlugField, à cause de
+        #    PostgreSQL : un SlugField y crée un index supplémentaire (suffixé
+        #    "_like", pour les recherches par préfixe). L'étape 3 recréerait
+        #    ce même index et Postgres refuserait — « relation ... already
+        #    exists ». Le CharField n'en crée aucun, donc l'étape 3 pose
+        #    l'index une seule fois.
+        #
+        #    SQLite n'a pas ces index : le bug ne se voit qu'en production.
         migrations.AddField(
             model_name='product',
             name='slug',
-            field=models.SlugField(blank=True, default='', max_length=140, verbose_name='identifiant URL'),
+            field=models.CharField(blank=True, default='', max_length=140, verbose_name='identifiant URL'),
             preserve_default=False,
         ),
         # 2. On remplit les slugs, chacun différent.
