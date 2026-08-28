@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .views import GalleryPhotoViewSet, ProductViewSet, OpeningHoursViewSet, InstagramStoryViewSet, InstagramPostViewSet, MenuDrinkViewSet, DrinkOfMonthViewSet, DrinkOfMonthSettingsView, SupplementViewSet, ContactMessageCreateView, SiteSettingsView, CheckoutView, StripeWebhookView, LegalSettingsView
+from .views import GalleryPhotoViewSet, ProductViewSet, OpeningHoursViewSet, InstagramStoryViewSet, InstagramPostViewSet, MenuDrinkViewSet, DrinkOfMonthViewSet, DrinkOfMonthSettingsView, SupplementViewSet, ContactMessageCreateView, SiteSettingsView, CheckoutView, StripeWebhookView, LegalSettingsView, AboutPageView
 
 router = DefaultRouter()
 router.register(r"produits", ProductViewSet)
@@ -19,6 +19,7 @@ urlpatterns = router.urls + [
     path("commander/", CheckoutView.as_view()), # Endpoint pour le paiement
     path("parametres/", SiteSettingsView.as_view()),
     path("infos-legales/", LegalSettingsView.as_view()),
+    path("a-propos/", AboutPageView.as_view()),
     path("stripe/webhook/", StripeWebhookView.as_view()), # Endpoint pour le webhook
 
 ]

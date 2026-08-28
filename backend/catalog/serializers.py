@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, LegalSettings
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, LegalSettings, AboutPage, AboutValue
 
 class ProductImageSerializer(serializers.ModelSerializer):
     """Une photo de galerie d'un produit, en JSON."""
@@ -202,6 +202,35 @@ class LegalSettingsSerializer(serializers.ModelSerializer):
             "data_retention",
             "terms_updated_at",
         ]
+
+
+class AboutValueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AboutValue
+        fields = ["id", "icon", "title", "text", "order"]
+
+
+class AboutPageSerializer(serializers.ModelSerializer):
+    # Le récit déjà découpé en paragraphes, pour que le front n'ait pas à
+    # refaire ce travail.
+    story_paragraphs = serializers.ListField(
+        child=serializers.CharField(), read_only=True
+    )
+    values = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AboutPage
+        fields = ["intro", "story_paragraphs", "closing", "values"]
+
+    def get_values(self, obj):
+        # Seules les valeurs cochées « affichée sur le site ». obj.pk est None
+        # quand aucune ligne n'existe encore en base : on renvoie alors une
+        # liste vide plutôt que d'interroger une relation inexistante.
+        if obj.pk is None:
+            return []
+        return AboutValueSerializer(
+            obj.values.filter(visible=True), many=True
+        ).data
 
 
 class CheckoutLineSerializer(serializers.Serializer):

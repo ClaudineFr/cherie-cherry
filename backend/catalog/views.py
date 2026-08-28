@@ -11,8 +11,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, Order, OrderItem, LegalSettings
-from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer, SiteSettingsSerializer, CheckoutSerializer, LegalSettingsSerializer
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, Order, OrderItem, LegalSettings, AboutPage
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer, SiteSettingsSerializer, CheckoutSerializer, LegalSettingsSerializer, AboutPageSerializer
 
 # Tous les endpoints ci-dessous sont en LECTURE SEULE
 # (ReadOnlyModelViewSet = seulement GET liste + GET détail).
@@ -124,6 +124,17 @@ class LegalSettingsView(APIView):
         # Ligne absente : on renvoie un objet vide plutôt qu'une erreur. Le
         # front affichera des mentions à compléter, pas une page cassée.
         serializer = LegalSettingsSerializer(reglages or LegalSettings())
+        return Response(serializer.data)
+
+
+class AboutPageView(APIView):
+    """Renvoie le contenu de la page « À propos », en UN objet."""
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        page = AboutPage.objects.first()
+        serializer = AboutPageSerializer(page or AboutPage())
         return Response(serializer.data)
 
 

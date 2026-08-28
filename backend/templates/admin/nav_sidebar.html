@@ -44,6 +44,12 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
       </ul>
     </li>
     <li>
+      <a href="{% url 'admin:catalog_aboutpage_changelist' %}" data-models="aboutpage aboutvalue">
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-user"></use></svg></span>
+        <span class="cc-rail-label">À propos</span>
+      </a>
+    </li>
+    <li>
       <a href="{% url 'admin:catalog_product_changelist' %}" data-models="product">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span>
         <span class="cc-rail-label">Concept store</span>

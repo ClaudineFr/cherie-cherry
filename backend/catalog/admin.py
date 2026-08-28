@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings, AboutPage, AboutValue
 
 
 class SingletonAdminMixin:
@@ -451,6 +451,39 @@ class LegalSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return not LegalSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class AboutValueInline(admin.TabularInline):
+    """Les valeurs, éditées depuis la page À propos elle-même."""
+
+    model = AboutValue
+    extra = 1
+    fields = ["icon", "title", "text", "order", "visible"]
+
+
+@admin.register(AboutPage)
+class AboutPageAdmin(SingletonAdminMixin, admin.ModelAdmin):
+    """Le contenu de la page « À propos », en un seul formulaire."""
+
+    inlines = [AboutValueInline]
+
+    fieldsets = [
+        (
+            "Votre histoire",
+            {
+                "fields": ["intro", "story", "closing"],
+                "description": "Le texte de la page « À propos ». Dans "
+                "« votre histoire », laissez une ligne vide entre deux "
+                "paragraphes.",
+            },
+        ),
+    ]
+
+    def has_add_permission(self, request):
+        return not AboutPage.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         return False

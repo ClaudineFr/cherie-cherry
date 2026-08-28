@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
-import { LuFlower, LuCoffee, LuHeart } from "react-icons/lu";
+import type { IconType } from "react-icons";
+import {
+  LuFlower,
+  LuCoffee,
+  LuHeart,
+  LuSparkles,
+  LuGift,
+  LuLeaf,
+} from "react-icons/lu";
 import { fetchSiteSettings } from "@/app/siteSettings";
+import { fetchAboutPage } from "@/app/aboutPage";
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -8,27 +17,25 @@ export const metadata: Metadata = {
     "L'histoire de Chérie Cherry, coffee shop et concept store à Carpentras : notre esprit, nos valeurs et les mains derrière le lieu.",
 };
 
-const values = [
-  {
-    Icon: LuFlower,
-    title: "Fait avec soin",
-    text: "Pâtisseries maison, pièces chinées une à une : chaque détail est choisi, jamais standardisé.",
-  },
-  {
-    Icon: LuCoffee,
-    title: "Le goût avant tout",
-    text: "Cafés de spécialité et matcha sélectionnés avec exigence, pour des boissons qu'on prend le temps de savourer.",
-  },
-  {
-    Icon: LuHeart,
-    title: "Un lieu qui rassemble",
-    text: "Un coin de Provence où l'on vient pour un café, on repart avec un carnet, et on revient pour l'ambiance.",
-  },
-];
+// Les icônes proposées dans l'admin. La cliente choisit un libellé
+// (« Fleur », « Cœur »…), Django enregistre la clé, et c'est ici qu'on la
+// traduit en dessin — choisir une icône n'est pas un travail d'éditrice,
+// mais le catalogue doit rester le même des deux côtés.
+const ICONS: Record<string, IconType> = {
+  flower: LuFlower,
+  coffee: LuCoffee,
+  heart: LuHeart,
+  sparkles: LuSparkles,
+  gift: LuGift,
+  leaf: LuLeaf,
+};
 
 export default async function AProposPage() {
-  // Adresse éditable depuis l'admin, glissée dans la phrase de signature.
-  const settings = await fetchSiteSettings();
+  // Le contenu et l'adresse viennent tous deux de l'admin.
+  const [about, settings] = await Promise.all([
+    fetchAboutPage(),
+    fetchSiteSettings(),
+  ]);
 
   return (
     <main className="flex-1 bg-cream px-6 py-20">
@@ -41,57 +48,53 @@ export default async function AProposPage() {
           <h1 className="mt-3 font-serif text-4xl text-green">
             À propos de Chérie Cherry
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-base text-ink/70">
-            Un coffee shop et concept store né d&apos;une envie simple :
-            réunir sous un même toit tout ce qu&apos;on aime.
-          </p>
+          {about.intro && (
+            <p className="mx-auto mt-4 max-w-md text-base text-ink/70">
+              {about.intro}
+            </p>
+          )}
         </div>
 
         {/* Récit */}
-        <div className="mt-16 flex flex-col gap-6 text-base leading-relaxed text-ink/80">
-          <p>
-            {/* TODO : à remplacer par la vraie histoire de la fondatrice */}
-            Chérie Cherry est né en plein cœur de Carpentras, de l&apos;envie
-            de créer un endroit à son image : chaleureux, féminin et un brin
-            gourmand. L&apos;idée&nbsp;? Un lieu où l&apos;on peut aussi bien
-            s&apos;attabler autour d&apos;un matcha latte que dénicher la petite
-            pièce déco qui manquait à la maison.
-          </p>
-          <p>
-            D&apos;un côté, le <strong className="text-green">coffee shop</strong>
-            &nbsp;: cafés de spécialité, matcha et pâtisseries faites maison, à
-            déguster sur place dans un décor pensé comme un cocon. De
-            l&apos;autre, le{" "}
-            <strong className="text-green">concept store</strong>&nbsp;: déco,
-            papeterie et prêt-à-porter féminin, chinés et sélectionnés avec soin.
-          </p>
-          <p>
-            Deux univers, une même signature&nbsp;: le plaisir des jolies choses,
-            faites et choisies avec attention.
-          </p>
-        </div>
+        {about.story_paragraphs.length > 0 && (
+          <div className="mt-16 flex flex-col gap-6 text-base leading-relaxed text-ink/80">
+            {about.story_paragraphs.map((paragraphe, i) => (
+              // Les paragraphes n'ont pas d'identifiant propre et peuvent être
+              // réécrits à tout moment : leur position est la seule clé stable.
+              <p key={i}>{paragraphe}</p>
+            ))}
+          </div>
+        )}
 
         {/* Valeurs */}
-        <div className="mt-16 grid gap-6 sm:grid-cols-3">
-          {values.map((value) => (
-            <div
-              key={value.title}
-              className="flex flex-col items-center gap-2 rounded-2xl bg-pink-soft px-5 py-8 text-center"
-            >
-              <value.Icon className="text-xl text-green" aria-hidden />
-              <p className="font-serif text-lg text-green">{value.title}</p>
-              <p className="text-sm text-ink/70">{value.text}</p>
-            </div>
-          ))}
-        </div>
+        {about.values.length > 0 && (
+          <div className="mt-16 grid gap-6 sm:grid-cols-3">
+            {about.values.map((value) => {
+              // Icône inconnue (clé retirée du code) : on retombe sur le cœur
+              // plutôt que de planter la page.
+              const Icon = ICONS[value.icon] ?? LuHeart;
+              return (
+                <div
+                  key={value.id}
+                  className="flex flex-col items-center gap-2 rounded-2xl bg-pink-soft px-5 py-8 text-center"
+                >
+                  <Icon className="text-xl text-green" aria-hidden />
+                  <p className="font-serif text-lg text-green">{value.title}</p>
+                  <p className="text-sm text-ink/70">{value.text}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Signature */}
-        <p className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
-          Chérie Cherry, c&apos;est avant tout un lieu à vivre. Le mieux
-          reste encore de pousser la porte&nbsp;: on vous y attend
-          {settings.street && `, au ${settings.street}`}
-          {settings.city && `, à ${settings.city}`}.
-        </p>
+        {/* Signature : l'adresse est ajoutée à la phrase saisie dans l'admin. */}
+        {about.closing && (
+          <p className="mt-16 rounded-2xl bg-pink-soft px-6 py-6 text-center text-sm text-ink/70">
+            {about.closing}
+            {settings.street && `, au ${settings.street}`}
+            {settings.city && `, à ${settings.city}`}.
+          </p>
+        )}
       </div>
     </main>
   );
