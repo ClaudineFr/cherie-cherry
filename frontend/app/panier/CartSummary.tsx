@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/CartContext";
 import QuantityPicker from "@/components/QuantityPicker";
+import CheckoutForm from "./CheckoutForm";
 
 // Affiche le contenu du panier. Version simple pour l'instant : la gestion
 // fine des quantités et le passage au paiement viendront ensuite.
@@ -100,9 +101,7 @@ export default function CartSummary() {
         </span>
       </div>
 
-      <p className="mt-4 text-center text-sm text-ink/50">
-        Retrait en boutique. Le paiement en ligne arrive très bientôt.
-      </p>
+      <CheckoutForm />
     </div>
   );
 }
