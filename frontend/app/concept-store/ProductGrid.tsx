@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { categories, type Category, type Product } from "./products";
 import AddToCartButton from "@/components/AddToCartButton";
 
@@ -149,14 +150,23 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                 key={product.id ?? product.name}
                 className="flex flex-col rounded-2xl border border-green/10 bg-cream p-5"
               >
-                <div className="relative mb-4 aspect-square overflow-hidden rounded-xl bg-pink">
+                {/* La photo et le titre mènent à la fiche produit. On n'enveloppe
+                    PAS toute la carte : le bouton « Ajouter au panier » se
+                    retrouverait dans le lien, ce qui est du HTML invalide et
+                    déclencherait les deux actions d'un seul clic. */}
+                <Link
+                  href={`/concept-store/${product.slug}`}
+                  tabIndex={-1}
+                  aria-hidden
+                  className="relative mb-4 block aspect-square overflow-hidden rounded-xl bg-pink"
+                >
                   {product.image && (
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      className="object-cover"
+                      className="object-cover transition duration-300 hover:scale-105"
                     />
                   )}
                   {product.featured && (
@@ -164,11 +174,19 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                       Coup de cœur
                     </span>
                   )}
-                </div>
+                </Link>
 
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-serif text-lg text-green">
-                    {product.name}
+                    {/* Le lien porté par le titre est le seul atteignable au
+                        clavier : celui de la photo est masqué (aria-hidden)
+                        pour ne pas annoncer deux fois la même destination. */}
+                    <Link
+                      href={`/concept-store/${product.slug}`}
+                      className="transition hover:opacity-70"
+                    >
+                      {product.name}
+                    </Link>
                   </h3>
                   <span className="whitespace-nowrap text-green">
                     {product.price} €
