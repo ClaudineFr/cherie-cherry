@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem
 
 
 class SingletonAdminMixin:
@@ -300,3 +300,85 @@ def _dashboard_index(request, extra_context=None):
 
 
 admin.site.index = _dashboard_index
+
+class OrderItemInline(admin.TabularInline):
+    """Les articles de la commande, affichés dans la fiche commande."""
+
+    model = OrderItem
+    extra = 0
+
+    # Une commande payée est un document comptable : on la consulte, on ne
+    # la réécrit pas. Tout est donc en lecture seule.
+    readonly_fields = ["product", "product_name", "unit_price", "quantity", "line_total"]
+    can_delete = False
+
+    @admin.display(description="total")
+    def line_total(self, obj):
+        return f"{obj.total} €"
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = [
+        "__str__",
+        "created_at",
+        "status",
+        "delivery_method",
+        "total_display",
+        "email",
+    ]
+
+    # La cliente change surtout le statut : autant le faire depuis la liste.
+    list_editable = ["status"]
+
+    list_filter = ["status", "delivery_method", "created_at"]
+
+    search_fields = ["last_name", "first_name", "email", "stripe_session_id"]
+
+    date_hierarchy = "created_at"
+
+    inlines = [OrderItemInline]
+
+    # Ce que le client a saisi et ce que Stripe a répondu ne se modifient
+    # pas à la main : ce sont des faits, pas des réglages. Seuls le statut
+    # et la note interne restent modifiables.
+    readonly_fields = [
+        "email", "first_name", "last_name", "phone",
+        "delivery_method", "address_line1", "address_line2",
+        "postal_code", "city", "shipping_fee",
+        "stripe_session_id", "created_at", "updated_at",
+        "total_display",
+    ]
+
+    # Regroupement du formulaire, pour que la cliente s'y retrouve.
+    fieldsets = [
+        ("Suivi", {"fields": ["status", "notes"]}),
+        ("Client", {"fields": ["first_name", "last_name", "email", "phone"]}),
+        (
+            "Livraison",
+            {
+                "fields": [
+                    "delivery_method",
+                    "address_line1",
+                    "address_line2",
+                    "postal_code",
+                    "city",
+                    "shipping_fee",
+                ]
+            },
+        ),
+        ("Paiement", {"fields": ["total_display", "stripe_session_id"]}),
+        ("Dates", {"fields": ["created_at", "updated_at"]}),
+    ]
+
+    @admin.display(description="total")
+    def total_display(self, obj):
+        return f"{obj.total} €"
+
+    # Les commandes viennent des clients, pas de l'admin : on n'en crée pas
+    # à la main.
+    def has_add_permission(self, request):
+        return False

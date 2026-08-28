@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.text import slugify
+from decimal import Decimal
+
 
 
 
@@ -490,3 +492,193 @@ class SiteSettings(models.Model):
 
     def __str__(self):
         return "Coordonnées du site"
+
+            # --- Livraison ---
+    # Modifiables par la cliente : elle ajustera après ses premiers envois.
+
+    shipping_fee = models.DecimalField(
+        "frais de livraison (€)",
+        max_digits=6,
+        decimal_places=2,
+        default=Decimal("5.90"),
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text="Montant facturé pour une livraison à domicile.",
+    )
+
+    free_shipping_from = models.DecimalField(
+        "livraison offerte à partir de (€)",
+        max_digits=7,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text="Laisser vide pour ne jamais offrir la livraison.",
+    )
+
+class Order(models.Model):
+    """Une commande passée sur la boutique en ligne.
+
+    Créée quand un visiteur valide son panier. Le paiement passe par Stripe :
+    la commande est d'abord « en attente », puis confirmée quand Stripe nous
+    prévient que le paiement a abouti.
+
+    La cliente suit ses commandes depuis l'admin.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "En attente de paiement"
+        PAID = "paid", "Payée"
+        SHIPPED = "shipped", "Expédiée"
+        READY = "ready", "Prête à retirer"
+        CANCELLED = "cancelled", "Annulée"
+
+    # Retrait ou livraison. On utilise des choix (et non un booléen
+    # « est_livree ») pour pouvoir ajouter le point relais plus tard sans
+    # restructurer le modèle ni migrer les commandes existantes.
+    class Delivery(models.TextChoices):
+        PICKUP = "pickup", "Retrait en boutique"
+        HOME = "home", "Livraison à domicile"
+
+    # --- Le client ---
+    # Pas de compte utilisateur : on commande en renseignant ses coordonnées.
+    email = models.EmailField("email")
+    first_name = models.CharField("prénom", max_length=80)
+    last_name = models.CharField("nom", max_length=80)
+    phone = models.CharField("téléphone", max_length=30, blank=True)
+
+    # --- Livraison ---
+    delivery_method = models.CharField(
+        "mode de livraison",
+        max_length=20,
+        choices=Delivery.choices,
+        default=Delivery.PICKUP,
+    )
+
+    # Adresse : remplie uniquement pour une livraison à domicile.
+    # D'où blank=True — la validation dans clean() les rend obligatoires
+    # quand le mode l'exige.
+    address_line1 = models.CharField("adresse", max_length=200, blank=True)
+    address_line2 = models.CharField(
+        "complément d'adresse", max_length=200, blank=True
+    )
+    postal_code = models.CharField("code postal", max_length=10, blank=True)
+    city = models.CharField("ville", max_length=100, blank=True)
+
+    # --- Montants ---
+    # Recopiés au moment de la commande, JAMAIS recalculés ensuite. Si la
+    # cliente change ses tarifs demain, les commandes d'hier doivent garder
+    # le montant réellement payé — c'est ce que Stripe a encaissé.
+    shipping_fee = models.DecimalField(
+        "frais de livraison (€)", max_digits=6, decimal_places=2, default=0
+    )
+
+    # --- Suivi ---
+    status = models.CharField(
+        "statut", max_length=20, choices=Status.choices, default=Status.PENDING
+    )
+
+    # L'identifiant de la session de paiement chez Stripe. Sert à rapprocher
+    # notre commande de ce que Stripe nous raconte, et à retrouver le
+    # paiement dans leur interface en cas de litige.
+    stripe_session_id = models.CharField(
+        "session Stripe", max_length=255, blank=True, db_index=True
+    )
+
+    notes = models.TextField(
+        "note interne",
+        blank=True,
+        help_text="Visible uniquement dans l'admin, jamais par le client.",
+    )
+
+    created_at = models.DateTimeField("passée le", auto_now_add=True)
+    updated_at = models.DateTimeField("modifiée le", auto_now=True)
+
+    class Meta:
+        verbose_name = "commande"
+        verbose_name_plural = "commandes"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Commande #{self.pk} — {self.last_name}"
+
+    def clean(self):
+        """Une livraison à domicile exige une adresse complète."""
+        if self.delivery_method == self.Delivery.HOME:
+            manquants = []
+            if not self.address_line1:
+                manquants.append("l'adresse")
+            if not self.postal_code:
+                manquants.append("le code postal")
+            if not self.city:
+                manquants.append("la ville")
+            if manquants:
+                raise ValidationError(
+                    "Pour une livraison à domicile, renseignez "
+                    + ", ".join(manquants)
+                    + "."
+                )
+
+    @property
+    def items_total(self):
+        """La somme des articles, hors frais de livraison."""
+        return sum((item.total for item in self.items.all()), Decimal("0"))
+
+    @property
+    def total(self):
+        """Le montant total réellement dû."""
+        return self.items_total + self.shipping_fee
+
+
+class OrderItem(models.Model):
+    """Une ligne de commande : un produit, en telle quantité, à tel prix.
+
+    Le nom et le prix sont RECOPIÉS ici, pas lus depuis le produit. Une
+    commande doit rester le reflet exact de ce qui a été acheté : si la
+    cliente change un prix ou renomme un article la semaine suivante, les
+    commandes passées ne doivent pas bouger d'un centime. C'est aussi ce
+    qui permet de garder une commande lisible après la suppression d'un
+    produit.
+    """
+
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="items",
+        verbose_name="commande",
+    )
+
+    # SET_NULL et non CASCADE : supprimer un produit du catalogue ne doit
+    # PAS effacer les lignes des commandes déjà passées. Le lien se vide,
+    # mais le nom et le prix recopiés gardent la ligne lisible.
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="order_items",
+        verbose_name="produit",
+    )
+
+    # La photo du produit au moment de l'achat.
+    product_name = models.CharField("nom du produit", max_length=120)
+    unit_price = models.DecimalField(
+        "prix unitaire (€)", max_digits=7, decimal_places=2
+    )
+
+    quantity = models.PositiveIntegerField(
+        "quantité", default=1, validators=[MinValueValidator(1)]
+    )
+
+    class Meta:
+        verbose_name = "article commandé"
+        verbose_name_plural = "articles commandés"
+
+    def __str__(self):
+        return f"{self.quantity} × {self.product_name}"
+
+    @property
+    def total(self):
+        """Le montant de cette ligne. `property` = s'utilise comme un
+        attribut (`ligne.total`), mais se calcule à la volée : rien n'est
+        stocké en base, donc rien ne peut se désynchroniser."""
+        return self.unit_price * self.quantity
