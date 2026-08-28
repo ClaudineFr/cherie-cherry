@@ -81,6 +81,13 @@ from rest_framework.response import Response
 class DrinkOfMonthSettingsView(APIView):
     """Renvoie les réglages de l'encart (la date de fin), sous forme d'UN objet."""
 
+    # Le réglage global (DjangoModelPermissionsOrAnonReadOnly) déduit les
+    # droits du modèle visé, qu'il lit dans `.queryset`. Une APIView n'en a
+    # pas — elle construit son objet à la main — et la permission lève alors
+    # une erreur 500. On déclare donc explicitement la règle : lecture
+    # publique, ce que fait déjà cette vue qui n'expose qu'un GET.
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request):
         settings = DrinkOfMonthSettings.objects.first()
         serializer = DrinkOfMonthSettingsSerializer(
@@ -90,6 +97,10 @@ class DrinkOfMonthSettingsView(APIView):
 
 class SiteSettingsView(APIView):
     """Renvoie les coordonnées du site (adresse, contact, réseaux) en UN objet."""
+
+    # Même raison que DrinkOfMonthSettingsView ci-dessus : une APIView n'a pas
+    # de `.queryset`, donc la permission par défaut ne sait pas quoi vérifier.
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         settings = SiteSettings.objects.first()
