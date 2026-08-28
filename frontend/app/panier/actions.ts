@@ -37,6 +37,20 @@ export async function createCheckout(
     return { message: "Votre panier est vide." };
   }
 
+  // L'acceptation des CGV conditionne la vente. L'attribut `required` du
+  // formulaire bloque déjà l'envoi, mais il suffit de désactiver JavaScript
+  // ou de poster la requête à la main pour le contourner : on revérifie ici,
+  // là où le client n'a pas la main.
+  if (!formData.get("accept_terms")) {
+    return {
+      errors: {
+        accept_terms: [
+          "Vous devez accepter les conditions générales de vente.",
+        ],
+      },
+    };
+  }
+
   const payload = {
     email: formData.get("email"),
     first_name: formData.get("first_name"),

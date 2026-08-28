@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 import { useCart } from "@/components/CartContext";
 import { createCheckout, type CheckoutState } from "./actions";
 
@@ -177,6 +178,33 @@ export default function CheckoutForm() {
           </div>
         </div>
       )}
+
+      {/* Acceptation des CGV. Obligatoire pour la vente à distance : le
+          Client doit avoir pris connaissance des conditions AVANT de payer.
+          `required` bloque l'envoi côté navigateur, et la Server Action
+          revérifie — une case cochée dans le navigateur ne prouve rien. */}
+      <div className="mt-8 flex items-start gap-3 rounded-xl border border-green/10 bg-cream/50 p-4">
+        <input
+          id="accept_terms"
+          name="accept_terms"
+          type="checkbox"
+          required
+          className="mt-0.5 h-4 w-4 shrink-0 accent-green"
+        />
+        <label htmlFor="accept_terms" className="text-[0.8rem] text-ink/70">
+          J’ai lu et j’accepte les{" "}
+          <Link
+            href="/cgv"
+            target="_blank"
+            className="text-green underline underline-offset-2"
+          >
+            conditions générales de vente
+          </Link>
+          . Je reconnais disposer d’un droit de rétractation de 14 jours à
+          compter de la réception de ma commande.
+        </label>
+      </div>
+      {erreur("accept_terms")}
 
       {/* Erreur globale : stock épuisé, service indisponible… */}
       {state.message && (
