@@ -296,6 +296,14 @@ def _dashboard_index(request, extra_context=None):
     extra_context["cc_drinks_count"] = MenuDrink.objects.filter(available=True).count()
     extra_context["cc_gallery_count"] = GalleryPhoto.objects.count()
 
+    # Commandes payées mais pas encore expédiées ni retirées : c'est ce qui
+    # demande une action de la propriétaire, donc ce qu'elle doit voir en
+    # premier. Les commandes « en attente » n'y figurent pas : leur paiement
+    # n'a pas abouti, il n'y a rien à préparer.
+    extra_context["cc_orders_to_handle"] = Order.objects.filter(
+        status=Order.Status.PAID
+    ).count()
+
     return _default_admin_index(request, extra_context)
 
 

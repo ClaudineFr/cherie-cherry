@@ -29,6 +29,11 @@ récentes » reste dans la colonne de droite.
 
   {# Rangée de stats : quelques chiffres du site en un coup d'œil. #}
   <div class="cc-stats">
+    {# Les commandes à préparer viennent en premier : c'est ce qui attend une action. #}
+    <a class="cc-stat" href="{% url 'admin:catalog_order_changelist' %}">
+      <span class="cc-stat-num">{{ cc_orders_to_handle }}</span>
+      <span class="cc-stat-label">Commandes à préparer</span>
+    </a>
     <a class="cc-stat" href="{% url 'admin:catalog_product_changelist' %}">
       <span class="cc-stat-num">{{ cc_products_count }}</span>
       <span class="cc-stat-label">Produits en boutique</span>
