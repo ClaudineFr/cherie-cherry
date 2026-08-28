@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 
+from . import emails
 from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, Order, OrderItem, LegalSettings, AboutPage
 from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer, SiteSettingsSerializer, CheckoutSerializer, LegalSettingsSerializer, AboutPageSerializer
 
@@ -370,6 +371,13 @@ class StripeWebhookView(APIView):
 
             commande.status = Order.Status.PAID
             commande.save(update_fields=["status", "updated_at"])
+
+        # Les emails partent APRÈS la transaction, jamais dedans : si celle-ci
+        # était annulée, on aurait déjà annoncé une commande qui n'existe plus.
+        # Un échec d'envoi ne remonte pas (voir emails.py) — la commande est
+        # payée quoi qu'il arrive, et Stripe doit recevoir son 200.
+        emails.confirmation_au_client(commande)
+        emails.alerte_a_la_proprietaire(commande)
 
     def _payment_echoue(self, session):
         session = session.to_dict() if hasattr(session, "to_dict") else session
