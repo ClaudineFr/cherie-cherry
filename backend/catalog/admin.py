@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from . import emails
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings, AboutPage, AboutValue
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings, AboutPage, AboutValue, ShippingSettings
 
 
 class SingletonAdminMixin:
@@ -254,14 +254,6 @@ class SiteSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
         ("Adresse", {"fields": ["street", "postal_code", "city"]}),
         ("Contact", {"fields": ["email", "phone"]}),
         ("Réseaux sociaux", {"fields": ["instagram_url", "tiktok_url"]}),
-        (
-            "Livraison",
-            {
-                "fields": ["shipping_fee", "free_shipping_from"],
-                "description": "Ce que vous facturez pour envoyer un colis. "
-                "Le retrait en boutique reste toujours gratuit.",
-            },
-        ),
     ]
 
     # Singleton (comme DrinkOfMonthSettings) : on autorise l'ajout SEULEMENT
@@ -522,6 +514,29 @@ class AboutPageAdmin(SingletonAdminMixin, admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return not AboutPage.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(ShippingSettings)
+class ShippingSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
+    """Les tarifs d'expédition, sur leur propre page."""
+
+    fieldsets = [
+        (
+            "Tarifs d'expédition",
+            {
+                "fields": ["shipping_fee", "free_shipping_from"],
+                "description": "Ce que vous facturez pour envoyer un colis. "
+                "Ces montants s'appliquent aux nouvelles commandes ; les "
+                "commandes déjà passées gardent le tarif qui était en vigueur.",
+            },
+        ),
+    ]
+
+    def has_add_permission(self, request):
+        return not ShippingSettings.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         return False

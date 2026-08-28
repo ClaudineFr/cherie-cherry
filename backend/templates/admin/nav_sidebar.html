@@ -80,7 +80,8 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
         <span class="cc-rail-label">Réglages</span>
       </span>
       <ul class="cc-rail-sub" aria-label="Réglages">
-        <li><a href="{% url 'admin:catalog_sitesettings_changelist' %}" data-models="sitesettings">Coordonnées &amp; livraison</a></li>
+        <li><a href="{% url 'admin:catalog_sitesettings_changelist' %}" data-models="sitesettings">Coordonnées</a></li>
+        <li><a href="{% url 'admin:catalog_shippingsettings_changelist' %}" data-models="shippingsettings">Livraison</a></li>
         <li><a href="{% url 'admin:catalog_legalsettings_changelist' %}" data-models="legalsettings">Informations légales</a></li>
       </ul>
     </li>
