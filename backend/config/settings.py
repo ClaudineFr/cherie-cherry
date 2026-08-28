@@ -200,3 +200,16 @@ STORAGES = {
 #     (ex: /data/media) pour que les photos survivent aux redéploiements.
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.environ.get("DJANGO_MEDIA_ROOT", BASE_DIR / "media")
+
+# Django REST Framework : lecture seule par défaut, pour tout le monde.
+#
+# Les vues sont déjà en ReadOnlyModelViewSet ; ce réglage global est une
+# sécurité supplémentaire, qui protège aussi les vues qu'on ajoutera plus
+# tard sans y penser. Une vue qui doit accepter des écritures (le formulaire
+# de contact, et bientôt les commandes) déclare explicitement sa propre
+# permission.
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+    ],
+}
