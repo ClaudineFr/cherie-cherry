@@ -14,9 +14,21 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from dotenv import load_dotenv
+
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Charge les variables du fichier backend/.env, s'il existe.
+#
+# En local, ça évite de retaper les clés à chaque terminal. En production,
+# Railway fournit ses propres variables d'environnement et il n'y a pas de
+# fichier .env : load_dotenv ne trouve rien et ne fait rien. Les variables
+# déjà définies dans l'environnement ne sont JAMAIS écrasées.
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -213,3 +225,22 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
     ],
 }
+
+# --- Stripe (paiement de la boutique en ligne) ---
+#
+# En local, ces valeurs viennent de backend/.env ; en production, des
+# variables Railway. Les clés de test (préfixe _test_) ne touchent aucun
+# argent réel.
+#
+# La clé secrète ne doit JAMAIS partir vers le navigateur : elle sert
+# uniquement côté serveur. Seule la clé publique peut être exposée.
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
+
+# Sert à vérifier que les notifications de paiement viennent bien de Stripe
+# et non d'un plaisantin. Renseigné à l'étape du webhook.
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+
+# L'adresse vers laquelle Stripe renvoie le client après paiement est
+# FRONTEND_URL, déjà définie plus haut pour le bouton « Voir le site » de
+# l'admin. On ne la redéfinit pas ici.
