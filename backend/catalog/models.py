@@ -645,6 +645,111 @@ class LegalSettings(models.Model):
         return "Informations légales"
 
 
+class AboutPage(models.Model):
+    """Le contenu de la page « À propos ».
+
+    Singleton : une seule ligne. La cliente y raconte son histoire et la fait
+    évoluer sans passer par une modification du site.
+
+    Les mises en forme (gras, icônes, disposition) restent dans le code : ce
+    modèle ne porte que du texte.
+    """
+
+    intro = models.TextField(
+        "phrase d'accroche",
+        blank=True,
+        help_text="La phrase sous le titre, en haut de la page. Deux lignes "
+        "maximum pour rester lisible.",
+    )
+
+    story = models.TextField(
+        "votre histoire",
+        blank=True,
+        help_text="Le récit principal. Laissez une ligne vide entre deux "
+        "paragraphes : ils seront séparés à l'affichage.",
+    )
+
+    closing = models.TextField(
+        "phrase de fin",
+        blank=True,
+        help_text="Le petit encart en bas de page. L'adresse de la boutique "
+        "y est ajoutée automatiquement.",
+    )
+
+    class Meta:
+        verbose_name = "page À propos"
+        verbose_name_plural = "page À propos"
+
+    def __str__(self):
+        return "Page À propos"
+
+    @property
+    def story_paragraphs(self):
+        """Découpe le récit en paragraphes, sur les lignes vides.
+
+        La cliente écrit dans une simple zone de texte ; on lui évite d'avoir
+        à connaître le HTML. On retire au passage les blancs superflus et les
+        paragraphes vides, pour qu'un retour à la ligne en trop ne crée pas
+        un trou dans la page.
+        """
+        return [bloc.strip() for bloc in self.story.split("\n\n") if bloc.strip()]
+
+
+class AboutValue(models.Model):
+    """Une des valeurs mises en avant sur la page « À propos ».
+
+    Affichées en cartes sous le récit. La cliente peut en ajouter, en retirer
+    ou les réordonner ; l'icône, elle, reste choisie dans le code.
+    """
+
+    # Le lien vers la page. Il n'y a qu'une seule page « À propos », mais
+    # Django exige cette clé pour éditer les valeurs depuis son formulaire.
+    page = models.ForeignKey(
+        AboutPage,
+        on_delete=models.CASCADE,
+        related_name="values",
+        verbose_name="page",
+    )
+
+    # Les icônes disponibles. La valeur en base est une clé que le front
+    # traduit en dessin : la cliente choisit dans une liste, sans avoir à
+    # connaître les noms techniques.
+    class Icon(models.TextChoices):
+        FLOWER = "flower", "Fleur"
+        COFFEE = "coffee", "Tasse de café"
+        HEART = "heart", "Cœur"
+        SPARKLES = "sparkles", "Étincelles"
+        GIFT = "gift", "Cadeau"
+        LEAF = "leaf", "Feuille"
+
+    icon = models.CharField(
+        "icône", max_length=20, choices=Icon.choices, default=Icon.HEART
+    )
+
+    title = models.CharField("titre", max_length=80)
+
+    text = models.TextField(
+        "description",
+        help_text="Une à deux phrases : les cartes sont côte à côte, un texte "
+        "trop long les déséquilibre.",
+    )
+
+    order = models.PositiveIntegerField(
+        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+    )
+
+    # Décocher pour retirer une valeur du site sans la supprimer.
+    visible = models.BooleanField("affichée sur le site", default=True)
+
+    class Meta:
+        verbose_name = "valeur (page À propos)"
+        verbose_name_plural = "valeurs (page À propos)"
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.title
+
+
 class Order(models.Model):
     """Une commande passée sur la boutique en ligne.
 
