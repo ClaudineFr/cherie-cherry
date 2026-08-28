@@ -10,3 +10,7 @@ dj-database-url==3.1.2      # traduit DATABASE_URL en config Django (Postgres en
 psycopg[binary]==3.3.4      # driver PostgreSQL
 whitenoise==6.12.0          # sert les fichiers statiques (CSS de l'admin) en prod
 gunicorn==26.0.0            # serveur d'application qui fait tourner Django en prod
+
+# --- Boutique en ligne ---
+stripe==15.6.0              # SDK Stripe (paiement par carte)
+python-dotenv==1.2.3        # lit backend/.env en local (sans effet sur Railway)
