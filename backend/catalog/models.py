@@ -486,14 +486,7 @@ class SiteSettings(models.Model):
     instagram_url = models.URLField("lien Instagram", blank=True)
     tiktok_url = models.URLField("lien TikTok", blank=True)
 
-    class Meta:
-        verbose_name = "coordonnées du site"
-        verbose_name_plural = "coordonnées du site"
-
-    def __str__(self):
-        return "Coordonnées du site"
-
-            # --- Livraison ---
+    # --- Livraison ---
     # Modifiables par la cliente : elle ajustera après ses premiers envois.
 
     shipping_fee = models.DecimalField(
@@ -514,6 +507,143 @@ class SiteSettings(models.Model):
         validators=[MinValueValidator(Decimal("0"))],
         help_text="Laisser vide pour ne jamais offrir la livraison.",
     )
+
+    class Meta:
+        verbose_name = "coordonnées du site"
+        verbose_name_plural = "coordonnées du site"
+
+    def __str__(self):
+        return "Coordonnées du site"
+
+
+class LegalSettings(models.Model):
+    """Les informations juridiques affichées dans les pages légales.
+
+    Mentions légales, CGV et politique de confidentialité en ont besoin, et
+    elles étaient jusqu'ici écrites en dur dans le code avec des « [À
+    COMPLÉTER] ». La cliente les renseigne désormais elle-même, sans passer
+    par une modification du site.
+
+    Singleton, comme SiteSettings : une seule ligne, éditée directement.
+
+    Séparé de SiteSettings à dessein : là-bas ce sont les coordonnées
+    affichées un peu partout (footer, contact), ici des mentions juridiques
+    qu'on ne touche presque jamais. Les mélanger donnerait un formulaire
+    interminable.
+    """
+
+    # --- Identité de l'entreprise ---
+    company_name = models.CharField(
+        "raison sociale",
+        max_length=200,
+        blank=True,
+        help_text="Le nom officiel de l'entreprise, tel qu'il figure sur "
+        "l'extrait Kbis (ex. « Chérie Cherry SARL »).",
+    )
+    legal_form = models.CharField(
+        "forme juridique",
+        max_length=100,
+        blank=True,
+        help_text="Ex. SARL, SAS, EI, micro-entreprise.",
+    )
+    share_capital = models.CharField(
+        "capital social",
+        max_length=50,
+        blank=True,
+        help_text="Le cas échéant, ex. « 5 000 € ». Laisser vide pour une "
+        "entreprise individuelle.",
+    )
+    siret = models.CharField(
+        "SIRET",
+        max_length=20,
+        blank=True,
+        help_text="Les 14 chiffres, espaces autorisés.",
+    )
+    vat_number = models.CharField(
+        "numéro de TVA intracommunautaire",
+        max_length=20,
+        blank=True,
+        help_text="Ex. FR12345678901. Laisser vide si non assujettie.",
+    )
+    publication_director = models.CharField(
+        "directeur / directrice de la publication",
+        max_length=120,
+        blank=True,
+        help_text="La personne responsable du contenu du site, en général "
+        "la gérante.",
+    )
+
+    # --- Hébergeur (obligatoire dans les mentions légales) ---
+    host_name = models.CharField(
+        "nom de l'hébergeur",
+        max_length=200,
+        blank=True,
+        help_text="L'entreprise qui héberge le site.",
+    )
+    host_address = models.CharField(
+        "adresse de l'hébergeur", max_length=250, blank=True
+    )
+    host_contact = models.CharField(
+        "contact de l'hébergeur",
+        max_length=200,
+        blank=True,
+        help_text="Téléphone ou site web de l'hébergeur.",
+    )
+
+    # --- Vente en ligne ---
+    dispatch_delay = models.CharField(
+        "délai d'expédition",
+        max_length=100,
+        blank=True,
+        help_text="Sous combien de temps un colis part après le paiement "
+        "(ex. « 3 jours ouvrés »).",
+    )
+    delivery_delay = models.CharField(
+        "délai de livraison",
+        max_length=100,
+        blank=True,
+        help_text="Temps de trajet indicatif après expédition "
+        "(ex. « 2 à 5 jours ouvrés »).",
+    )
+    pickup_delay = models.CharField(
+        "délai de retrait en boutique",
+        max_length=100,
+        blank=True,
+        help_text="Combien de temps une commande est gardée en magasin "
+        "(ex. « 14 jours »).",
+    )
+    mediator = models.TextField(
+        "médiateur de la consommation",
+        blank=True,
+        help_text="Nom et coordonnées de l'organisme de médiation. "
+        "L'adhésion à un service de médiation est OBLIGATOIRE pour vendre "
+        "en ligne.",
+    )
+
+    data_retention = models.CharField(
+        "durée de conservation des données",
+        max_length=100,
+        blank=True,
+        help_text="Combien de temps vous gardez les messages et commandes "
+        "après le dernier échange (ex. « 12 mois »). Affiché dans la "
+        "politique de confidentialité.",
+    )
+
+    # Date de dernière révision des CGV, affichée en haut de la page.
+    terms_updated_at = models.DateField(
+        "CGV mises à jour le",
+        null=True,
+        blank=True,
+        help_text="À changer quand le texte des CGV est modifié.",
+    )
+
+    class Meta:
+        verbose_name = "informations légales"
+        verbose_name_plural = "informations légales"
+
+    def __str__(self):
+        return "Informations légales"
+
 
 class Order(models.Model):
     """Une commande passée sur la boutique en ligne.

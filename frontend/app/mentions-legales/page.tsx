@@ -1,4 +1,10 @@
 import type { Metadata } from "next";
+import { fetchLegalSettings, ouACompleter } from "../legalSettings";
+import {
+  adresseEnLigne,
+  emailOuACompleter,
+  fetchSiteSettings,
+} from "../siteSettings";
 
 export const metadata: Metadata = {
   title: "Mentions légales",
@@ -6,7 +12,14 @@ export const metadata: Metadata = {
     "Mentions légales du site Chérie Cherry : éditeur, hébergeur et propriété intellectuelle.",
 };
 
-export default function MentionsLegalesPage() {
+export default async function MentionsLegalesPage() {
+  // Les informations viennent de l'admin : la propriétaire les met à jour
+  // elle-même, sans passer par une modification du site.
+  const [legal, site] = await Promise.all([
+    fetchLegalSettings(),
+    fetchSiteSettings(),
+  ]);
+
   return (
     <main className="flex-1 bg-cream px-6 py-20">
       <div className="mx-auto max-w-3xl">
@@ -28,19 +41,27 @@ export default function MentionsLegalesPage() {
               Éditeur du site
             </h2>
             <p>
-              {/* TODO : remplacer chaque [À COMPLÉTER] par les vraies informations */}
               Le site <strong>cheriecherry.fr</strong> est édité par&nbsp;:
             </p>
             <ul className="mt-3 flex flex-col gap-1">
-              <li>Raison sociale&nbsp;: [À COMPLÉTER]</li>
-              <li>Forme juridique&nbsp;: [À COMPLÉTER — ex. SARL, SAS, EI]</li>
-              <li>Capital social&nbsp;: [À COMPLÉTER, le cas échéant]</li>
-              <li>Siège social&nbsp;: 7 rue de la République, 84200 Carpentras</li>
-              <li>SIRET&nbsp;: [À COMPLÉTER]</li>
-              <li>Numéro de TVA intracommunautaire&nbsp;: [À COMPLÉTER]</li>
-              <li>Téléphone&nbsp;: [À COMPLÉTER]</li>
-              <li>Email&nbsp;: contact@cheriecherry.fr</li>
-              <li>Directeur / directrice de la publication&nbsp;: [À COMPLÉTER]</li>
+              <li>Raison sociale&nbsp;: {ouACompleter(legal.company_name)}</li>
+              <li>Forme juridique&nbsp;: {ouACompleter(legal.legal_form)}</li>
+              {legal.share_capital && (
+                <li>Capital social&nbsp;: {legal.share_capital}</li>
+              )}
+              <li>Siège social&nbsp;: {adresseEnLigne(site)}</li>
+              <li>SIRET&nbsp;: {ouACompleter(legal.siret)}</li>
+              {legal.vat_number && (
+                <li>
+                  Numéro de TVA intracommunautaire&nbsp;: {legal.vat_number}
+                </li>
+              )}
+              <li>Téléphone&nbsp;: {ouACompleter(site.phone)}</li>
+              <li>Email&nbsp;: {emailOuACompleter(site)}</li>
+              <li>
+                Directeur / directrice de la publication&nbsp;:{" "}
+                {ouACompleter(legal.publication_director)}
+              </li>
             </ul>
           </section>
 
@@ -49,10 +70,9 @@ export default function MentionsLegalesPage() {
             <h2 className="mb-4 font-serif text-2xl text-green">Hébergeur</h2>
             <p>Le site est hébergé par&nbsp;:</p>
             <ul className="mt-3 flex flex-col gap-1">
-              {/* TODO : renseigner l'hébergeur réel (ex. Vercel, OVH…) */}
-              <li>Nom&nbsp;: [À COMPLÉTER — ex. Vercel Inc., OVH…]</li>
-              <li>Adresse&nbsp;: [À COMPLÉTER]</li>
-              <li>Contact&nbsp;: [À COMPLÉTER]</li>
+              <li>Nom&nbsp;: {ouACompleter(legal.host_name)}</li>
+              <li>Adresse&nbsp;: {ouACompleter(legal.host_address)}</li>
+              <li>Contact&nbsp;: {ouACompleter(legal.host_contact)}</li>
             </ul>
           </section>
 
@@ -62,12 +82,11 @@ export default function MentionsLegalesPage() {
               Propriété intellectuelle
             </h2>
             <p>
-              L&apos;ensemble des contenus présents sur ce site (textes,
-              images, logo, éléments graphiques et mise en page) est la
-              propriété de Chérie Cherry, sauf mention contraire, et est
-              protégé par le droit d&apos;auteur. Toute reproduction ou
-              utilisation, totale ou partielle, sans autorisation préalable est
-              interdite.
+              L&apos;ensemble des contenus présents sur ce site (textes, images,
+              logo, éléments graphiques et mise en page) est la propriété de
+              Chérie Cherry, sauf mention contraire, et est protégé par le droit
+              d&apos;auteur. Toute reproduction ou utilisation, totale ou
+              partielle, sans autorisation préalable est interdite.
             </p>
           </section>
 
@@ -78,10 +97,10 @@ export default function MentionsLegalesPage() {
               Pour toute question relative au site, vous pouvez nous écrire à
               l&apos;adresse{" "}
               <a
-                href="mailto:contact@cheriecherry.fr"
+                href={`mailto:${site.email}`}
                 className="text-green underline underline-offset-2"
               >
-                contact@cheriecherry.fr
+                {emailOuACompleter(site)}
               </a>
               .
             </p>

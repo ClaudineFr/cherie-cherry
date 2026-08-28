@@ -32,7 +32,9 @@ const EMPTY: SiteSettings = {
 // null) : en cas de souci, c'est l'objet vide ci-dessus.
 export async function fetchSiteSettings(): Promise<SiteSettings> {
   if (!API_URL) {
-    console.error("API_SETTINGS_URL n'est pas définie. Vérifie ton .env.local.");
+    console.error(
+      "API_SETTINGS_URL n'est pas définie. Vérifie ton .env.local.",
+    );
     return EMPTY;
   }
 
@@ -51,4 +53,21 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
     console.error("Impossible de joindre l'API paramètres :", err);
     return EMPTY;
   }
+}
+
+// L'adresse sur une seule ligne : « 7 rue de la République, 84200 Carpentras ».
+// Utilisée dans les pages légales, où l'adresse s'insère dans une phrase.
+// Renvoie « à compléter » si la propriétaire ne l'a pas renseignée, pour que
+// le trou reste visible plutôt que de laisser une phrase bancale.
+export function adresseEnLigne(site: SiteSettings): string {
+  const morceaux = [
+    site.street,
+    [site.postal_code, site.city].filter(Boolean).join(" "),
+  ].filter((m) => m.trim() !== "");
+  return morceaux.length > 0 ? morceaux.join(", ") : "à compléter";
+}
+
+// L'email de contact, ou « à compléter » s'il manque.
+export function emailOuACompleter(site: SiteSettings): string {
+  return site.email.trim() || "à compléter";
 }
