@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { fetchLegalSettings, formatDate, ouACompleter } from "../legalSettings";
 
 export const metadata: Metadata = {
   title: "Conditions générales de vente",
@@ -10,11 +11,13 @@ export const metadata: Metadata = {
 // Les CGV de la boutique en ligne.
 //
 // ⚠️ Ce texte couvre les mentions rendues obligatoires par le code de la
-// consommation pour la vente à distance, mais il doit être relu et complété
-// par la propriétaire (et idéalement par un professionnel du droit) : il
-// engage son entreprise. Les [À COMPLÉTER] marquent les informations que
-// seule elle possède.
-export default function CGVPage() {
+// consommation pour la vente à distance, mais il doit être relu par la
+// propriétaire (et idéalement par un professionnel du droit) : il engage son
+// entreprise. Les informations qui lui sont propres (raison sociale, SIRET,
+// délais, médiateur) viennent de l'admin, via LegalSettings.
+export default async function CGVPage() {
+  const legal = await fetchLegalSettings();
+
   const section = "mb-4 font-serif text-2xl text-green";
   const sousTitre = "mt-6 mb-2 font-medium text-green";
 
@@ -29,7 +32,7 @@ export default function CGVPage() {
             Conditions générales de vente
           </h1>
           <p className="mt-4 text-sm text-ink/50">
-            Dernière mise à jour&nbsp;: [À COMPLÉTER — date de mise en ligne]
+            Dernière mise à jour&nbsp;: {formatDate(legal.terms_updated_at)}
           </p>
         </div>
 
@@ -42,10 +45,10 @@ export default function CGVPage() {
             </p>
             <ul className="mt-3 flex flex-col gap-1">
               <li>
-                Le vendeur&nbsp;: [À COMPLÉTER — raison sociale], dont le siège
-                social est situé 7 rue de la République, 84200 Carpentras,
-                immatriculée sous le numéro SIRET [À COMPLÉTER], ci-après
-                «&nbsp;le Vendeur&nbsp;»&nbsp;;
+                Le vendeur&nbsp;: {ouACompleter(legal.company_name)}, dont le
+                siège social est situé 7 rue de la République, 84200 Carpentras,
+                immatriculée sous le numéro SIRET {ouACompleter(legal.siret)},
+                ci-après «&nbsp;le Vendeur&nbsp;»&nbsp;;
               </li>
               <li>
                 Toute personne physique non commerçante effectuant un achat sur
@@ -143,8 +146,8 @@ export default function CGVPage() {
               Le retrait est gratuit. La commande est mise à disposition à
               l’adresse du magasin, 7 rue de la République, 84200 Carpentras,
               aux horaires d’ouverture. Le Client est prévenu dès que sa
-              commande est prête et dispose de [À COMPLÉTER — ex. 14 jours] pour
-              venir la récupérer.
+              commande est prête et dispose de{" "}
+              {ouACompleter(legal.pickup_delay)} pour venir la récupérer.
             </p>
 
             <h3 className={sousTitre}>Livraison à domicile</h3>
@@ -155,12 +158,13 @@ export default function CGVPage() {
               d’achat.
             </p>
             <p className="mt-3">
-              Les commandes sont expédiées sous [À COMPLÉTER — ex. 3 jours
-              ouvrés] à compter de la confirmation du paiement. Le délai de
-              livraison indicatif est de [À COMPLÉTER — ex. 2 à 5 jours ouvrés]
-              après expédition. Conformément à l’article L.216-1 du code de la
-              consommation, la livraison intervient au plus tard trente (30)
-              jours après la conclusion du contrat.
+              Les commandes sont expédiées sous{" "}
+              {ouACompleter(legal.dispatch_delay)} à compter de la confirmation
+              du paiement. Le délai de livraison indicatif est de{" "}
+              {ouACompleter(legal.delivery_delay)} après expédition.
+              Conformément à l’article L.216-1 du code de la consommation, la
+              livraison intervient au plus tard trente (30) jours après la
+              conclusion du contrat.
             </p>
             <p className="mt-3">
               En cas de retard de livraison, le Client peut demander la
@@ -246,8 +250,8 @@ export default function CGVPage() {
             <p className="mt-3">
               Conformément à l’article L.612-1 du code de la consommation, le
               Client peut recourir gratuitement à un médiateur de la
-              consommation en vue de la résolution amiable d’un litige&nbsp;: [À
-              COMPLÉTER — nom et coordonnées du médiateur souscrit].
+              consommation en vue de la résolution amiable d’un litige&nbsp;:{" "}
+              {ouACompleter(legal.mediator)}.
             </p>
             <p className="mt-3">
               Le Client peut également utiliser la plateforme européenne de

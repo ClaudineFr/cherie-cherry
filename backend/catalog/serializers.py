@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, LegalSettings
 
 class ProductImageSerializer(serializers.ModelSerializer):
     """Une photo de galerie d'un produit, en JSON."""
@@ -179,6 +179,30 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
             "instagram_url",
             "tiktok_url",
         ]
+
+class LegalSettingsSerializer(serializers.ModelSerializer):
+    """Les informations juridiques, pour les pages légales du front."""
+
+    class Meta:
+        model = LegalSettings
+        fields = [
+            "company_name",
+            "legal_form",
+            "share_capital",
+            "siret",
+            "vat_number",
+            "publication_director",
+            "host_name",
+            "host_address",
+            "host_contact",
+            "dispatch_delay",
+            "delivery_delay",
+            "pickup_delay",
+            "mediator",
+            "data_retention",
+            "terms_updated_at",
+        ]
+
 
 class CheckoutLineSerializer(serializers.Serializer):
     """Une ligne du panier telle que le navigateur l'envoie.

@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem
+from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings
 
 
 class SingletonAdminMixin:
@@ -381,4 +381,60 @@ class OrderAdmin(admin.ModelAdmin):
     # Les commandes viennent des clients, pas de l'admin : on n'en crée pas
     # à la main.
     def has_add_permission(self, request):
+        return False
+
+
+@admin.register(LegalSettings)
+class LegalSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
+    """Les informations juridiques, éditées en une seule page.
+
+    Singleton comme SiteSettings : cliquer sur la rubrique ouvre directement le
+    formulaire, sans passer par une liste d'un seul élément.
+    """
+
+    fieldsets = [
+        (
+            "Votre entreprise",
+            {
+                "fields": [
+                    "company_name",
+                    "legal_form",
+                    "share_capital",
+                    "siret",
+                    "vat_number",
+                    "publication_director",
+                ],
+                "description": "Ces informations apparaissent dans les "
+                "mentions légales et les conditions de vente.",
+            },
+        ),
+        (
+            "Hébergeur du site",
+            {
+                "fields": ["host_name", "host_address", "host_contact"],
+                "description": "La loi impose d'indiquer qui héberge le "
+                "site. Demandez ces informations à votre développeuse.",
+            },
+        ),
+        (
+            "Vente en ligne",
+            {
+                "fields": [
+                    "dispatch_delay",
+                    "delivery_delay",
+                    "pickup_delay",
+                    "mediator",
+                    "data_retention",
+                    "terms_updated_at",
+                ],
+                "description": "Les délais annoncés à vos clients, et "
+                "l'organisme de médiation auquel vous adhérez.",
+            },
+        ),
+    ]
+
+    def has_add_permission(self, request):
+        return not LegalSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
         return False

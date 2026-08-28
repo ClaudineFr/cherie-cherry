@@ -11,8 +11,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 
-from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, Order, OrderItem
-from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer, SiteSettingsSerializer, CheckoutSerializer
+from .models import GalleryPhoto, Product, OpeningHours, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, Order, OrderItem, LegalSettings
+from .serializers import GalleryPhotoSerializer, ProductSerializer, OpeningHoursSerializer, InstagramStorySerializer, InstagramPostSerializer, MenuDrinkSerializer, DrinkOfMonthSerializer, DrinkOfMonthSettingsSerializer, SupplementSerializer, ContactMessageSerializer, SiteSettingsSerializer, CheckoutSerializer, LegalSettingsSerializer
 
 # Tous les endpoints ci-dessous sont en LECTURE SEULE
 # (ReadOnlyModelViewSet = seulement GET liste + GET détail).
@@ -111,6 +111,21 @@ class SiteSettingsView(APIView):
         # vide plutôt qu'une erreur : le front affichera juste des champs vides.
         serializer = SiteSettingsSerializer(settings or SiteSettings())
         return Response(serializer.data)
+
+class LegalSettingsView(APIView):
+    """Renvoie les informations juridiques du site, en UN objet."""
+
+    # Même raison que les autres vues singleton : une APIView n'a pas de
+    # `.queryset`, donc la permission par défaut ne sait pas quoi vérifier.
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        reglages = LegalSettings.objects.first()
+        # Ligne absente : on renvoie un objet vide plutôt qu'une erreur. Le
+        # front affichera des mentions à compléter, pas une page cassée.
+        serializer = LegalSettingsSerializer(reglages or LegalSettings())
+        return Response(serializer.data)
+
 
 class CheckoutView(APIView):
     """Crée la session de paiement Stripe à partir du panier.

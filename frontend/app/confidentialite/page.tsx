@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { fetchLegalSettings, ouACompleter } from "../legalSettings";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
@@ -6,7 +7,9 @@ export const metadata: Metadata = {
     "Politique de confidentialité de Chérie Cherry : données collectées via le formulaire de contact, finalité, durée de conservation et vos droits.",
 };
 
-export default function ConfidentialitePage() {
+export default async function ConfidentialitePage() {
+  const legal = await fetchLegalSettings();
+
   return (
     <main className="flex-1 bg-cream px-6 py-20">
       <div className="mx-auto max-w-3xl">
@@ -32,10 +35,9 @@ export default function ConfidentialitePage() {
               Responsable du traitement
             </h2>
             <p>
-              {/* TODO : renseigner l'identité du responsable (souvent identique à l'éditeur des mentions légales) */}
               Les données collectées via ce site sont traitées par Chérie
-              Cherry, [À COMPLÉTER — raison sociale], dont le siège social est
-              situé au 7 rue de la République, 84200 Carpentras. Pour toute
+              Cherry, {ouACompleter(legal.company_name)}, dont le siège social
+              est situé au 7 rue de la République, 84200 Carpentras. Pour toute
               question, vous pouvez écrire à{" "}
               <a
                 href="mailto:contact@cheriecherry.fr"
@@ -73,8 +75,8 @@ export default function ConfidentialitePage() {
               Pourquoi ces données&nbsp;?
             </h2>
             <p>
-              Ces informations servent uniquement à traiter votre demande et à
-              y répondre. La base légale de ce traitement est l&apos;intérêt
+              Ces informations servent uniquement à traiter votre demande et à y
+              répondre. La base légale de ce traitement est l&apos;intérêt
               légitime de Chérie Cherry à répondre aux sollicitations qui lui
               sont adressées.
             </p>
@@ -86,10 +88,9 @@ export default function ConfidentialitePage() {
               Durée de conservation
             </h2>
             <p>
-              {/* TODO : ajuster la durée réellement pratiquée */}
               Vos données sont conservées le temps nécessaire au traitement de
-              votre demande, puis supprimées dans un délai de [À COMPLÉTER —
-              ex. 12 mois] après notre dernier échange.
+              votre demande, puis supprimées dans un délai de{" "}
+              {ouACompleter(legal.data_retention)} après notre dernier échange.
             </p>
           </section>
 
@@ -111,8 +112,8 @@ export default function ConfidentialitePage() {
             <p>
               Ce site n&apos;utilise aucun cookie de suivi, de publicité ni de
               mesure d&apos;audience. Seuls les cookies strictement nécessaires
-              à son bon fonctionnement peuvent être utilisés, sans traitement
-              de vos données personnelles à des fins de profilage.
+              à son bon fonctionnement peuvent être utilisés, sans traitement de
+              vos données personnelles à des fins de profilage.
             </p>
           </section>
 
@@ -134,8 +135,8 @@ export default function ConfidentialitePage() {
             </p>
             <p className="mt-3">
               Si vous estimez, après nous avoir contactés, que vos droits ne
-              sont pas respectés, vous pouvez adresser une réclamation à la
-              CNIL (
+              sont pas respectés, vous pouvez adresser une réclamation à la CNIL
+              (
               <a
                 href="https://www.cnil.fr"
                 target="_blank"
