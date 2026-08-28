@@ -253,6 +253,14 @@ class SiteSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
         ("Adresse", {"fields": ["street", "postal_code", "city"]}),
         ("Contact", {"fields": ["email", "phone"]}),
         ("Réseaux sociaux", {"fields": ["instagram_url", "tiktok_url"]}),
+        (
+            "Livraison",
+            {
+                "fields": ["shipping_fee", "free_shipping_from"],
+                "description": "Ce que vous facturez pour envoyer un colis. "
+                "Le retrait en boutique reste toujours gratuit.",
+            },
+        ),
     ]
 
     # Singleton (comme DrinkOfMonthSettings) : on autorise l'ajout SEULEMENT
