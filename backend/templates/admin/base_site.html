@@ -91,8 +91,8 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
   Tiroir mobile repensé : panneau latéral qui glisse depuis la gauche par-dessus
   un overlay assombri. Les grandes rubriques à sous-menu sont des accordéons
   (bouton + chevron) ; les autres sont des liens directs. Toutes les rubriques
-  sont présentes (dont Messages et Réglages). Le surlignage « actif » est porté
-  par le lien courant (data-models ; le JS cible #cc-drawer [data-models]).
+  sont présentes, dans le même ordre que le rail desktop. Le surlignage
+  « actif » est porté par le lien courant (data-models ; le JS cible #cc-drawer [data-models]).
   {% endcomment %}
   <div id="cc-overlay" class="cc-overlay" hidden></div>
   <nav id="cc-drawer" class="cc-drawer" aria-label="Catégories" hidden>
@@ -132,7 +132,13 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
         </ul>
       </li>
       <li>
+        <a href="{% url 'admin:catalog_aboutpage_changelist' %}" data-models="aboutpage aboutvalue"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-user"></use></svg></span><span class="cc-rail-label">À propos</span></a>
+      </li>
+      <li>
         <a href="{% url 'admin:catalog_product_changelist' %}" data-models="product"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span><span class="cc-rail-label">Concept store</span></a>
+      </li>
+      <li>
+        <a href="{% url 'admin:catalog_order_changelist' %}" data-models="order"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-receipt"></use></svg></span><span class="cc-rail-label">Commandes</span></a>
       </li>
       <li>
         <a href="{% url 'admin:catalog_openinghours_changelist' %}" data-models="openinghours"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-map-pin"></use></svg></span><span class="cc-rail-label">Infos pratiques</span></a>
@@ -140,8 +146,17 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
       <li>
         <a href="{% url 'admin:catalog_contactmessage_changelist' %}" data-models="contactmessage"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-mail"></use></svg></span><span class="cc-rail-label">Messages</span></a>
       </li>
-      <li>
-        <a href="{% url 'admin:catalog_sitesettings_changelist' %}" data-models="sitesettings"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-settings"></use></svg></span><span class="cc-rail-label">Réglages</span></a>
+      <li class="cc-group">
+        <button type="button" class="cc-group-toggle" aria-expanded="false" aria-controls="cc-sub-settings">
+          <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-settings"></use></svg></span>
+          <span class="cc-rail-label">Réglages</span>
+          <span class="cc-chevron" aria-hidden="true"><svg class="cc-icon"><use href="#icon-chevron-down"></use></svg></span>
+        </button>
+        <ul id="cc-sub-settings" class="cc-drawer-sub" hidden>
+          <li><a href="{% url 'admin:catalog_sitesettings_changelist' %}" data-models="sitesettings">Coordonnées</a></li>
+          <li><a href="{% url 'admin:catalog_shippingsettings_changelist' %}" data-models="shippingsettings">Livraison</a></li>
+          <li><a href="{% url 'admin:catalog_legalsettings_changelist' %}" data-models="legalsettings">Informations légales</a></li>
+        </ul>
       </li>
     </ul>
   </nav>
@@ -248,7 +263,7 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
           if (e.key === "Escape" && !drawer.hidden) { doCloseDrawer(true); }
         });
 
-        // --- Accordéons des grandes rubriques (Accueil du site, Coffee shop) ---
+        // --- Accordéons des grandes rubriques (Accueil du site, Coffee shop, Réglages) ---
         drawer.querySelectorAll(".cc-group-toggle").forEach(function (toggle) {
           var sub = document.getElementById(toggle.getAttribute("aria-controls"));
           if (!sub) { return; }
