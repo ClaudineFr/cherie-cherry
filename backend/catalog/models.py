@@ -790,6 +790,8 @@ class Order(models.Model):
     class Delivery(models.TextChoices):
         PICKUP = "pickup", "Retrait en boutique"
         HOME = "home", "Livraison à domicile"
+        RELAY = "relay", "Livraison en point relais"
+
 
     # --- Le client ---
     # Pas de compte utilisateur : on commande en renseignant ses coordonnées.
@@ -815,6 +817,20 @@ class Order(models.Model):
     )
     postal_code = models.CharField("code postal", max_length=10, blank=True)
     city = models.CharField("ville", max_length=100, blank=True)
+    # --- Point relais ---
+    # Rempli uniquement pour une livraison en point relais. Les coordonnées du
+    # relais sont RECOPIÉES ici, comme le nom et le prix d'un produit dans
+    # OrderItem : si Mondial Relay ferme ce point dans six mois, la commande
+    # doit toujours montrer où le colis a été envoyé.
+    relay_id = models.CharField(
+        "identifiant du point relais", max_length=20, blank=True,
+        help_text="Numéro Mondial Relay du point, ex. FR-012345.",
+    )
+    relay_name = models.CharField("nom du point relais", max_length=150, blank=True)
+    relay_address = models.CharField("adresse du point relais", max_length=200, blank=True)
+    relay_postal_code = models.CharField("code postal du point relais", max_length=10, blank=True)
+    relay_city = models.CharField("ville du point relais", max_length=100, blank=True)
+
 
     # --- Montants ---
     # Recopiés au moment de la commande, JAMAIS recalculés ensuite. Si la
