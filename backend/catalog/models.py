@@ -525,6 +525,17 @@ class ShippingSettings(models.Model):
         "Laisser vide pour la facturer systématiquement.",
     )
 
+    relay_shipping_fee = models.DecimalField(
+        "frais en point relais (€)",
+        max_digits=6,
+        decimal_places=2,
+        default=Decimal("4.50"),
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text="Montant facturé pour une livraison en point relais. "
+        "Généralement moins cher qu'une livraison à domicile.",
+    )
+
+
     class Meta:
         verbose_name = "livraison"
         verbose_name_plural = "livraison"
