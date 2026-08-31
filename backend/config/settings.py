@@ -263,10 +263,20 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 if RESEND_API_KEY:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = "smtp.resend.com"
-    EMAIL_PORT = 587
+    # Port 2587 et non 587 : Railway bloque les ports SMTP habituels en
+    # sortie (25, 465, 587), une protection anti-spam courante chez les
+    # hébergeurs. La connexion n'échouait même pas franchement, elle restait
+    # suspendue jusqu'à ce que gunicorn tue le worker au bout de 30 s — et le
+    # webhook Stripe répondait 500 alors que la commande était bien payée.
+    # Resend expose 2587 précisément pour ce cas.
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "2587"))
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = "resend"
     EMAIL_HOST_PASSWORD = RESEND_API_KEY
+    # Filet de sécurité : sans délai maximum, un serveur SMTP qui ne répond
+    # pas bloque la requête entière. Le try/except de emails.py ne suffit
+    # pas — il n'attrape rien tant que la connexion n'a pas rendu la main.
+    EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "10"))
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
