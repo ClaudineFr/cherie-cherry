@@ -188,14 +188,19 @@ class CheckoutView(APIView):
         )
 
         frais = Decimal("0")
-        if data["delivery_method"] == Order.Delivery.HOME:
+        mode = data["delivery_method"]
+        if mode in (Order.Delivery.HOME, Order.Delivery.RELAY):
             # Pas de ligne en base : on prend les valeurs par défaut du modèle
             # plutôt que d'échouer.
             reglages = ShippingSettings.objects.first() or ShippingSettings()
-            frais = reglages.shipping_fee or Decimal("0")
+            if mode == Order.Delivery.RELAY:
+                frais = reglages.relay_shipping_fee or Decimal("0")
+            else:
+                frais = reglages.shipping_fee or Decimal("0")
             seuil = reglages.free_shipping_from
             if seuil is not None and total_articles >= seuil:
                 frais = Decimal("0")
+
 
         # --- 4. Enregistrer la commande, en attente de paiement ---
         commande = Order.objects.create(
@@ -208,6 +213,11 @@ class CheckoutView(APIView):
             address_line2=data.get("address_line2", ""),
             postal_code=data.get("postal_code", ""),
             city=data.get("city", ""),
+            relay_id=data.get("relay_id", ""),
+            relay_name=data.get("relay_name", ""),
+            relay_address=data.get("relay_address", ""),
+            relay_postal_code=data.get("relay_postal_code", ""),
+            relay_city=data.get("relay_city", ""),
             shipping_fee=frais,
             status=Order.Status.PENDING,
         )
