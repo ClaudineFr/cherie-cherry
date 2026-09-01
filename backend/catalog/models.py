@@ -525,6 +525,17 @@ class ShippingSettings(models.Model):
         "Laisser vide pour la facturer systématiquement.",
     )
 
+    relay_shipping_fee = models.DecimalField(
+        "frais en point relais (€)",
+        max_digits=6,
+        decimal_places=2,
+        default=Decimal("4.50"),
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text="Montant facturé pour une livraison en point relais. "
+        "Généralement moins cher qu'une livraison à domicile.",
+    )
+
+
     class Meta:
         verbose_name = "livraison"
         verbose_name_plural = "livraison"
@@ -790,6 +801,8 @@ class Order(models.Model):
     class Delivery(models.TextChoices):
         PICKUP = "pickup", "Retrait en boutique"
         HOME = "home", "Livraison à domicile"
+        RELAY = "relay", "Livraison en point relais"
+
 
     # --- Le client ---
     # Pas de compte utilisateur : on commande en renseignant ses coordonnées.
@@ -815,6 +828,20 @@ class Order(models.Model):
     )
     postal_code = models.CharField("code postal", max_length=10, blank=True)
     city = models.CharField("ville", max_length=100, blank=True)
+    # --- Point relais ---
+    # Rempli uniquement pour une livraison en point relais. Les coordonnées du
+    # relais sont RECOPIÉES ici, comme le nom et le prix d'un produit dans
+    # OrderItem : si Mondial Relay ferme ce point dans six mois, la commande
+    # doit toujours montrer où le colis a été envoyé.
+    relay_id = models.CharField(
+        "identifiant du point relais", max_length=20, blank=True,
+        help_text="Numéro Mondial Relay du point, ex. FR-012345.",
+    )
+    relay_name = models.CharField("nom du point relais", max_length=150, blank=True)
+    relay_address = models.CharField("adresse du point relais", max_length=200, blank=True)
+    relay_postal_code = models.CharField("code postal du point relais", max_length=10, blank=True)
+    relay_city = models.CharField("ville du point relais", max_length=100, blank=True)
+
 
     # --- Montants ---
     # Recopiés au moment de la commande, JAMAIS recalculés ensuite. Si la
@@ -834,6 +861,17 @@ class Order(models.Model):
     # paiement dans leur interface en cas de litige.
     stripe_session_id = models.CharField(
         "session Stripe", max_length=255, blank=True, db_index=True
+    )
+
+    # Saisi à la main après création de l'étiquette chez Mondial Relay. Il
+    # part dans l'email d'expédition : sans lui, le client sait que son colis
+    # est parti mais ne peut pas le suivre.
+    tracking_number = models.CharField(
+        "numéro de suivi",
+        max_length=40,
+        blank=True,
+        help_text="Le numéro d'expédition Mondial Relay. "
+        "Envoyé au client avec l'email d'expédition.",
     )
 
     notes = models.TextField(

@@ -51,16 +51,31 @@ export async function createCheckout(
     };
   }
 
+  // formData.get() rend `null` pour un champ absent du formulaire, et le
+  // formulaire n'affiche que les champs du mode choisi — un retrait en
+  // boutique n'a ni adresse ni point relais. Or Django accepte une chaîne
+  // vide, jamais `null` : sans cette conversion, la commande était refusée
+  // en 400 sur tous les champs manquants.
+  const champ = (nom: string) => (formData.get(nom) ?? "").toString();
+
   const payload = {
-    email: formData.get("email"),
-    first_name: formData.get("first_name"),
-    last_name: formData.get("last_name"),
-    phone: formData.get("phone"),
-    delivery_method: formData.get("delivery_method"),
-    address_line1: formData.get("address_line1"),
-    address_line2: formData.get("address_line2"),
-    postal_code: formData.get("postal_code"),
-    city: formData.get("city"),
+    email: champ("email"),
+    first_name: champ("first_name"),
+    last_name: champ("last_name"),
+    phone: champ("phone"),
+    delivery_method: champ("delivery_method"),
+    address_line1: champ("address_line1"),
+    address_line2: champ("address_line2"),
+    postal_code: champ("postal_code"),
+    city: champ("city"),
+    // Point relais : renseigné par le widget Mondial Relay via des champs
+    // cachés. Comme pour l'adresse, Django revérifie leur présence selon le
+    // mode choisi — masquer un champ n'est pas une validation.
+    relay_id: champ("relay_id"),
+    relay_name: champ("relay_name"),
+    relay_address: champ("relay_address"),
+    relay_postal_code: champ("relay_postal_code"),
+    relay_city: champ("relay_city"),
     items,
   };
 

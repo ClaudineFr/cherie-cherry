@@ -98,6 +98,21 @@ def confirmation_au_client(commande):
         adresse = _adresse_boutique()
         if adresse:
             mode += f"\n\nNotre adresse : {adresse}"
+    elif commande.delivery_method == Order.Delivery.RELAY:
+        # Sans ce cas, le « else » ci-dessous annoncerait une livraison à
+        # domicile et afficherait une adresse vide : le client ne saurait pas
+        # où aller chercher son colis.
+        mode = "Votre commande sera livrée au point relais suivant :\n"
+        for ligne in (
+            commande.relay_name,
+            commande.relay_address,
+            " ".join(
+                p for p in (commande.relay_postal_code, commande.relay_city) if p
+            ),
+        ):
+            if ligne:
+                mode += f"  {ligne}\n"
+        mode += "\nVous serez prévenu(e) par Mondial Relay dès son arrivée."
     else:
         mode = (
             "Votre commande sera expédiée à l'adresse suivante :\n"
@@ -134,11 +149,9 @@ Chérie Cherry
 
 def alerte_a_la_proprietaire(commande):
     """Le message qui prévient la propriétaire d'une commande à préparer."""
-    mode = (
-        "Retrait en boutique"
-        if commande.delivery_method == Order.Delivery.PICKUP
-        else "Livraison à domicile"
-    )
+    # get_delivery_method_display() donne le libellé défini sur le modèle :
+    # un mode ajouté plus tard s'affichera sans repasser ici.
+    mode = commande.get_delivery_method_display()
 
     adresse = ""
     if commande.delivery_method == Order.Delivery.HOME:
@@ -149,6 +162,24 @@ def alerte_a_la_proprietaire(commande):
         adresse = "\nADRESSE DE LIVRAISON\n" + "\n".join(
             f"  {ligne}" for ligne in lignes
         )
+    elif commande.delivery_method == Order.Delivery.RELAY:
+        # C'est l'information dont elle a besoin pour éditer l'étiquette :
+        # sans elle, l'email annoncerait une expédition sans dire où.
+        lignes = [
+            ligne
+            for ligne in (
+                commande.relay_name,
+                commande.relay_address,
+                " ".join(
+                    p
+                    for p in (commande.relay_postal_code, commande.relay_city)
+                    if p
+                ),
+                f"N° Mondial Relay : {commande.relay_id}" if commande.relay_id else "",
+            )
+            if ligne
+        ]
+        adresse = "\nPOINT RELAIS\n" + "\n".join(f"  {ligne}" for ligne in lignes)
 
     telephone = f"\n  Téléphone : {commande.phone}" if commande.phone else ""
 
@@ -198,6 +229,66 @@ Chérie Cherry
 
     return _envoyer(
         sujet=f"Votre commande n° {commande.pk} est prête !",
+        corps=corps,
+        destinataires=[commande.email],
+    )
+
+
+def commande_expediee(commande):
+    """Prévient le client que son colis est parti.
+
+    Le pendant de commande_prete() pour les commandes livrées : sans lui, la
+    propriétaire marque la commande « expédiée » et le client, lui, n'apprend
+    rien — il écrit pour demander où en est son colis.
+    """
+    if commande.delivery_method == Order.Delivery.RELAY:
+        destination = "Votre colis est en route vers votre point relais :\n"
+        for ligne in (
+            commande.relay_name,
+            commande.relay_address,
+            " ".join(
+                p for p in (commande.relay_postal_code, commande.relay_city) if p
+            ),
+        ):
+            if ligne:
+                destination += f"  {ligne}\n"
+        destination += (
+            "\nMondial Relay vous préviendra dès qu'il sera disponible.\n"
+            "Pensez à emporter une pièce d'identité pour le retirer."
+        )
+    else:
+        destination = "Votre colis est en route vers :\n"
+        for ligne in (
+            commande.address_line1,
+            commande.address_line2,
+            f"{commande.postal_code} {commande.city}".strip(),
+        ):
+            if ligne:
+                destination += f"  {ligne}\n"
+
+    suivi = ""
+    if commande.tracking_number:
+        suivi = (
+            f"\n\nNuméro de suivi : {commande.tracking_number}\n"
+            "Suivez votre colis sur www.mondialrelay.fr, rubrique « Suivi de colis »."
+        )
+
+    corps = f"""Bonjour {commande.first_name},
+
+Bonne nouvelle : votre commande n° {commande.pk} vient d'être expédiée.
+
+{destination}{suivi}
+
+VOTRE COMMANDE
+
+{_recapitulatif(commande)}
+
+À très bientôt,
+Chérie Cherry
+"""
+
+    return _envoyer(
+        sujet=f"Votre commande n° {commande.pk} est en route !",
         corps=corps,
         destinataires=[commande.email],
     )

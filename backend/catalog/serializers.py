@@ -265,6 +265,15 @@ class CheckoutSerializer(serializers.Serializer):
     postal_code = serializers.CharField(max_length=10, required=False, allow_blank=True)
     city = serializers.CharField(max_length=100, required=False, allow_blank=True)
 
+    # Point relais : rempli par le widget Mondial Relay. Comme l'adresse
+    # ci-dessus, facultatif ici et exigé dans validate() selon le mode.
+    relay_id = serializers.CharField(max_length=20, required=False, allow_blank=True)
+    relay_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    relay_address = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    relay_postal_code = serializers.CharField(max_length=10, required=False, allow_blank=True)
+    relay_city = serializers.CharField(max_length=100, required=False, allow_blank=True)
+
+
     # allow_empty=False : on refuse un panier vide.
     items = CheckoutLineSerializer(many=True, allow_empty=False)
 
@@ -286,6 +295,17 @@ class CheckoutSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     {champ: "Ce champ est requis pour une livraison." for champ in manquants}
                 )
+        elif data["delivery_method"] == Order.Delivery.RELAY:
+            manquants = [
+                champ
+                for champ in ("relay_id", "relay_name", "relay_postal_code", "relay_city")
+                if not data.get(champ)
+            ]
+            if manquants:
+                raise serializers.ValidationError(
+                    {champ: "Veuillez choisir un point relais." for champ in manquants}
+                )
+
 
         # Un même produit ne doit pas apparaître deux fois : sinon le stock
         # serait vérifié ligne par ligne, et deux lignes de 3 passeraient

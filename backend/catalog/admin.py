@@ -329,6 +329,27 @@ class OrderItemInline(admin.TabularInline):
         return False
 
 
+class ATraiterFilter(admin.SimpleListFilter):
+    """« Ce qui m'attend » : les commandes payées qui n'ont pas encore bougé.
+
+    Le filtre par statut existe déjà, mais il oblige à savoir lequel chercher.
+    Ici la question est plus simple — qu'est-ce que je dois préparer
+    aujourd'hui ? Les commandes en attente de paiement n'en font pas partie :
+    rien n'a été réglé, il n'y a rien à emballer.
+    """
+
+    title = "à traiter"
+    parameter_name = "a_traiter"
+
+    def lookups(self, request, model_admin):
+        return [("1", "Commandes à préparer")]
+
+    def queryset(self, request, queryset):
+        if self.value() == "1":
+            return queryset.filter(status=Order.Status.PAID)
+        return queryset
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
@@ -343,9 +364,15 @@ class OrderAdmin(admin.ModelAdmin):
     # La cliente change surtout le statut : autant le faire depuis la liste.
     list_editable = ["status"]
 
-    list_filter = ["status", "delivery_method", "created_at"]
+    list_filter = [ATraiterFilter, "status", "delivery_method", "created_at"]
 
-    search_fields = ["last_name", "first_name", "email", "stripe_session_id"]
+    search_fields = [
+        "last_name",
+        "first_name",
+        "email",
+        "stripe_session_id",
+        "tracking_number",
+    ]
 
     date_hierarchy = "created_at"
 
@@ -358,13 +385,120 @@ class OrderAdmin(admin.ModelAdmin):
         "email", "first_name", "last_name", "phone",
         "delivery_method", "address_line1", "address_line2",
         "postal_code", "city", "shipping_fee",
+        "relay_id", "relay_name", "relay_address",
+        "relay_postal_code", "relay_city",
         "stripe_session_id", "created_at", "updated_at",
-        "total_display",
+        "total_display", "relay_display", "destinataire_display",
     ]
+
+    def get_fieldsets(self, request, obj=None):
+        """Ne montre que les champs qui concernent le mode de livraison.
+
+        Une commande en point relais affichait quatre lignes d'adresse vides,
+        et une commande en retrait six. Des tirets alignés ne disent rien
+        d'utile : ils font surtout douter qu'une information manque.
+        """
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            return fieldsets
+
+        inutiles = set()
+        if obj.delivery_method != Order.Delivery.HOME:
+            inutiles |= {"address_line1", "address_line2", "postal_code", "city"}
+        if obj.delivery_method != Order.Delivery.RELAY:
+            inutiles.add("relay_display")
+        if obj.delivery_method == Order.Delivery.PICKUP:
+            # Rien à expédier : ni frais, ni adresse à recopier.
+            inutiles |= {"shipping_fee", "destinataire_display"}
+
+        return [
+            (
+                titre,
+                {
+                    **options,
+                    "fields": [
+                        champ
+                        for champ in options["fields"]
+                        if champ not in inutiles
+                    ],
+                },
+            )
+            for titre, options in fieldsets
+        ]
+
+    @admin.display(description="à recopier chez Mondial Relay")
+    def destinataire_display(self, obj):
+        """L'adresse du destinataire, prête à recopier sur l'étiquette.
+
+        Elle crée ses étiquettes à la main : sans ce bloc, il faut piocher
+        dans cinq champs éparpillés et retaper — c'est là que se glissent les
+        fautes qui font revenir un colis.
+
+        Pour un point relais, le destinataire reste le CLIENT : c'est son nom
+        qui va sur l'étiquette, le relais n'étant que le lieu de retrait,
+        désigné par son numéro.
+        """
+        if obj.delivery_method == Order.Delivery.PICKUP:
+            return "—"
+
+        lignes = [f"{obj.first_name} {obj.last_name}".strip()]
+
+        if obj.delivery_method == Order.Delivery.RELAY:
+            if obj.relay_id:
+                lignes.append(f"Point relais n° {obj.relay_id}")
+            lignes += [
+                p
+                for p in (
+                    obj.relay_name,
+                    obj.relay_address,
+                    " ".join(
+                        x for x in (obj.relay_postal_code, obj.relay_city) if x
+                    ),
+                )
+                if p
+            ]
+        else:
+            lignes += [
+                p
+                for p in (
+                    obj.address_line1,
+                    obj.address_line2,
+                    " ".join(x for x in (obj.postal_code, obj.city) if x),
+                )
+                if p
+            ]
+
+        if obj.phone:
+            lignes.append(f"Tél. {obj.phone}")
+        lignes.append(obj.email)
+
+        # <pre> : le texte garde ses retours à la ligne, donc un copier-coller
+        # arrive chez Mondial Relay dans la même forme qu'à l'écran.
+        return format_html(
+            '<pre style="margin:0;font:inherit;white-space:pre-wrap;'
+            'user-select:all;cursor:text">{}</pre>',
+            "\n".join(lignes),
+        )
+
+    @admin.display(description="point relais")
+    def relay_display(self, obj):
+        """Le point relais en une ligne, plutôt que cinq champs à lire.
+
+        Une commande sur deux n'en a pas (retrait, domicile) : afficher les
+        cinq champs bruts remplirait la fiche de vides. Le tiret dit « pas
+        de relais » sans laisser douter d'une information manquante.
+        """
+        if not obj.relay_id:
+            return "—"
+        lignes = [obj.relay_name, obj.relay_address]
+        ville = " ".join(p for p in (obj.relay_postal_code, obj.relay_city) if p)
+        if ville:
+            lignes.append(ville)
+        return f"{' · '.join(p for p in lignes if p)} (n° {obj.relay_id})"
 
     # Regroupement du formulaire, pour que la cliente s'y retrouve.
     fieldsets = [
-        ("Suivi", {"fields": ["status", "notes"]}),
+        ("Suivi", {"fields": ["status", "tracking_number", "notes"]}),
         ("Client", {"fields": ["first_name", "last_name", "email", "phone"]}),
         (
             "Livraison",
@@ -375,7 +509,9 @@ class OrderAdmin(admin.ModelAdmin):
                     "address_line2",
                     "postal_code",
                     "city",
+                    "relay_display",
                     "shipping_fee",
+                    "destinataire_display",
                 ]
             },
         ),
@@ -410,12 +546,30 @@ class OrderAdmin(admin.ModelAdmin):
 
         super().save_model(request, obj, form, change)
 
+        # Réservé au retrait en boutique : cet email dit « venez la retirer
+        # aux horaires d'ouverture », ce qui est faux pour un colis expédié.
+        # « Prête à retirer » sur une commande en livraison est une erreur de
+        # saisie — on ne prévient pas le client sur cette base.
         vient_de_passer_a_prete = (
             obj.status == Order.Status.READY
             and ancien_statut != Order.Status.READY
+            and obj.delivery_method == Order.Delivery.PICKUP
         )
-        if vient_de_passer_a_prete:
-            if emails.commande_prete(obj):
+        # Le pendant pour les commandes livrées. Sans lui, elle marque la
+        # commande « expédiée » et le client n'apprend rien.
+        vient_de_passer_a_expediee = (
+            obj.status == Order.Status.SHIPPED
+            and ancien_statut != Order.Status.SHIPPED
+            and obj.delivery_method != Order.Delivery.PICKUP
+        )
+
+        if vient_de_passer_a_prete or vient_de_passer_a_expediee:
+            envoye = (
+                emails.commande_prete(obj)
+                if vient_de_passer_a_prete
+                else emails.commande_expediee(obj)
+            )
+            if envoye:
                 self.message_user(
                     request, f"{obj.first_name} a été prévenu(e) par email."
                 )

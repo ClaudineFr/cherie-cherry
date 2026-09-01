@@ -1,0 +1,97 @@
+/* Rendre le widget Mondial Relay utilisable sur mobile.
+ *
+ * Le plugin écrit son propre HTML avec des largeurs fixes en pixels : 680px
+ * pour le bloc entier, 400px pour la carte flottée à droite. Sur un écran de
+ * 390px, il débordait de la page — toute la mise en page du site se retrouvait
+ * décalée, pas seulement le widget.
+ *
+ * On ne peut pas modifier son balisage, donc on le contraint depuis
+ * l'extérieur. Les !important sont nécessaires : le plugin pose ses largeurs
+ * en style inline, qui l'emporte sur toute feuille de style.
+ *
+ * Ce fichier est importé par RelayPicker.tsx et ne s'applique donc qu'à la
+ * page panier, quand le client a choisi la livraison en point relais.
+ */
+
+/* Garde-fou : quoi qu'il arrive à l'intérieur, rien ne dépasse du conteneur. */
+.mr-widget {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.mr-widget .MR-Widget,
+.mr-widget .MRW-Title,
+.mr-widget .MRW-Content,
+.mr-widget .MRW-Search,
+.mr-widget .MRW-Results {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* La ligne de recherche (Ville / CP / boutons) : elle passe à la ligne au
+   lieu de forcer la largeur du bloc. */
+.mr-widget .MRW-Line {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  box-sizing: border-box;
+}
+
+.mr-widget .MRW-Line input {
+  min-width: 0; /* sans ça, un input en flex refuse de rétrécir */
+  flex: 1 1 8rem;
+}
+
+/* Le logo du transporteur n'est pas une image mais un background-image posé
+   sur le bloc de recherche, calé pour une mise en page en 680px : rétréci, il
+   passe sous le champ « Ville ». On le retire sur mobile — le titre du widget
+   dit déjà qu'on choisit un point Mondial Relay. */
+@media (max-width: 767px) {
+  .mr-widget .MRW-Search {
+    background-image: none !important;
+    padding-left: 0 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Empilement vertical : la LISTE d'abord, la carte ensuite. C'est la liste
+     qu'on lit pour choisir (nom, adresse, numéro) ; la carte sert à situer.
+     Le widget rend la carte en premier, d'où l'ordre explicite.
+     .MRW-Map et .MRW-RList sont toutes deux DANS .MRW-Results. */
+  .mr-widget .MRW-Results {
+    display: flex;
+    flex-direction: column;
+    float: none !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .mr-widget .MRW-RList {
+    order: 1;
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 18rem;
+    overflow-y: auto;
+  }
+
+  .mr-widget .MRW-Map {
+    order: 2;
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 16rem !important;
+    margin-top: 0.75rem;
+  }
+
+  /* Cibles tactiles : les lignes de résultats sont cliquables, autant leur
+     donner de quoi être touchées sans zoomer. */
+  .mr-widget .MRW-Results > div {
+    padding-block: 0.35rem;
+  }
+}
