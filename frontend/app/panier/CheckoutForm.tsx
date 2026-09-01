@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
+import RelayPicker from "@/components/RelayPicker";
 import { createCheckout, type CheckoutState } from "./actions";
 
 // Un point relais tel que le widget Mondial Relay le renvoie. Ces valeurs
@@ -237,10 +238,15 @@ export default function CheckoutForm() {
               </button>
             </>
           ) : (
-            <p className="text-sm text-ink/70">
-              Choisissez le point relais où vous souhaitez récupérer votre
-              commande.
-            </p>
+            <>
+              <p className="text-sm text-ink/70">
+                Choisissez le point relais où vous souhaitez récupérer votre
+                commande.
+              </p>
+              <div className="mt-4">
+                <RelayPicker onSelect={setRelay} />
+              </div>
+            </>
           )}
 
           {/* Les champs cachés portent le point choisi jusqu'au Server Action.
