@@ -358,9 +358,27 @@ class OrderAdmin(admin.ModelAdmin):
         "email", "first_name", "last_name", "phone",
         "delivery_method", "address_line1", "address_line2",
         "postal_code", "city", "shipping_fee",
+        "relay_id", "relay_name", "relay_address",
+        "relay_postal_code", "relay_city",
         "stripe_session_id", "created_at", "updated_at",
-        "total_display",
+        "total_display", "relay_display",
     ]
+
+    @admin.display(description="point relais")
+    def relay_display(self, obj):
+        """Le point relais en une ligne, plutôt que cinq champs à lire.
+
+        Une commande sur deux n'en a pas (retrait, domicile) : afficher les
+        cinq champs bruts remplirait la fiche de vides. Le tiret dit « pas
+        de relais » sans laisser douter d'une information manquante.
+        """
+        if not obj.relay_id:
+            return "—"
+        lignes = [obj.relay_name, obj.relay_address]
+        ville = " ".join(p for p in (obj.relay_postal_code, obj.relay_city) if p)
+        if ville:
+            lignes.append(ville)
+        return f"{' · '.join(p for p in lignes if p)} (n° {obj.relay_id})"
 
     # Regroupement du formulaire, pour que la cliente s'y retrouve.
     fieldsets = [
@@ -375,6 +393,7 @@ class OrderAdmin(admin.ModelAdmin):
                     "address_line2",
                     "postal_code",
                     "city",
+                    "relay_display",
                     "shipping_fee",
                 ]
             },
@@ -410,9 +429,14 @@ class OrderAdmin(admin.ModelAdmin):
 
         super().save_model(request, obj, form, change)
 
+        # Réservé au retrait en boutique : cet email dit « venez la retirer
+        # aux horaires d'ouverture », ce qui est faux pour un colis expédié.
+        # « Prête à retirer » sur une commande en livraison est une erreur de
+        # saisie — on ne prévient pas le client sur cette base.
         vient_de_passer_a_prete = (
             obj.status == Order.Status.READY
             and ancien_statut != Order.Status.READY
+            and obj.delivery_method == Order.Delivery.PICKUP
         )
         if vient_de_passer_a_prete:
             if emails.commande_prete(obj):

@@ -98,6 +98,21 @@ def confirmation_au_client(commande):
         adresse = _adresse_boutique()
         if adresse:
             mode += f"\n\nNotre adresse : {adresse}"
+    elif commande.delivery_method == Order.Delivery.RELAY:
+        # Sans ce cas, le « else » ci-dessous annoncerait une livraison à
+        # domicile et afficherait une adresse vide : le client ne saurait pas
+        # où aller chercher son colis.
+        mode = "Votre commande sera livrée au point relais suivant :\n"
+        for ligne in (
+            commande.relay_name,
+            commande.relay_address,
+            " ".join(
+                p for p in (commande.relay_postal_code, commande.relay_city) if p
+            ),
+        ):
+            if ligne:
+                mode += f"  {ligne}\n"
+        mode += "\nVous serez prévenu(e) par Mondial Relay dès son arrivée."
     else:
         mode = (
             "Votre commande sera expédiée à l'adresse suivante :\n"
@@ -134,11 +149,9 @@ Chérie Cherry
 
 def alerte_a_la_proprietaire(commande):
     """Le message qui prévient la propriétaire d'une commande à préparer."""
-    mode = (
-        "Retrait en boutique"
-        if commande.delivery_method == Order.Delivery.PICKUP
-        else "Livraison à domicile"
-    )
+    # get_delivery_method_display() donne le libellé défini sur le modèle :
+    # un mode ajouté plus tard s'affichera sans repasser ici.
+    mode = commande.get_delivery_method_display()
 
     adresse = ""
     if commande.delivery_method == Order.Delivery.HOME:
@@ -149,6 +162,24 @@ def alerte_a_la_proprietaire(commande):
         adresse = "\nADRESSE DE LIVRAISON\n" + "\n".join(
             f"  {ligne}" for ligne in lignes
         )
+    elif commande.delivery_method == Order.Delivery.RELAY:
+        # C'est l'information dont elle a besoin pour éditer l'étiquette :
+        # sans elle, l'email annoncerait une expédition sans dire où.
+        lignes = [
+            ligne
+            for ligne in (
+                commande.relay_name,
+                commande.relay_address,
+                " ".join(
+                    p
+                    for p in (commande.relay_postal_code, commande.relay_city)
+                    if p
+                ),
+                f"N° Mondial Relay : {commande.relay_id}" if commande.relay_id else "",
+            )
+            if ligne
+        ]
+        adresse = "\nPOINT RELAIS\n" + "\n".join(f"  {ligne}" for ligne in lignes)
 
     telephone = f"\n  Téléphone : {commande.phone}" if commande.phone else ""
 
