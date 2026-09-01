@@ -5,12 +5,30 @@ import Link from "next/link";
 import { useCart } from "@/components/CartContext";
 import { createCheckout, type CheckoutState } from "./actions";
 
+// Un point relais tel que le widget Mondial Relay le renvoie. Ces valeurs
+// partent telles quelles dans le formulaire : Django les recopie sur la
+// commande pour garder une trace de l'endroit où le colis a été envoyé.
+export type RelayPoint = {
+  id: string;
+  name: string;
+  address: string;
+  postalCode: string;
+  city: string;
+};
+
 export default function CheckoutForm() {
   const { lines, total } = useCart();
 
   // Le mode de livraison pilote l'affichage du bloc adresse. On le garde en
   // état plutôt que de lire le formulaire, pour réagir au clic tout de suite.
-  const [delivery, setDelivery] = useState<"pickup" | "home">("pickup");
+  const [delivery, setDelivery] = useState<"pickup" | "home" | "relay">(
+    "pickup",
+  );
+
+  // Le point relais choisi dans le widget Mondial Relay. `null` tant que le
+  // client n'en a pas sélectionné : c'est ce qui distingue « pas encore
+  // choisi » d'un relais aux champs vides.
+  const [relay, setRelay] = useState<RelayPoint | null>(null);
 
   // On n'envoie que les identifiants et les quantités : les prix sont relus
   // par Django. bind fige ce premier argument, useActionState fournissant
@@ -126,6 +144,21 @@ export default function CheckoutForm() {
               France métropolitaine
             </span>
           </label>
+
+          <label className={choix(delivery === "relay")}>
+            <input
+              type="radio"
+              name="delivery_method"
+              value="relay"
+              checked={delivery === "relay"}
+              onChange={() => setDelivery("relay")}
+              className="sr-only"
+            />
+            <span className="block font-medium">Point relais</span>
+            <span className="mt-1 block text-[0.7rem] text-ink/50">
+              À retirer près de chez vous
+            </span>
+          </label>
         </div>
       </fieldset>
 
@@ -176,6 +209,59 @@ export default function CheckoutForm() {
               {erreur("city")}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Point relais. Le widget Mondial Relay viendra se greffer ici : il
+          appellera setRelay() avec le point choisi. En attendant, le bloc
+          affiche l'état de la sélection et transporte les valeurs. */}
+      {delivery === "relay" && (
+        <div className="mt-6 rounded-xl border border-green/10 bg-cream/50 p-4">
+          {relay ? (
+            <>
+              <p className="text-[0.7rem] uppercase tracking-wide text-ink/50">
+                Votre point relais
+              </p>
+              <p className="mt-2 font-medium text-green">{relay.name}</p>
+              <p className="mt-0.5 text-sm text-ink/70">
+                {relay.address}
+                <br />
+                {relay.postalCode} {relay.city}
+              </p>
+              <button
+                type="button"
+                onClick={() => setRelay(null)}
+                className="mt-3 text-sm text-green underline underline-offset-4 hover:text-green/70"
+              >
+                Choisir un autre point relais
+              </button>
+            </>
+          ) : (
+            <p className="text-sm text-ink/70">
+              Choisissez le point relais où vous souhaitez récupérer votre
+              commande.
+            </p>
+          )}
+
+          {/* Les champs cachés portent le point choisi jusqu'au Server Action.
+              Ils ne sont rendus que si un relais est sélectionné : un champ
+              vide et un champ absent se valent côté Django, mais l'absence
+              rend le formulaire plus lisible dans les outils de debug. */}
+          {relay && (
+            <>
+              <input type="hidden" name="relay_id" value={relay.id} />
+              <input type="hidden" name="relay_name" value={relay.name} />
+              <input type="hidden" name="relay_address" value={relay.address} />
+              <input
+                type="hidden"
+                name="relay_postal_code"
+                value={relay.postalCode}
+              />
+              <input type="hidden" name="relay_city" value={relay.city} />
+            </>
+          )}
+
+          {erreur("relay_id")}
         </div>
       )}
 

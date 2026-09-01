@@ -61,6 +61,14 @@ export async function createCheckout(
     address_line2: formData.get("address_line2"),
     postal_code: formData.get("postal_code"),
     city: formData.get("city"),
+    // Point relais : renseigné par le widget Mondial Relay via des champs
+    // cachés. Comme pour l'adresse, Django revérifie leur présence selon le
+    // mode choisi — masquer un champ n'est pas une validation.
+    relay_id: formData.get("relay_id"),
+    relay_name: formData.get("relay_name"),
+    relay_address: formData.get("relay_address"),
+    relay_postal_code: formData.get("relay_postal_code"),
+    relay_city: formData.get("relay_city"),
     items,
   };
 
