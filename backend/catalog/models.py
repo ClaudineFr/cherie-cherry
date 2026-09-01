@@ -863,6 +863,17 @@ class Order(models.Model):
         "session Stripe", max_length=255, blank=True, db_index=True
     )
 
+    # Saisi à la main après création de l'étiquette chez Mondial Relay. Il
+    # part dans l'email d'expédition : sans lui, le client sait que son colis
+    # est parti mais ne peut pas le suivre.
+    tracking_number = models.CharField(
+        "numéro de suivi",
+        max_length=40,
+        blank=True,
+        help_text="Le numéro d'expédition Mondial Relay. "
+        "Envoyé au client avec l'email d'expédition.",
+    )
+
     notes = models.TextField(
         "note interne",
         blank=True,

@@ -232,3 +232,63 @@ Chérie Cherry
         corps=corps,
         destinataires=[commande.email],
     )
+
+
+def commande_expediee(commande):
+    """Prévient le client que son colis est parti.
+
+    Le pendant de commande_prete() pour les commandes livrées : sans lui, la
+    propriétaire marque la commande « expédiée » et le client, lui, n'apprend
+    rien — il écrit pour demander où en est son colis.
+    """
+    if commande.delivery_method == Order.Delivery.RELAY:
+        destination = "Votre colis est en route vers votre point relais :\n"
+        for ligne in (
+            commande.relay_name,
+            commande.relay_address,
+            " ".join(
+                p for p in (commande.relay_postal_code, commande.relay_city) if p
+            ),
+        ):
+            if ligne:
+                destination += f"  {ligne}\n"
+        destination += (
+            "\nMondial Relay vous préviendra dès qu'il sera disponible.\n"
+            "Pensez à emporter une pièce d'identité pour le retirer."
+        )
+    else:
+        destination = "Votre colis est en route vers :\n"
+        for ligne in (
+            commande.address_line1,
+            commande.address_line2,
+            f"{commande.postal_code} {commande.city}".strip(),
+        ):
+            if ligne:
+                destination += f"  {ligne}\n"
+
+    suivi = ""
+    if commande.tracking_number:
+        suivi = (
+            f"\n\nNuméro de suivi : {commande.tracking_number}\n"
+            "Suivez votre colis sur www.mondialrelay.fr, rubrique « Suivi de colis »."
+        )
+
+    corps = f"""Bonjour {commande.first_name},
+
+Bonne nouvelle : votre commande n° {commande.pk} vient d'être expédiée.
+
+{destination}{suivi}
+
+VOTRE COMMANDE
+
+{_recapitulatif(commande)}
+
+À très bientôt,
+Chérie Cherry
+"""
+
+    return _envoyer(
+        sujet=f"Votre commande n° {commande.pk} est en route !",
+        corps=corps,
+        destinataires=[commande.email],
+    )
