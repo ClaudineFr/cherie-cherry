@@ -13,6 +13,8 @@
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import type { RelayPoint } from "@/app/panier/CheckoutForm";
+// Contraint la mise en page du widget, qui arrive en largeurs fixes.
+import "./RelayPicker.css";
 
 // Ce que le plugin renvoie à OnParcelShopSelected. Les noms de champs sont
 // les siens (en français), d'où la conversion vers RelayPoint plus bas.
