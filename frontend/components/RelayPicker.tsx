@@ -12,7 +12,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
-import type { RelayPoint } from "@/app/panier/CheckoutForm";
+// ⚠️ Composant NON UTILISE pour l'instant : le checkout demande le point
+// relais dans de simples champs texte (cf. CheckoutForm). Le widget pose ses
+// largeurs en pixels en style inline, ce qui le rendait bancal sur mobile, et
+// il tourne sur BDTEST (compte de demonstration public) tant que la boutique
+// n'a pas son vrai code enseigne. Conserve tel quel pour etre rebranche ce
+// jour-la.
+
+// Un point relais tel que le widget Mondial Relay le renvoie.
+export type RelayPoint = {
+  id: string;
+  name: string;
+  address: string;
+  postalCode: string;
+  city: string;
+};
 // Contraint la mise en page du widget, qui arrive en largeurs fixes.
 import "./RelayPicker.css";
 
