@@ -298,7 +298,7 @@ class CheckoutSerializer(serializers.Serializer):
         elif data["delivery_method"] == Order.Delivery.RELAY:
             manquants = [
                 champ
-                for champ in ("relay_id", "relay_name", "relay_postal_code", "relay_city")
+                for champ in ("relay_name", "relay_postal_code", "relay_city")
                 if not data.get(champ)
             ]
             if manquants:

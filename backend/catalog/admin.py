@@ -488,13 +488,17 @@ class OrderAdmin(admin.ModelAdmin):
         cinq champs bruts remplirait la fiche de vides. Le tiret dit « pas
         de relais » sans laisser douter d'une information manquante.
         """
-        if not obj.relay_id:
+        if not obj.relay_name:
             return "—"
         lignes = [obj.relay_name, obj.relay_address]
         ville = " ".join(p for p in (obj.relay_postal_code, obj.relay_city) if p)
         if ville:
             lignes.append(ville)
-        return f"{' · '.join(p for p in lignes if p)} (n° {obj.relay_id})"
+        # Le numéro ne vient que du widget Mondial Relay : quand le client
+        # saisit son relais à la main, il n'y en a pas. On ne l'ajoute donc
+        # que s'il existe, plutôt que d'afficher un « (n° ) » vide.
+        numero = f" (n° {obj.relay_id})" if obj.relay_id else ""
+        return f"{' · '.join(p for p in lignes if p)}{numero}"
 
     # Regroupement du formulaire, pour que la cliente s'y retrouve.
     fieldsets = [
