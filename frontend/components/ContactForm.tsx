@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 
+import Loader from "@/components/Loader";
 import { sendContactMessage, type ContactState } from "@/app/contact/actions";
 
 // État initial : rien n'a encore été soumis.
@@ -106,8 +107,12 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-green px-6 py-3 text-sm uppercase tracking-widest text-cream transition-opacity hover:opacity-80 disabled:opacity-50"
+        className="inline-flex items-center justify-center gap-2 self-start rounded-full bg-green px-6 py-3 text-sm uppercase tracking-widest text-cream transition-opacity hover:opacity-80 disabled:opacity-50"
       >
+        {/* Pendant l'envoi : petit anneau qui tourne à gauche du texte.
+            label={null} → l'anneau seul, le texte du bouton suffit à dire
+            ce qui se passe. */}
+        {pending && <Loader size="sm" label={null} />}
         {pending ? "Envoi en cours…" : "Envoyer"}
       </button>
 
