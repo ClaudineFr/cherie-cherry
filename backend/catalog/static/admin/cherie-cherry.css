@@ -906,6 +906,23 @@ select,
   padding: 9px 11px;
   border: 1px solid var(--border-color);
 }
+/* Django impose une height FIXE aux select (1.875rem dans base.css, puis
+   2.25rem sur `.form-row select` sous 1024px dans responsive.css) : combinee a
+   notre padding, la valeur affichee se retrouve rognee. On laisse la hauteur
+   s'adapter au contenu.
+
+   Meme piege que pour la largeur plus bas : `responsive.css` est charge APRES
+   notre fichier, donc a specificite egale c'est lui qui gagne. On prefixe donc
+   par #content pour passer devant sans recourir a !important. */
+select,
+#content .form-row select {
+  height: auto;
+}
+select[multiple],
+#content .form-row select[multiple] {
+  min-height: 150px;
+}
+
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="email"]:focus,
