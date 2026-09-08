@@ -1,4 +1,10 @@
+import logging
+
+import stripe
+from django.conf import settings
 from django.contrib import admin
+from django.db import transaction
+from django.db.models import F
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.html import format_html
@@ -6,6 +12,9 @@ from django.utils.safestring import mark_safe
 
 from . import emails
 from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings, AboutPage, AboutValue, ShippingSettings
+
+
+logger = logging.getLogger(__name__)
 
 
 class SingletonAdminMixin:
@@ -536,6 +545,139 @@ class OrderAdmin(admin.ModelAdmin):
     # à la main.
     def has_add_permission(self, request):
         return False
+
+    actions = ["annuler_et_rembourser"]
+
+    # Le menu d'actions aussi en bas de la liste. `list_editable` (le statut
+    # modifiable en ligne) place un bouton « Enregistrer » sous le tableau,
+    # qui attire l'œil : sans ce doublon, le menu resté tout en haut passe
+    # inaperçu.
+    actions_on_bottom = True
+
+    @admin.action(description="Annuler et rembourser la commande")
+    def annuler_et_rembourser(self, request, queryset):
+        """Annule des commandes payées, rembourse le client et s'en excuse.
+
+        Le cas visé : un produit affiché disponible ne l'était pas vraiment,
+        et la commande a été encaissée quand même. Il faut alors rendre
+        l'argent, remettre les articles en stock et prévenir le client.
+
+        C'est une action GROUPÉE plutôt qu'un simple passage au statut
+        « Annulée » : un remboursement est irréversible, et le déclencher
+        depuis une liste déroulante rendrait une fausse manœuvre trop facile.
+        Le statut « Annulée » reste utilisable seul, sans toucher à l'argent.
+
+        Chaque commande est traitée séparément : l'échec de l'une ne doit pas
+        empêcher les autres d'aboutir.
+        """
+        rembourses = annules = 0
+
+        for commande in queryset:
+            if commande.status == Order.Status.CANCELLED:
+                self.message_user(
+                    request,
+                    f"Commande n° {commande.pk} : déjà annulée, rien à faire.",
+                    level="warning",
+                )
+                continue
+
+            # --- 1. Rembourser, si de l'argent a bien été encaissé ---
+            #
+            # Une commande « en attente de paiement » n'a jamais été débitée :
+            # il n'y a rien à rendre. On l'annule quand même, mais l'email ne
+            # promettra pas un virement qui n'arriverait jamais.
+            remboursee = False
+            if commande.status != Order.Status.PENDING and commande.stripe_session_id:
+                erreur = self._rembourser(commande)
+                if erreur:
+                    # On n'annule PAS une commande dont l'argent n'a pas pu
+                    # être rendu : la fiche resterait « annulée » alors que le
+                    # client a toujours été débité.
+                    self.message_user(
+                        request,
+                        f"Commande n° {commande.pk} : remboursement refusé "
+                        f"par Stripe ({erreur}). Commande laissée telle "
+                        "quelle — vérifiez sur le tableau de bord Stripe.",
+                        level="error",
+                    )
+                    continue
+                remboursee = True
+                rembourses += 1
+
+            # --- 2. Remettre le stock et annuler, d'un seul bloc ---
+            #
+            # transaction.atomic : si l'annulation échoue à mi-chemin, on ne
+            # veut pas d'un stock regonflé sur une commande restée payée.
+            # F() plutôt que lire-puis-écrire, pour la même raison qu'à
+            # l'encaissement : deux opérations simultanées ne doivent pas
+            # s'écraser l'une l'autre.
+            with transaction.atomic():
+                if commande.status == Order.Status.PAID:
+                    # Seule une commande PAYÉE a décrémenté le stock (c'est le
+                    # webhook qui le fait). Le regonfler sur une commande non
+                    # payée inventerait des articles.
+                    for ligne in commande.items.all():
+                        Product.objects.filter(pk=ligne.product_id).update(
+                            stock=F("stock") + ligne.quantity
+                        )
+
+                commande.status = Order.Status.CANCELLED
+                commande.save(update_fields=["status", "updated_at"])
+            annules += 1
+
+            # --- 3. Prévenir le client, hors transaction ---
+            #
+            # Comme à l'encaissement : on n'envoie rien tant que la base n'est
+            # pas à jour, sinon un email pourrait annoncer une annulation
+            # défaite ensuite.
+            if not emails.commande_annulee(commande, rembourse=remboursee):
+                self.message_user(
+                    request,
+                    f"Commande n° {commande.pk} : annulée"
+                    + (" et remboursée" if remboursee else "")
+                    + ", mais l'email n'est pas parti — prévenez le client "
+                    "autrement.",
+                    level="warning",
+                )
+
+        if annules:
+            detail = f" ({rembourses} remboursée(s))" if rembourses else ""
+            self.message_user(
+                request,
+                f"{annules} commande(s) annulée(s){detail}. "
+                "Le stock a été remis à jour et le client prévenu.",
+            )
+
+    def _rembourser(self, commande):
+        """Rembourse intégralement une commande. Renvoie None, ou l'erreur.
+
+        Stripe rembourse un paiement (`payment_intent`), pas une session de
+        paiement — et c'est la session qu'on garde sur la commande. On la
+        relit donc pour retrouver le paiement correspondant.
+        """
+        try:
+            # `client.v1.*` et non `client.checkout` / `client.refunds` :
+            # ces raccourcis sont dépréciés dans stripe-python et émettent un
+            # DeprecationWarning.
+            client = stripe.StripeClient(settings.STRIPE_SECRET_KEY)
+            session = client.v1.checkout.sessions.retrieve(commande.stripe_session_id)
+
+            paiement = getattr(session, "payment_intent", None)
+            if not paiement:
+                # Session jamais réglée : rien n'a été encaissé, donc rien à
+                # rendre. Ce n'est pas une erreur.
+                return None
+
+            # Pas de montant : Stripe rembourse alors la totalité, frais de
+            # port compris. C'est ce qu'on veut ici — l'erreur vient de la
+            # boutique, le client ne doit rien payer.
+            client.v1.refunds.create(params={"payment_intent": paiement})
+            return None
+        except stripe.StripeError as exc:
+            logger.warning(
+                "Remboursement refusé pour la commande %s : %s", commande.pk, exc
+            )
+            return str(getattr(exc, "user_message", None) or exc)
 
     def save_model(self, request, obj, form, change):
         """Prévient le client quand sa commande passe à « prête à retirer ».

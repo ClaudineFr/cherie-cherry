@@ -292,3 +292,55 @@ Chérie Cherry
         corps=corps,
         destinataires=[commande.email],
     )
+
+def commande_annulee(commande, rembourse=True):
+    """S'excuse d'annuler une commande, et annonce le remboursement.
+
+    Le cas visé : un produit affiché disponible ne l'était pas vraiment
+    (stock mal à jour), et la commande a été encaissée quand même. La faute
+    est du côté de la boutique, pas du client : le message le dit clairement
+    plutôt que d'invoquer un vague « problème technique ».
+
+    `rembourse` distingue les deux situations. Une commande déjà payée est
+    remboursée, et on l'annonce avec le délai bancaire. Une commande annulée
+    avant paiement n'a rien à rembourser : promettre un virement qui
+    n'arrivera jamais ferait attendre le client pour rien.
+    """
+    if rembourse:
+        argent = (
+            f"Vous allez bien sûr être intégralement remboursé(e) de "
+            f"{commande.total} €.\nLe remboursement est déjà lancé ; selon "
+            "votre banque, il apparaîtra\nsur votre compte sous 5 à 10 jours."
+        )
+    else:
+        argent = "Cette commande n'a pas été débitée : vous n'avez rien à faire."
+
+    contact = _email_proprietaire()
+    reponse = (
+        f"\n\nPour toute question, écrivez-nous à {contact}." if contact else ""
+    )
+
+    corps = f"""Bonjour {commande.first_name},
+
+Nous sommes vraiment désolés : nous devons annuler votre commande
+n° {commande.pk}. Un article commandé n'était en réalité plus disponible,
+malgré ce qu'indiquait notre site — l'erreur vient de chez nous.
+
+{argent}
+
+VOTRE COMMANDE ANNULÉE
+
+{_recapitulatif(commande)}
+
+Encore toutes nos excuses pour ce désagrément.{reponse}
+
+À bientôt,
+Chérie Cherry
+"""
+
+    return _envoyer(
+        sujet=f"Annulation de votre commande n° {commande.pk}",
+        corps=corps,
+        destinataires=[commande.email],
+        repondre_a=contact or None,
+    )
