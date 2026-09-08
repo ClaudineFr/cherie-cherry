@@ -1594,3 +1594,152 @@ a.button:hover {
 .deletelink {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9709c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6'/%3E%3Cpath d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Cline x1='10' x2='10' y1='11' y2='17'/%3E%3Cline x1='14' x2='14' y1='11' y2='17'/%3E%3C/svg%3E");
 }
+
+/* --- Annulation d'une commande ------------------------------------------
+ *
+ * Le bouton vit sous le formulaire de la commande, dans un encadré à part :
+ * il ne fait pas partie des boutons d'enregistrement, et le confondre avec
+ * eux couterait un remboursement.
+ */
+.cc-cancel-zone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--cc-pink);
+  border-radius: var(--cc-radius);
+  background: var(--cc-pink-soft);
+}
+
+.cc-cancel-title {
+  margin: 0;
+  font-weight: 600;
+  color: var(--cc-green-deep);
+}
+
+.cc-cancel-help {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: var(--body-quiet-color);
+}
+
+/* Contour plutot que fond plein : le bouton se voit sans se confondre avec
+   le « Enregistrer » vert, qui reste l'action courante. */
+.cc-cancel-btn,
+.cc-cancel-btn:link,
+.cc-cancel-btn:visited {
+  flex-shrink: 0;
+  padding: 9px 18px;
+  border: 1px solid var(--cc-pink-deep);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--cc-pink-deep);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cc-cancel-btn:hover {
+  background: var(--cc-pink-deep);
+  color: #fff;
+}
+
+/* --- Page de confirmation --- */
+.cc-confirm {
+  max-width: 34rem;
+  margin: 24px auto;
+  padding: 24px 26px;
+  border: 1px solid var(--hairline-color);
+  border-radius: var(--cc-radius);
+  background: #fff;
+}
+
+.cc-confirm-title {
+  margin: 0 0 18px;
+  font-size: 1.25rem;
+  color: var(--cc-green-deep);
+}
+
+.cc-confirm-recap {
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: var(--cc-pink-soft);
+}
+
+.cc-confirm-recap p {
+  margin: 0 0 4px;
+}
+
+.cc-confirm-recap ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: var(--body-quiet-color);
+}
+
+.cc-confirm-label {
+  margin: 20px 0 2px;
+  font-weight: 600;
+}
+
+.cc-confirm-help {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: var(--body-quiet-color);
+}
+
+.cc-confirm-select {
+  width: 100%;
+}
+
+.cc-confirm-effets {
+  margin-top: 20px;
+  font-size: 0.85rem;
+}
+
+.cc-confirm-effets p {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.cc-confirm-effets ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--body-quiet-color);
+}
+
+/* Les deux boutons cote a cote, et qui s'empilent quand la place manque. */
+.cc-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cc-confirm-cancel,
+.cc-confirm-cancel:link,
+.cc-confirm-cancel:visited {
+  color: var(--body-quiet-color);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* L'action destructrice porte le rose soutenu de la DA : visible, mais sans
+   le rouge d'alerte qui jurerait avec le reste du back-office. */
+.cc-confirm-submit {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  background: var(--cc-pink-deep);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+}
+
+.cc-confirm-submit:hover {
+  background: #c25c88;
+}

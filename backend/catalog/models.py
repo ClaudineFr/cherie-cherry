@@ -837,6 +837,20 @@ class Order(models.Model):
         READY = "ready", "Prête à retirer"
         CANCELLED = "cancelled", "Annulée"
 
+    class CancelReason(models.TextChoices):
+        """Pourquoi une commande a été annulée — ce qui sera dit au client.
+
+        Chaque motif correspond à une formulation de l'email d'annulation :
+        s'excuser d'une rupture de stock et répondre à une demande du client
+        n'appellent pas le même message. Les libellés ci-dessous sont ceux
+        que la propriétaire lit dans le back-office, pas le texte envoyé.
+        """
+
+        OUT_OF_STOCK = "out_of_stock", "Article finalement indisponible"
+        DAMAGED = "damaged", "Article abîmé ou défectueux"
+        CUSTOMER_REQUEST = "customer_request", "Demande du client"
+        OTHER = "other", "Autre motif"
+
     # Retrait ou livraison. On utilise des choix (et non un booléen
     # « est_livree ») pour pouvoir ajouter le point relais plus tard sans
     # restructurer le modèle ni migrer les commandes existantes.
@@ -901,6 +915,15 @@ class Order(models.Model):
     # L'identifiant de la session de paiement chez Stripe. Sert à rapprocher
     # notre commande de ce que Stripe nous raconte, et à retrouver le
     # paiement dans leur interface en cas de litige.
+    cancel_reason = models.CharField(
+        "motif d'annulation",
+        max_length=20,
+        choices=CancelReason.choices,
+        blank=True,
+        help_text="Renseigné automatiquement lors d'une annulation. "
+        "Détermine ce que dit l'email envoyé au client.",
+    )
+
     stripe_session_id = models.CharField(
         "session Stripe", max_length=255, blank=True, db_index=True
     )

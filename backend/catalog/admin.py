@@ -1,11 +1,21 @@
+import logging
+
+import stripe
+from django.conf import settings
 from django.contrib import admin
-from django.shortcuts import redirect
-from django.urls import reverse
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.db.models import F
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from . import emails
 from .models import GalleryPhoto, OpeningHours, Product, InstagramStory, InstagramPost, MenuDrink, DrinkOfMonth, DrinkOfMonthSettings, Supplement, ContactMessage, SiteSettings, ProductImage, Order, OrderItem, LegalSettings, AboutPage, AboutValue, ShippingSettings
+
+
+logger = logging.getLogger(__name__)
 
 
 class SingletonAdminMixin:
@@ -536,6 +546,164 @@ class OrderAdmin(admin.ModelAdmin):
     # à la main.
     def has_add_permission(self, request):
         return False
+
+    # Le bouton d'annulation vit dans la fiche de la commande, pas dans la
+    # liste : on annule UNE commande précise, en la regardant. Le template
+    # ajoute le bouton, `get_urls` lui donne son adresse.
+    change_form_template = "admin/catalog/order/change_form.html"
+
+    def get_urls(self):
+        """Ajoute l'adresse du bouton « Annuler et rembourser »."""
+        perso = [
+            path(
+                "<int:pk>/annuler-rembourser/",
+                self.admin_site.admin_view(self.vue_annuler_rembourser),
+                name="catalog_order_annuler_rembourser",
+            ),
+        ]
+        return perso + super().get_urls()
+
+    def vue_annuler_rembourser(self, request, pk):
+        """Demande confirmation, puis annule, rembourse et s'excuse.
+
+        Le cas visé : un produit affiché disponible ne l'était pas vraiment,
+        et la commande a été encaissée quand même. Il faut alors rendre
+        l'argent, remettre les articles en stock et prévenir le client.
+
+        En GET on affiche une page de confirmation : un remboursement est
+        irréversible, il ne doit pas partir sur un clic isolé. Le POST fait
+        le travail. Passer le statut à « Annulée » à la main reste possible
+        et ne touche toujours pas à l'argent.
+        """
+        commande = get_object_or_404(Order, pk=pk)
+
+        if not self.has_change_permission(request, commande):
+            raise PermissionDenied
+
+        deja_annulee = commande.status == Order.Status.CANCELLED
+        # Une commande jamais payée n'a rien à rendre : on l'annule, mais
+        # l'email ne promettra pas un virement qui n'arriverait jamais.
+        a_rembourser = (
+            commande.status != Order.Status.PENDING
+            and bool(commande.stripe_session_id)
+            and not deja_annulee
+        )
+        retour = reverse("admin:catalog_order_change", args=[commande.pk])
+
+        if request.method != "POST":
+            return render(
+                request,
+                "admin/catalog/order/annuler_rembourser.html",
+                {
+                    **self.admin_site.each_context(request),
+                    "title": f"Annuler la commande n° {commande.pk}",
+                    "commande": commande,
+                    "a_rembourser": a_rembourser,
+                    "deja_annulee": deja_annulee,
+                    "motifs": Order.CancelReason.choices,
+                    "retour": retour,
+                    "opts": self.model._meta,
+                },
+            )
+
+        if deja_annulee:
+            self.message_user(
+                request, "Cette commande est déjà annulée.", level="warning"
+            )
+            return redirect(retour)
+
+        # Le motif vient d'un <select> : on le revalide plutôt que de faire
+        # confiance au formulaire, et on retombe sur « Autre » si la valeur
+        # reçue n'est pas une de celles proposées.
+        motif = request.POST.get("motif", "")
+        if motif not in Order.CancelReason.values:
+            motif = Order.CancelReason.OTHER
+
+        # --- 1. Rembourser, si de l'argent a bien été encaissé ---
+        remboursee = False
+        if a_rembourser:
+            erreur = self._rembourser(commande)
+            if erreur:
+                # On n'annule PAS une commande dont l'argent n'a pas pu être
+                # rendu : la fiche afficherait « annulée » alors que le client
+                # est toujours débité.
+                self.message_user(
+                    request,
+                    f"Remboursement refusé par Stripe ({erreur}). La commande "
+                    "n'a pas été annulée — vérifiez sur le tableau de bord "
+                    "Stripe.",
+                    level="error",
+                )
+                return redirect(retour)
+            remboursee = True
+
+        # --- 2. Remettre le stock et annuler, d'un seul bloc ---
+        #
+        # transaction.atomic : si l'annulation échoue à mi-chemin, on ne veut
+        # pas d'un stock regonflé sur une commande restée payée. F() plutôt
+        # que lire-puis-écrire, pour la même raison qu'à l'encaissement.
+        with transaction.atomic():
+            if commande.status == Order.Status.PAID:
+                # Seule une commande PAYÉE a décrémenté le stock (c'est le
+                # webhook qui le fait). Le regonfler sur une commande non
+                # payée inventerait des articles.
+                for ligne in commande.items.all():
+                    Product.objects.filter(pk=ligne.product_id).update(
+                        stock=F("stock") + ligne.quantity
+                    )
+
+            commande.status = Order.Status.CANCELLED
+            commande.cancel_reason = motif
+            commande.save(
+                update_fields=["status", "cancel_reason", "updated_at"]
+            )
+
+        # --- 3. Prévenir le client, hors transaction ---
+        if emails.commande_annulee(commande, rembourse=remboursee, motif=motif):
+            self.message_user(
+                request,
+                f"Commande annulée{" et remboursée" if remboursee else ""}. "
+                "Le stock a été remis à jour et le client prévenu par email.",
+            )
+        else:
+            self.message_user(
+                request,
+                f"Commande annulée{" et remboursée" if remboursee else ""}, "
+                "mais l'email n'est pas parti — prévenez le client autrement.",
+                level="warning",
+            )
+        return redirect(retour)
+
+    def _rembourser(self, commande):
+        """Rembourse intégralement une commande. Renvoie None, ou l'erreur.
+
+        Stripe rembourse un paiement (`payment_intent`), pas une session de
+        paiement — et c'est la session qu'on garde sur la commande. On la
+        relit donc pour retrouver le paiement correspondant.
+        """
+        try:
+            # `client.v1.*` et non `client.checkout` / `client.refunds` :
+            # ces raccourcis sont dépréciés dans stripe-python et émettent un
+            # DeprecationWarning.
+            client = stripe.StripeClient(settings.STRIPE_SECRET_KEY)
+            session = client.v1.checkout.sessions.retrieve(commande.stripe_session_id)
+
+            paiement = getattr(session, "payment_intent", None)
+            if not paiement:
+                # Session jamais réglée : rien n'a été encaissé, donc rien à
+                # rendre. Ce n'est pas une erreur.
+                return None
+
+            # Pas de montant : Stripe rembourse alors la totalité, frais de
+            # port compris. C'est ce qu'on veut ici — l'erreur vient de la
+            # boutique, le client ne doit rien payer.
+            client.v1.refunds.create(params={"payment_intent": paiement})
+            return None
+        except stripe.StripeError as exc:
+            logger.warning(
+                "Remboursement refusé pour la commande %s : %s", commande.pk, exc
+            )
+            return str(getattr(exc, "user_message", None) or exc)
 
     def save_model(self, request, obj, form, change):
         """Prévient le client quand sa commande passe à « prête à retirer ».

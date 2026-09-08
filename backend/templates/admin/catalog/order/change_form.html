@@ -1,0 +1,23 @@
+{% extends "admin/change_form.html" %}
+
+{# Ajoute le bouton « Annuler et rembourser » à la fiche d'une commande.
+   Il n'apparaît que sur une commande existante et non déjà annulée : sur une
+   commande annulée il n'y aurait rien à faire, et le proposer quand même
+   ferait douter. Le bouton mène à une page de confirmation, jamais
+   directement au remboursement. #}
+{% block submit_buttons_bottom %}
+  {{ block.super }}
+  {% if original and original.status != "cancelled" %}
+    <div class="cc-cancel-zone">
+      <div>
+        <p class="cc-cancel-title">Annuler cette commande</p>
+        <p class="cc-cancel-help">
+          Rembourse la cliente, remet les articles en stock et lui envoie un
+          email d'explication.
+        </p>
+      </div>
+      <a href="{% url 'admin:catalog_order_annuler_rembourser' original.pk %}"
+         class="cc-cancel-btn">Annuler et rembourser…</a>
+    </div>
+  {% endif %}
+{% endblock %}

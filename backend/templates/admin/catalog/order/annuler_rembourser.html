@@ -1,0 +1,73 @@
+{% extends "admin/base_site.html" %}
+
+{# Page de confirmation avant d'annuler une commande. Un remboursement ne se
+   défait pas : on montre ce qui va se passer, on fait choisir le motif (qui
+   décide de ce que dira l'email), et on demande un second clic. #}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Accueil</a>
+    &rsaquo; <a href="{% url 'admin:catalog_order_changelist' %}">Commandes</a>
+    &rsaquo; <a href="{{ retour }}">Commande n° {{ commande.pk }}</a>
+    &rsaquo; Annuler
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="cc-confirm">
+    <h1 class="cc-confirm-title">Annuler la commande n° {{ commande.pk }} ?</h1>
+
+    <div class="cc-confirm-recap">
+      <p><strong>{{ commande.first_name }} {{ commande.last_name }}</strong>
+         — {{ commande.email }}</p>
+      <p>{{ commande.total }} € · {{ commande.get_status_display }}</p>
+      <ul>
+        {% for ligne in commande.items.all %}
+          <li>{{ ligne.quantity }} × {{ ligne.product_name }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <p class="cc-confirm-label">
+        <label for="motif">Pourquoi annulez-vous cette commande ?</label>
+      </p>
+      <p class="cc-confirm-help">
+        Le motif choisi décide de ce que dira l'email envoyé à la cliente.
+      </p>
+      <select name="motif" id="motif" class="cc-confirm-select">
+        {% for valeur, libelle in motifs %}
+          <option value="{{ valeur }}">{{ libelle }}</option>
+        {% endfor %}
+      </select>
+
+      <div class="cc-confirm-effets">
+        <p>En validant :</p>
+        <ul>
+          {% if a_rembourser %}
+            <li><strong>{{ commande.total }} € seront remboursés</strong> à la
+                cliente. Cette opération ne peut pas être annulée.</li>
+          {% else %}
+            <li>Aucun remboursement : cette commande n'a pas été débitée.</li>
+          {% endif %}
+          <li>Les articles retournent en stock.</li>
+          <li>La cliente reçoit un email d'explication.</li>
+          <li>La commande passe en « Annulée ».</li>
+        </ul>
+      </div>
+
+      <div class="cc-confirm-actions">
+        <a href="{{ retour }}" class="cc-confirm-cancel">Non, revenir</a>
+        <button type="submit" class="cc-confirm-submit">
+          {% if a_rembourser %}
+            Oui, annuler et rembourser {{ commande.total }} €
+          {% else %}
+            Oui, annuler la commande
+          {% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

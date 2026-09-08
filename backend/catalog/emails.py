@@ -292,3 +292,85 @@ Chérie Cherry
         corps=corps,
         destinataires=[commande.email],
     )
+
+def commande_annulee(commande, rembourse=True, motif=""):
+    """S'excuse d'annuler une commande, et annonce le remboursement.
+
+    `motif` change la raison annoncée : une rupture de stock est une faute de
+    la boutique et se dit comme telle, tandis qu'une annulation demandée par
+    le client n'a pas à s'excuser de quoi que ce soit. Sans motif, on reste
+    sur une formulation neutre.
+
+    `rembourse` distingue les deux situations d'argent. Une commande déjà
+    payée est remboursée, et on l'annonce avec le délai bancaire. Une commande
+    annulée avant paiement n'a rien à rembourser : promettre un virement qui
+    n'arriverait jamais ferait attendre le client pour rien.
+    """
+    from .models import Order
+
+    # Chaque motif a sa phrase : le ton n'est pas le même selon que la
+    # boutique s'excuse ou répond à une demande.
+    raisons = {
+        Order.CancelReason.OUT_OF_STOCK: (
+            "Nous sommes vraiment désolés : nous devons annuler votre commande\n"
+            f"n° {commande.pk}. Un article commandé n'était en réalité plus\n"
+            "disponible, malgré ce qu'indiquait notre site — l'erreur vient de\n"
+            "chez nous."
+        ),
+        Order.CancelReason.DAMAGED: (
+            "Nous sommes vraiment désolés : nous devons annuler votre commande\n"
+            f"n° {commande.pk}. En la préparant, nous avons constaté qu'un\n"
+            "article était abîmé, et nous préférons ne pas vous l'envoyer dans\n"
+            "cet état."
+        ),
+        Order.CancelReason.CUSTOMER_REQUEST: (
+            f"Comme convenu, nous avons annulé votre commande n° {commande.pk}."
+        ),
+    }
+    intro = raisons.get(
+        motif,
+        "Nous sommes désolés : nous devons annuler votre commande\n"
+        f"n° {commande.pk}.",
+    )
+
+    if rembourse:
+        argent = (
+            f"Vous allez bien sûr être intégralement remboursé(e) de "
+            f"{commande.total} €.\nLe remboursement est déjà lancé ; selon "
+            "votre banque, il apparaîtra\nsur votre compte sous 5 à 10 jours."
+        )
+    else:
+        argent = "Cette commande n'a pas été débitée : vous n'avez rien à faire."
+
+    contact = _email_proprietaire()
+    reponse = (
+        f"\n\nPour toute question, écrivez-nous à {contact}." if contact else ""
+    )
+
+    # On ne s'excuse pas d'avoir fait ce que le client demandait.
+    excuses = (
+        ""
+        if motif == Order.CancelReason.CUSTOMER_REQUEST
+        else "\n\nEncore toutes nos excuses pour ce désagrément."
+    )
+
+    corps = f"""Bonjour {commande.first_name},
+
+{intro}
+
+{argent}
+
+VOTRE COMMANDE ANNULÉE
+
+{_recapitulatif(commande)}{excuses}{reponse}
+
+À bientôt,
+Chérie Cherry
+"""
+
+    return _envoyer(
+        sujet=f"Annulation de votre commande n° {commande.pk}",
+        corps=corps,
+        destinataires=[commande.email],
+        repondre_a=contact or None,
+    )
