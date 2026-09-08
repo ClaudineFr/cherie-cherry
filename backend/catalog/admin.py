@@ -352,6 +352,11 @@ class ATraiterFilter(admin.SimpleListFilter):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    # 19 champs à l'écran : sans ça, il faut dérouler toute la fiche pour
+    # atteindre le bouton d'enregistrement. Le doublon en haut évite l'aller-
+    # retour quand on ne change qu'un statut ou un numéro de suivi.
+    save_on_top = True
+
     list_display = [
         "__str__",
         "created_at",
@@ -595,6 +600,10 @@ class LegalSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
     Singleton comme SiteSettings : cliquer sur la rubrique ouvre directement le
     formulaire, sans passer par une liste d'un seul élément.
     """
+
+    # 15 champs, souvent de longs textes : un bouton d'enregistrement en haut
+    # évite de redescendre toute la page après une correction.
+    save_on_top = True
 
     fieldsets = [
         (
