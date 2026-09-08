@@ -12,6 +12,7 @@ d'emails en panne ne doit pas faire échouer un paiement.
 """
 
 import logging
+import textwrap
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -19,6 +20,24 @@ from django.core.mail import EmailMessage
 from .models import Order, SiteSettings
 
 logger = logging.getLogger(__name__)
+
+
+def plier(texte, largeur=70):
+    """Coupe un paragraphe en lignes lisibles dans un client mail texte.
+
+    Écrire les retours à la ligne à la main marchait tant que le texte ne
+    variait pas — mais un numéro de commande à un ou quatre chiffres décale
+    tout ce qui suit, et la coupure tombait au milieu d'une phrase. On laisse
+    donc Python plier le paragraphe une fois assemblé.
+
+    70 caractères : la largeur habituelle d'un email en texte brut, qui reste
+    lisible sans que le client mail ait à recouper les lignes lui-même.
+
+    Les numéros sont collés à leur « n° » par une espace insécable en amont :
+    textwrap ne coupe jamais dessus, donc « n° 27 » ne se retrouve pas à
+    cheval sur deux lignes.
+    """
+    return textwrap.fill(texte, width=largeur)
 
 
 def _adresse_boutique():
@@ -126,7 +145,7 @@ def confirmation_au_client(commande):
 
 Merci pour votre commande ! Nous avons bien reçu votre paiement.
 
-VOTRE COMMANDE (n° {commande.pk})
+VOTRE COMMANDE (n° {commande.pk})
 
 {_recapitulatif(commande)}
 
@@ -141,7 +160,7 @@ Chérie Cherry
 """
 
     return _envoyer(
-        sujet=f"Votre commande Chérie Cherry n° {commande.pk}",
+        sujet=f"Votre commande Chérie Cherry n° {commande.pk}",
         corps=corps,
         destinataires=[commande.email],
     )
@@ -183,7 +202,7 @@ def alerte_a_la_proprietaire(commande):
 
     telephone = f"\n  Téléphone : {commande.phone}" if commande.phone else ""
 
-    corps = f"""Nouvelle commande n° {commande.pk}
+    corps = f"""Nouvelle commande n° {commande.pk}
 
 CLIENT
   {commande.first_name} {commande.last_name}
@@ -201,7 +220,7 @@ Retrouvez cette commande dans votre espace d'administration.
 """
 
     return _envoyer(
-        sujet=f"Nouvelle commande n° {commande.pk} — {commande.total} €",
+        sujet=f"Nouvelle commande n° {commande.pk} — {commande.total} €",
         corps=corps,
         destinataires=[_email_proprietaire()] if _email_proprietaire() else [],
         # La propriétaire peut répondre directement au client.
@@ -216,7 +235,7 @@ def commande_prete(commande):
 
     corps = f"""Bonjour {commande.first_name},
 
-Votre commande n° {commande.pk} est prête ! Vous pouvez venir la retirer
+Votre commande n° {commande.pk} est prête ! Vous pouvez venir la retirer
 en boutique aux horaires d'ouverture.{lieu}
 
 VOTRE COMMANDE
@@ -228,7 +247,7 @@ Chérie Cherry
 """
 
     return _envoyer(
-        sujet=f"Votre commande n° {commande.pk} est prête !",
+        sujet=f"Votre commande n° {commande.pk} est prête !",
         corps=corps,
         destinataires=[commande.email],
     )
@@ -275,7 +294,7 @@ def commande_expediee(commande):
 
     corps = f"""Bonjour {commande.first_name},
 
-Bonne nouvelle : votre commande n° {commande.pk} vient d'être expédiée.
+Bonne nouvelle : votre commande n° {commande.pk} vient d'être expédiée.
 
 {destination}{suivi}
 
@@ -288,7 +307,7 @@ Chérie Cherry
 """
 
     return _envoyer(
-        sujet=f"Votre commande n° {commande.pk} est en route !",
+        sujet=f"Votre commande n° {commande.pk} est en route !",
         corps=corps,
         destinataires=[commande.email],
     )
@@ -306,38 +325,41 @@ def commande_annulee(commande, rembourse=True, motif=""):
     annulée avant paiement n'a rien à rembourser : promettre un virement qui
     n'arriverait jamais ferait attendre le client pour rien.
     """
-    from .models import Order
-
     # Chaque motif a sa phrase : le ton n'est pas le même selon que la
     # boutique s'excuse ou répond à une demande.
+    # Les phrases s'écrivent d'un seul tenant : c'est `plier()` qui les coupe.
+    # Les couper à la main donnait des lignes bancales, la longueur du numéro
+    # de commande décalant tout ce qui suit.
     raisons = {
         Order.CancelReason.OUT_OF_STOCK: (
-            "Nous sommes vraiment désolés : nous devons annuler votre commande\n"
-            f"n° {commande.pk}. Un article commandé n'était en réalité plus\n"
-            "disponible, malgré ce qu'indiquait notre site — l'erreur vient de\n"
-            "chez nous."
+            f"Nous sommes vraiment désolés : nous devons annuler votre "
+            f"commande n° {commande.pk}. Un article commandé n'était en "
+            "réalité plus disponible, malgré ce qu'indiquait notre site — "
+            "l'erreur vient de chez nous."
         ),
         Order.CancelReason.DAMAGED: (
-            "Nous sommes vraiment désolés : nous devons annuler votre commande\n"
-            f"n° {commande.pk}. En la préparant, nous avons constaté qu'un\n"
-            "article était abîmé, et nous préférons ne pas vous l'envoyer dans\n"
-            "cet état."
+            f"Nous sommes vraiment désolés : nous devons annuler votre "
+            f"commande n° {commande.pk}. En la préparant, nous avons constaté "
+            "qu'un article était abîmé, et nous préférons ne pas vous "
+            "l'envoyer dans cet état."
         ),
         Order.CancelReason.CUSTOMER_REQUEST: (
-            f"Comme convenu, nous avons annulé votre commande n° {commande.pk}."
+            f"Comme convenu, nous avons annulé votre commande n° {commande.pk}."
         ),
     }
-    intro = raisons.get(
-        motif,
-        "Nous sommes désolés : nous devons annuler votre commande\n"
-        f"n° {commande.pk}.",
+    intro = plier(
+        raisons.get(
+            motif,
+            "Nous sommes désolés : nous devons annuler votre commande "
+            f"n° {commande.pk}.",
+        )
     )
 
     if rembourse:
-        argent = (
+        argent = plier(
             f"Vous allez bien sûr être intégralement remboursé(e) de "
-            f"{commande.total} €.\nLe remboursement est déjà lancé ; selon "
-            "votre banque, il apparaîtra\nsur votre compte sous 5 à 10 jours."
+            f"{commande.total} €. Le remboursement est déjà lancé ; selon "
+            "votre banque, il apparaîtra sur votre compte sous 5 à 10 jours."
         )
     else:
         argent = "Cette commande n'a pas été débitée : vous n'avez rien à faire."
@@ -369,7 +391,7 @@ Chérie Cherry
 """
 
     return _envoyer(
-        sujet=f"Annulation de votre commande n° {commande.pk}",
+        sujet=f"Annulation de votre commande n° {commande.pk}",
         corps=corps,
         destinataires=[commande.email],
         repondre_a=contact or None,
