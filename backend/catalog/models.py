@@ -32,6 +32,8 @@ class Product(models.Model):
         max_length=140,
         unique=True,
         blank=True,
+        help_text="Laisser vide : il est créé automatiquement à partir du nom. "
+        "Le modifier change l'adresse de la fiche produit.",
     )
 
 
@@ -47,9 +49,19 @@ class Product(models.Model):
     # max_digits = nombre total de chiffres, decimal_places = chiffres après la virgule.
     price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
 
-    stock = models.PositiveIntegerField("stock", default=0)
+    stock = models.PositiveIntegerField(
+        "stock",
+        default=0,
+        help_text="Nombre d'exemplaires disponibles. À 0, le produit s'affiche "
+        "comme épuisé et ne peut plus être commandé.",
+    )
 
-    featured = models.BooleanField("coup de cœur", default=False)
+    featured = models.BooleanField(
+        "coup de cœur",
+        default=False,
+        help_text="Met le produit en avant dans la boutique "
+        "(filtre « coups de cœur »).",
+    )
 
      # Image du produit. upload_to = sous-dossier dans MEDIA_ROOT où ranger le fichier.
     # blank=True + null=True = le produit peut ne pas avoir d'image (optionnel).
@@ -132,7 +144,11 @@ class ProductImage(models.Model):
     )
 
     order = models.PositiveIntegerField(
-        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+        "ordre d'affichage",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Le plus petit nombre s'affiche en premier "
+        "(1 avant 2, 2 avant 3…).",
     )
 
     class Meta:
@@ -258,7 +274,11 @@ class InstagramStory(models.Model):
     # Pour ranger les ronds dans l'ordre voulu : plus le nombre est petit,
     # plus le rond apparaît tôt. La proprio ajuste ça depuis l'admin.
     order = models.PositiveIntegerField(
-        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+        "ordre d'affichage",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Le plus petit nombre s'affiche en premier "
+        "(1 avant 2, 2 avant 3…).",
     )
 
     created_at = models.DateTimeField("créé le", auto_now_add=True)
@@ -294,7 +314,11 @@ class InstagramPost(models.Model):
 
     # Pour ranger les posts dans l'ordre voulu (plus petit = affiché en premier).
     order = models.PositiveIntegerField(
-        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+        "ordre d'affichage",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Le plus petit nombre s'affiche en premier "
+        "(1 avant 2, 2 avant 3…).",
     )
 
     created_at = models.DateTimeField("créé le", auto_now_add=True)
@@ -334,7 +358,11 @@ class MenuDrink(models.Model):
     )
 
     order = models.PositiveIntegerField(
-        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+        "ordre d'affichage",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Le plus petit nombre s'affiche en premier "
+        "(1 avant 2, 2 avant 3…).",
     )
 
     # Décocher pour masquer une boisson sans la supprimer (rupture, saison...).
@@ -362,7 +390,11 @@ class DrinkOfMonth(models.Model):
 
     # Pour ranger les boissons du mois dans l'ordre voulu (comme les stories).
     order = models.PositiveIntegerField(
-        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+        "ordre d'affichage",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Le plus petit nombre s'affiche en premier "
+        "(1 avant 2, 2 avant 3…).",
     )
 
     # Décocher pour la retirer du site sans la supprimer.
@@ -392,6 +424,8 @@ class DrinkOfMonthSettings(models.Model):
         "disponibles jusqu'au",
         null=True,
         blank=True,
+        help_text="Affiche « Durée limitée jusqu'au … » sur la page coffee "
+        "shop. Laisser vide pour ne pas annoncer de date de fin.",
     )
 
     class Meta:
@@ -419,7 +453,11 @@ class Supplement(models.Model):
 
     # Pour ranger les suppléments dans l'ordre voulu (comme le menu).
     order = models.PositiveIntegerField(
-        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+        "ordre d'affichage",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Le plus petit nombre s'affiche en premier "
+        "(1 avant 2, 2 avant 3…).",
     )
 
     # Décocher pour masquer un supplément sans le supprimer.
@@ -763,7 +801,11 @@ class AboutValue(models.Model):
     )
 
     order = models.PositiveIntegerField(
-        "ordre d'affichage", default=1, validators=[MinValueValidator(1)]
+        "ordre d'affichage",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Le plus petit nombre s'affiche en premier "
+        "(1 avant 2, 2 avant 3…).",
     )
 
     # Décocher pour retirer une valeur du site sans la supprimer.
