@@ -3,19 +3,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
-import RelayPicker from "@/components/RelayPicker";
 import { createCheckout, type CheckoutState } from "./actions";
-
-// Un point relais tel que le widget Mondial Relay le renvoie. Ces valeurs
-// partent telles quelles dans le formulaire : Django les recopie sur la
-// commande pour garder une trace de l'endroit où le colis a été envoyé.
-export type RelayPoint = {
-  id: string;
-  name: string;
-  address: string;
-  postalCode: string;
-  city: string;
-};
 
 export default function CheckoutForm() {
   const { lines, total } = useCart();
@@ -25,11 +13,6 @@ export default function CheckoutForm() {
   const [delivery, setDelivery] = useState<"pickup" | "home" | "relay">(
     "pickup",
   );
-
-  // Le point relais choisi dans le widget Mondial Relay. `null` tant que le
-  // client n'en a pas sélectionné : c'est ce qui distingue « pas encore
-  // choisi » d'un relais aux champs vides.
-  const [relay, setRelay] = useState<RelayPoint | null>(null);
 
   // On n'envoie que les identifiants et les quantités : les prix sont relus
   // par Django. bind fige ce premier argument, useActionState fournissant
@@ -213,61 +196,106 @@ export default function CheckoutForm() {
         </div>
       )}
 
-      {/* Point relais. Le widget Mondial Relay viendra se greffer ici : il
-          appellera setRelay() avec le point choisi. En attendant, le bloc
-          affiche l'état de la sélection et transporte les valeurs. */}
+      {/* Point relais. Le client saisit lui-meme le relais de son choix,
+          reperé via le chercheur officiel de Mondial Relay (lien ci-dessous).
+
+          Le widget Mondial Relay a ete retire : il pose ses largeurs en pixels
+          en style inline, ce qui le rendait bancal sur mobile, et il tournait
+          sur BDTEST (le compte de demonstration public), dont les points
+          affiches ne sont pas garantis exacts. A rebrancher le jour ou la
+          boutique aura son vrai code enseigne. */}
       {delivery === "relay" && (
-        <div className="mt-6 rounded-xl border border-green/10 bg-cream/50 p-4">
-          {relay ? (
-            <>
-              <p className="text-[0.7rem] uppercase tracking-wide text-ink/50">
-                Votre point relais
-              </p>
-              <p className="mt-2 font-medium text-green">{relay.name}</p>
-              <p className="mt-0.5 text-sm text-ink/70">
-                {relay.address}
-                <br />
-                {relay.postalCode} {relay.city}
-              </p>
-              <button
-                type="button"
-                onClick={() => setRelay(null)}
-                className="mt-3 text-sm text-green underline underline-offset-4 hover:text-green/70"
-              >
-                Choisir un autre point relais
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-ink/70">
-                Choisissez le point relais où vous souhaitez récupérer votre
-                commande.
-              </p>
-              <div className="mt-4">
-                <RelayPicker onSelect={setRelay} />
-              </div>
-            </>
-          )}
+        <div className="mt-6 overflow-hidden rounded-xl border border-green/15">
+          <div className="border-b border-green/10 bg-pink-soft px-4 py-3 sm:px-5">
+            <p className="font-serif text-base text-green">
+              Votre point relais
+            </p>
+            <p className="mt-1 text-[0.8rem] leading-relaxed text-ink/60">
+              Indiquez le relais où vous souhaitez récupérer votre commande.
+            </p>
+          </div>
 
-          {/* Les champs cachés portent le point choisi jusqu'au Server Action.
-              Ils ne sont rendus que si un relais est sélectionné : un champ
-              vide et un champ absent se valent côté Django, mais l'absence
-              rend le formulaire plus lisible dans les outils de debug. */}
-          {relay && (
-            <>
-              <input type="hidden" name="relay_id" value={relay.id} />
-              <input type="hidden" name="relay_name" value={relay.name} />
-              <input type="hidden" name="relay_address" value={relay.address} />
+          <div className="space-y-4 px-4 py-4 sm:px-5">
+            <div>
+              <label className={label} htmlFor="relay_name">
+                Nom du point relais
+              </label>
               <input
-                type="hidden"
-                name="relay_postal_code"
-                value={relay.postalCode}
+                id="relay_name"
+                name="relay_name"
+                type="text"
+                required
+                placeholder="Ex. Boulangerie du Marché"
+                className={champ}
               />
-              <input type="hidden" name="relay_city" value={relay.city} />
-            </>
-          )}
+              {erreur("relay_name")}
+            </div>
 
-          {erreur("relay_id")}
+            <div>
+              <label className={label} htmlFor="relay_address">
+                Adresse
+              </label>
+              <input
+                id="relay_address"
+                name="relay_address"
+                type="text"
+                placeholder="Ex. 12 rue des Lilas"
+                className={champ}
+              />
+              {erreur("relay_address")}
+            </div>
+
+            {/* Code postal et ville cote a cote des qu'il y a la place : deux
+                champs courts, une seule ligne sur ecran large. */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[8rem_1fr]">
+              <div>
+                <label className={label} htmlFor="relay_postal_code">
+                  Code postal
+                </label>
+                <input
+                  id="relay_postal_code"
+                  name="relay_postal_code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  required
+                  placeholder="75011"
+                  className={champ}
+                />
+                {erreur("relay_postal_code")}
+              </div>
+              <div>
+                <label className={label} htmlFor="relay_city">
+                  Ville
+                </label>
+                <input
+                  id="relay_city"
+                  name="relay_city"
+                  type="text"
+                  required
+                  placeholder="Paris"
+                  className={champ}
+                />
+                {erreur("relay_city")}
+              </div>
+            </div>
+          </div>
+
+          {/* Le lien vers le chercheur officiel. rel="noreferrer" en plus de
+              noopener : on n'envoie pas l'URL du panier au site cible. */}
+          <div className="border-t border-green/10 bg-cream/50 px-4 py-3 sm:px-5">
+            <p className="text-[0.8rem] leading-relaxed text-ink/60">
+              Vous ne savez pas lequel choisir ?{" "}
+              <a
+                href="https://www.mondialrelay.fr/trouver-le-point-relais-le-plus-proche-de-chez-moi/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green underline underline-offset-4 hover:text-green/70"
+              >
+                Trouver un point relais près de chez vous
+              </a>
+            </p>
+          </div>
         </div>
       )}
 
