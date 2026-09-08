@@ -3,10 +3,11 @@ import logging
 import stripe
 from django.conf import settings
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import F
-from django.shortcuts import redirect
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -546,107 +547,132 @@ class OrderAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    actions = ["annuler_et_rembourser"]
+    # Le bouton d'annulation vit dans la fiche de la commande, pas dans la
+    # liste : on annule UNE commande précise, en la regardant. Le template
+    # ajoute le bouton, `get_urls` lui donne son adresse.
+    change_form_template = "admin/catalog/order/change_form.html"
 
-    # Le menu d'actions aussi en bas de la liste. `list_editable` (le statut
-    # modifiable en ligne) place un bouton « Enregistrer » sous le tableau,
-    # qui attire l'œil : sans ce doublon, le menu resté tout en haut passe
-    # inaperçu.
-    actions_on_bottom = True
+    def get_urls(self):
+        """Ajoute l'adresse du bouton « Annuler et rembourser »."""
+        perso = [
+            path(
+                "<int:pk>/annuler-rembourser/",
+                self.admin_site.admin_view(self.vue_annuler_rembourser),
+                name="catalog_order_annuler_rembourser",
+            ),
+        ]
+        return perso + super().get_urls()
 
-    @admin.action(description="Annuler et rembourser la commande")
-    def annuler_et_rembourser(self, request, queryset):
-        """Annule des commandes payées, rembourse le client et s'en excuse.
+    def vue_annuler_rembourser(self, request, pk):
+        """Demande confirmation, puis annule, rembourse et s'excuse.
 
         Le cas visé : un produit affiché disponible ne l'était pas vraiment,
         et la commande a été encaissée quand même. Il faut alors rendre
         l'argent, remettre les articles en stock et prévenir le client.
 
-        C'est une action GROUPÉE plutôt qu'un simple passage au statut
-        « Annulée » : un remboursement est irréversible, et le déclencher
-        depuis une liste déroulante rendrait une fausse manœuvre trop facile.
-        Le statut « Annulée » reste utilisable seul, sans toucher à l'argent.
-
-        Chaque commande est traitée séparément : l'échec de l'une ne doit pas
-        empêcher les autres d'aboutir.
+        En GET on affiche une page de confirmation : un remboursement est
+        irréversible, il ne doit pas partir sur un clic isolé. Le POST fait
+        le travail. Passer le statut à « Annulée » à la main reste possible
+        et ne touche toujours pas à l'argent.
         """
-        rembourses = annules = 0
+        commande = get_object_or_404(Order, pk=pk)
 
-        for commande in queryset:
-            if commande.status == Order.Status.CANCELLED:
+        if not self.has_change_permission(request, commande):
+            raise PermissionDenied
+
+        deja_annulee = commande.status == Order.Status.CANCELLED
+        # Une commande jamais payée n'a rien à rendre : on l'annule, mais
+        # l'email ne promettra pas un virement qui n'arriverait jamais.
+        a_rembourser = (
+            commande.status != Order.Status.PENDING
+            and bool(commande.stripe_session_id)
+            and not deja_annulee
+        )
+        retour = reverse("admin:catalog_order_change", args=[commande.pk])
+
+        if request.method != "POST":
+            return render(
+                request,
+                "admin/catalog/order/annuler_rembourser.html",
+                {
+                    **self.admin_site.each_context(request),
+                    "title": f"Annuler la commande n° {commande.pk}",
+                    "commande": commande,
+                    "a_rembourser": a_rembourser,
+                    "deja_annulee": deja_annulee,
+                    "motifs": Order.CancelReason.choices,
+                    "retour": retour,
+                    "opts": self.model._meta,
+                },
+            )
+
+        if deja_annulee:
+            self.message_user(
+                request, "Cette commande est déjà annulée.", level="warning"
+            )
+            return redirect(retour)
+
+        # Le motif vient d'un <select> : on le revalide plutôt que de faire
+        # confiance au formulaire, et on retombe sur « Autre » si la valeur
+        # reçue n'est pas une de celles proposées.
+        motif = request.POST.get("motif", "")
+        if motif not in Order.CancelReason.values:
+            motif = Order.CancelReason.OTHER
+
+        # --- 1. Rembourser, si de l'argent a bien été encaissé ---
+        remboursee = False
+        if a_rembourser:
+            erreur = self._rembourser(commande)
+            if erreur:
+                # On n'annule PAS une commande dont l'argent n'a pas pu être
+                # rendu : la fiche afficherait « annulée » alors que le client
+                # est toujours débité.
                 self.message_user(
                     request,
-                    f"Commande n° {commande.pk} : déjà annulée, rien à faire.",
-                    level="warning",
+                    f"Remboursement refusé par Stripe ({erreur}). La commande "
+                    "n'a pas été annulée — vérifiez sur le tableau de bord "
+                    "Stripe.",
+                    level="error",
                 )
-                continue
+                return redirect(retour)
+            remboursee = True
 
-            # --- 1. Rembourser, si de l'argent a bien été encaissé ---
-            #
-            # Une commande « en attente de paiement » n'a jamais été débitée :
-            # il n'y a rien à rendre. On l'annule quand même, mais l'email ne
-            # promettra pas un virement qui n'arriverait jamais.
-            remboursee = False
-            if commande.status != Order.Status.PENDING and commande.stripe_session_id:
-                erreur = self._rembourser(commande)
-                if erreur:
-                    # On n'annule PAS une commande dont l'argent n'a pas pu
-                    # être rendu : la fiche resterait « annulée » alors que le
-                    # client a toujours été débité.
-                    self.message_user(
-                        request,
-                        f"Commande n° {commande.pk} : remboursement refusé "
-                        f"par Stripe ({erreur}). Commande laissée telle "
-                        "quelle — vérifiez sur le tableau de bord Stripe.",
-                        level="error",
+        # --- 2. Remettre le stock et annuler, d'un seul bloc ---
+        #
+        # transaction.atomic : si l'annulation échoue à mi-chemin, on ne veut
+        # pas d'un stock regonflé sur une commande restée payée. F() plutôt
+        # que lire-puis-écrire, pour la même raison qu'à l'encaissement.
+        with transaction.atomic():
+            if commande.status == Order.Status.PAID:
+                # Seule une commande PAYÉE a décrémenté le stock (c'est le
+                # webhook qui le fait). Le regonfler sur une commande non
+                # payée inventerait des articles.
+                for ligne in commande.items.all():
+                    Product.objects.filter(pk=ligne.product_id).update(
+                        stock=F("stock") + ligne.quantity
                     )
-                    continue
-                remboursee = True
-                rembourses += 1
 
-            # --- 2. Remettre le stock et annuler, d'un seul bloc ---
-            #
-            # transaction.atomic : si l'annulation échoue à mi-chemin, on ne
-            # veut pas d'un stock regonflé sur une commande restée payée.
-            # F() plutôt que lire-puis-écrire, pour la même raison qu'à
-            # l'encaissement : deux opérations simultanées ne doivent pas
-            # s'écraser l'une l'autre.
-            with transaction.atomic():
-                if commande.status == Order.Status.PAID:
-                    # Seule une commande PAYÉE a décrémenté le stock (c'est le
-                    # webhook qui le fait). Le regonfler sur une commande non
-                    # payée inventerait des articles.
-                    for ligne in commande.items.all():
-                        Product.objects.filter(pk=ligne.product_id).update(
-                            stock=F("stock") + ligne.quantity
-                        )
+            commande.status = Order.Status.CANCELLED
+            commande.cancel_reason = motif
+            commande.save(
+                update_fields=["status", "cancel_reason", "updated_at"]
+            )
 
-                commande.status = Order.Status.CANCELLED
-                commande.save(update_fields=["status", "updated_at"])
-            annules += 1
-
-            # --- 3. Prévenir le client, hors transaction ---
-            #
-            # Comme à l'encaissement : on n'envoie rien tant que la base n'est
-            # pas à jour, sinon un email pourrait annoncer une annulation
-            # défaite ensuite.
-            if not emails.commande_annulee(commande, rembourse=remboursee):
-                self.message_user(
-                    request,
-                    f"Commande n° {commande.pk} : annulée"
-                    + (" et remboursée" if remboursee else "")
-                    + ", mais l'email n'est pas parti — prévenez le client "
-                    "autrement.",
-                    level="warning",
-                )
-
-        if annules:
-            detail = f" ({rembourses} remboursée(s))" if rembourses else ""
+        # --- 3. Prévenir le client, hors transaction ---
+        if emails.commande_annulee(commande, rembourse=remboursee, motif=motif):
             self.message_user(
                 request,
-                f"{annules} commande(s) annulée(s){detail}. "
-                "Le stock a été remis à jour et le client prévenu.",
+                f"Commande annulée{" et remboursée" if remboursee else ""}. "
+                "Le stock a été remis à jour et le client prévenu par email.",
             )
+        else:
+            self.message_user(
+                request,
+                f"Commande annulée{" et remboursée" if remboursee else ""}, "
+                "mais l'email n'est pas parti — prévenez le client autrement.",
+                level="warning",
+            )
+        return redirect(retour)
 
     def _rembourser(self, commande):
         """Rembourse intégralement une commande. Renvoie None, ou l'erreur.
