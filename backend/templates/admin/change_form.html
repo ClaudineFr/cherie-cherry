@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+{% comment %}
+Un lien de retour vers la liste, en haut de chaque fiche.
+
+Le fil d'Ariane de Django est masqué dans tout le BO (la navigation se fait
+par le rail de catégories) : sans ce lien, il n'existe aucun moyen de
+revenir à la liste depuis une fiche autre que de repasser par le menu.
+
+Surcharge globale : toute rubrique, présente ou future, en bénéficie.
+{% endcomment %}
+{% block content_title %}
+  {% comment %}
+  Pas de lien sur les rubriques à fiche unique (Coordonnées, Livraison,
+  Informations légales, À propos, Réglages boisson du mois) : leur vue liste
+  redirige vers cette même fiche, le lien tournerait donc en rond. Elles sont
+  reconnues au mixin SingletonAdminMixin, exposé par `cc_is_singleton`.
+  {% endcomment %}
+  {% if has_view_permission and not cc_is_singleton %}
+    <a href="{% url opts|admin_urlname:'changelist' %}" class="cc-back-link">
+      <svg class="cc-icon" aria-hidden="true"><use href="#icon-arrow-left"></use></svg>
+      Retour à la liste
+    </a>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
