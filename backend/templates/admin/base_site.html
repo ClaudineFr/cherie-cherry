@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load static i18n %}
+{% load static i18n cc_admin %}
 
 {% comment %}
 On surcharge admin/base_site.html (d'où le nom du fichier) mais on hérite de
@@ -66,8 +66,14 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
         <span class="cc-ico" aria-hidden="true"><svg class="cc-icon"><use href="#icon-user"></use></svg></span><span class="cc-txt">Mon compte <span aria-hidden="true">▾</span></span>
       </button>
       <span class="cc-account-menu" id="cc-account-menu" aria-label="Mon compte" hidden>
-        <a href="{% url 'admin:auth_group_changelist' %}">Groupes</a>
-        <a href="{% url 'admin:auth_user_changelist' %}">Utilisateurs</a>
+        {% comment %}
+        Les comptes du back-office se gèrent par rubriques (catalog/admin_users.py),
+        et seule la propriétaire y touche. L'écran natif « Groupes » n'existe plus :
+        les droits se règlent compte par compte, avec des cases en français.
+        {% endcomment %}
+        {% if user.is_superuser %}
+          <a href="{% url 'admin:auth_user_changelist' %}">Comptes du back-office</a>
+        {% endif %}
         {% if user.has_usable_password %}
           <a href="{% url 'admin:password_change' %}">Modifier le mot de passe</a>
         {% endif %}
@@ -94,6 +100,11 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
   sont présentes, dans le même ordre que le rail desktop. Le surlignage
   « actif » est porté par le lien courant (data-models ; le JS cible #cc-drawer [data-models]).
   {% endcomment %}
+  {% comment %}
+  Chaque rubrique du tiroir n'apparaît que si le compte y a accès : un lien vers
+  une page interdite serait un cul-de-sac. Mêmes clés que le rail desktop.
+  {% endcomment %}
+  {% sections_accordees as sections %}
   <div id="cc-overlay" class="cc-overlay" hidden></div>
   <nav id="cc-drawer" class="cc-drawer" aria-label="Catégories" hidden>
     <div class="cc-drawer-head">
@@ -106,6 +117,7 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
       <li>
         <a href="{% url 'admin:index' %}" data-models="index"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-home"></use></svg></span><span class="cc-rail-label">Accueil du BO</span></a>
       </li>
+      {% if "accueil_site" in sections %}
       <li class="cc-group">
         <button type="button" class="cc-group-toggle" aria-expanded="false" aria-controls="cc-sub-home">
           <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-camera"></use></svg></span>
@@ -118,6 +130,8 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
           <li><a href="{% url 'admin:catalog_galleryphoto_changelist' %}" data-models="galleryphoto">Galerie d'ambiance</a></li>
         </ul>
       </li>
+      {% endif %}
+      {% if "coffee_shop" in sections %}
       <li class="cc-group">
         <button type="button" class="cc-group-toggle" aria-expanded="false" aria-controls="cc-sub-coffee">
           <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-coffee"></use></svg></span>
@@ -131,21 +145,33 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
           <li><a href="{% url 'admin:catalog_drinkofmonthsettings_changelist' %}" data-models="drinkofmonthsettings">Réglages boisson du mois</a></li>
         </ul>
       </li>
+      {% endif %}
+      {% if "a_propos" in sections %}
       <li>
         <a href="{% url 'admin:catalog_aboutpage_changelist' %}" data-models="aboutpage aboutvalue"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-user"></use></svg></span><span class="cc-rail-label">À propos</span></a>
       </li>
+      {% endif %}
+      {% if "concept_store" in sections %}
       <li>
         <a href="{% url 'admin:catalog_product_changelist' %}" data-models="product"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span><span class="cc-rail-label">Concept store</span></a>
       </li>
+      {% endif %}
+      {% if "commandes" in sections %}
       <li>
         <a href="{% url 'admin:catalog_order_changelist' %}" data-models="order"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-receipt"></use></svg></span><span class="cc-rail-label">Commandes</span></a>
       </li>
+      {% endif %}
+      {% if "infos_pratiques" in sections %}
       <li>
         <a href="{% url 'admin:catalog_openinghours_changelist' %}" data-models="openinghours"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-map-pin"></use></svg></span><span class="cc-rail-label">Infos pratiques</span></a>
       </li>
+      {% endif %}
+      {% if "messages" in sections %}
       <li>
         <a href="{% url 'admin:catalog_contactmessage_changelist' %}" data-models="contactmessage"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-mail"></use></svg></span><span class="cc-rail-label">Messages</span></a>
       </li>
+      {% endif %}
+      {% if "reglages" in sections %}
       <li class="cc-group">
         <button type="button" class="cc-group-toggle" aria-expanded="false" aria-controls="cc-sub-settings">
           <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-settings"></use></svg></span>
@@ -158,6 +184,13 @@ l'admin, sans les « / » de séparation (les pastilles se suffisent).
           <li><a href="{% url 'admin:catalog_legalsettings_changelist' %}" data-models="legalsettings">Informations légales</a></li>
         </ul>
       </li>
+      {% endif %}
+      {% if user.is_superuser %}
+      {% comment %}Réservé à la propriétaire, comme sur le rail desktop : c'est ici qu'elle crée les comptes de ses alternantes.{% endcomment %}
+      <li>
+        <a href="{% url 'admin:auth_user_changelist' %}" data-models="user"><span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-users"></use></svg></span><span class="cc-rail-label">Comptes</span></a>
+      </li>
+      {% endif %}
     </ul>
   </nav>
 

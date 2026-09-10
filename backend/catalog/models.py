@@ -1037,3 +1037,35 @@ class OrderItem(models.Model):
         attribut (`ligne.total`), mais se calcule à la volée : rien n'est
         stocké en base, donc rien ne peut se désynchroniser."""
         return self.unit_price * self.quantity
+
+
+class StaffProfile(models.Model):
+    """Le petit supplément d'information sur un compte du back-office.
+
+    Django ne sait pas retenir « cette personne doit changer son mot de passe » :
+    on le stocke ici. Le mot de passe généré à la création ne sert alors qu'une
+    fois — la personne choisit le sien à sa première connexion, et la
+    propriétaire ne le connaît pas.
+    """
+
+    user = models.OneToOneField(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="staff_profile",
+        verbose_name="compte",
+    )
+    must_change_password = models.BooleanField(
+        "doit choisir un nouveau mot de passe",
+        default=False,
+        help_text=(
+            "Coché, la personne est invitée à choisir son propre mot de passe "
+            "à sa prochaine connexion."
+        ),
+    )
+
+    class Meta:
+        verbose_name = "profil de compte"
+        verbose_name_plural = "profils de compte"
+
+    def __str__(self):
+        return f"Profil de {self.user.username}"

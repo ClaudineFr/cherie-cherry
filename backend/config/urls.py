@@ -16,6 +16,30 @@ if settings.PREVIEW_TOKEN:
 else:
     admin.site.site_url = settings.FRONTEND_URL
 
+# Quand une personne change son mot de passe, elle n'a plus à le faire : on
+# lève le drapeau posé à la création du compte (voir StaffProfile et
+# catalog/middleware.py). On enveloppe la vue de l'admin plutôt que d'écouter
+# un signal : c'est ici, et seulement ici, qu'un nouveau mot de passe est
+# réellement enregistré.
+_password_change = admin.site.password_change
+
+
+def _password_change_et_lever_drapeau(request, extra_context=None):
+    reponse = _password_change(request, extra_context)
+
+    # Un POST réussi renvoie une redirection : c'est le signe que le
+    # changement a été accepté (un formulaire en erreur réaffiche la page).
+    if request.method == "POST" and reponse.status_code in (301, 302):
+        profil = getattr(request.user, "staff_profile", None)
+        if profil is not None and profil.must_change_password:
+            profil.must_change_password = False
+            profil.save(update_fields=["must_change_password"])
+
+    return reponse
+
+
+admin.site.password_change = _password_change_et_lever_drapeau
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("catalog.urls")),

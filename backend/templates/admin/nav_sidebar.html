@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n cc_admin %}
 {% comment %}
 Barre latérale « rail d'icônes » : repliée par défaut (icône seule), elle
 s'élargit au survol pour révéler le nom des catégories. Remplace la barre
@@ -7,7 +7,12 @@ calquée sur le site.
 
 Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
 « actif » (page courante) est repéré côté client pour surligner sa catégorie.
+
+Chaque rubrique n'apparaît que si le compte y a accès : un lien vers une page
+interdite serait un cul-de-sac. Les clés viennent de catalog/sections.py, les
+mêmes que les cases du formulaire de création de compte.
 {% endcomment %}
+{% sections_accordees as sections %}
 <nav class="cc-rail" id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
   {% comment %}Champ masqué : le script natif nav_sidebar.js cherche #nav-filter au chargement et planterait sans lui. Inutile ici (rail custom).{% endcomment %}
   <input type="search" id="nav-filter" hidden aria-hidden="true" tabindex="-1">
@@ -18,6 +23,7 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
         <span class="cc-rail-label">Accueil du BO</span>
       </a>
     </li>
+    {% if "accueil_site" in sections %}
     <li>
       {% comment %}Titre de groupe non cliquable : on accède au contenu par les sous-titres ci-dessous. Le surlignage « actif » est porté par le sous-titre courant (data-models sur chaque sous-lien).{% endcomment %}
       <span class="cc-rail-group">
@@ -30,6 +36,8 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
         <li><a href="{% url 'admin:catalog_galleryphoto_changelist' %}" data-models="galleryphoto">Galerie d'ambiance</a></li>
       </ul>
     </li>
+    {% endif %}
+    {% if "coffee_shop" in sections %}
     <li>
       {% comment %}Titre de groupe non cliquable : on accède au contenu par les sous-titres ci-dessous. Le surlignage « actif » est porté par le sous-titre courant (data-models sur chaque sous-lien).{% endcomment %}
       <span class="cc-rail-group">
@@ -43,36 +51,48 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
         <li><a href="{% url 'admin:catalog_drinkofmonthsettings_changelist' %}" data-models="drinkofmonthsettings">Réglages boisson du mois</a></li>
       </ul>
     </li>
+    {% endif %}
+    {% if "a_propos" in sections %}
     <li>
       <a href="{% url 'admin:catalog_aboutpage_changelist' %}" data-models="aboutpage aboutvalue">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-user"></use></svg></span>
         <span class="cc-rail-label">À propos</span>
       </a>
     </li>
+    {% endif %}
+    {% if "concept_store" in sections %}
     <li>
       <a href="{% url 'admin:catalog_product_changelist' %}" data-models="product">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-shopping-bag"></use></svg></span>
         <span class="cc-rail-label">Concept store</span>
       </a>
     </li>
+    {% endif %}
+    {% if "commandes" in sections %}
     <li>
       <a href="{% url 'admin:catalog_order_changelist' %}" data-models="order">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-receipt"></use></svg></span>
         <span class="cc-rail-label">Commandes</span>
       </a>
     </li>
+    {% endif %}
+    {% if "infos_pratiques" in sections %}
     <li>
       <a href="{% url 'admin:catalog_openinghours_changelist' %}" data-models="openinghours">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-map-pin"></use></svg></span>
         <span class="cc-rail-label">Infos pratiques</span>
       </a>
     </li>
+    {% endif %}
+    {% if "messages" in sections %}
     <li>
       <a href="{% url 'admin:catalog_contactmessage_changelist' %}" data-models="contactmessage">
         <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-mail"></use></svg></span>
         <span class="cc-rail-label">Messages</span>
       </a>
     </li>
+    {% endif %}
+    {% if "reglages" in sections %}
     <li>
       {% comment %}Titre de groupe non cliquable, comme « Accueil du site » et « Coffee shop » : les coordonnées et les informations légales se règlent une fois pour toutes, mais ce sont deux formulaires distincts.{% endcomment %}
       <span class="cc-rail-group">
@@ -85,5 +105,15 @@ Chaque catégorie pointe vers la page de liste de son 1er modèle. Le modèle
         <li><a href="{% url 'admin:catalog_legalsettings_changelist' %}" data-models="legalsettings">Informations légales</a></li>
       </ul>
     </li>
+    {% endif %}
+    {% if user.is_superuser %}
+    <li>
+      {% comment %}Réservé à la propriétaire : c'est ici qu'elle crée les comptes de ses alternantes et choisit leurs accès.{% endcomment %}
+      <a href="{% url 'admin:auth_user_changelist' %}" data-models="user">
+        <span class="cc-rail-icon" aria-hidden="true"><svg class="cc-icon"><use href="#icon-users"></use></svg></span>
+        <span class="cc-rail-label">Comptes</span>
+      </a>
+    </li>
+    {% endif %}
   </ul>
 </nav>

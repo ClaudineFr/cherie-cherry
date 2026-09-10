@@ -108,6 +108,10 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Tant qu'une personne n'a pas remplacé le mot de passe créé pour elle,
+    # toute page du BO la renvoie vers le formulaire de changement.
+    # Après MessageMiddleware : le middleware affiche un message d'accueil.
+    'catalog.middleware.ForcePasswordChangeMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 

@@ -294,26 +294,45 @@ def _dashboard_index(request, extra_context=None):
     # Titre (h1) de la home : « Page d'accueil » au lieu de « Site administration ».
     extra_context["title"] = "Page d'accueil"
 
-    unread = ContactMessage.objects.filter(is_read=False)
-    extra_context["cc_unread_count"] = unread.count()
-    # Aperçu : les 3 messages non lus les plus récents.
-    extra_context["cc_unread_preview"] = unread.order_by("-created_at")[:3]
+    # Chaque chiffre est cliquable : n'afficher que ceux dont la rubrique est
+    # accordée, sinon le raccourci mène à une page « permission refusée ».
+    # Les clés sont celles de catalog/sections.py.
+    from .sections import keys_for_user
+
+    sections = keys_for_user(request.user)
+    extra_context["cc_sections"] = sections
+
+    if "messages" in sections:
+        unread = ContactMessage.objects.filter(is_read=False)
+        extra_context["cc_unread_count"] = unread.count()
+        # Aperçu : les 3 messages non lus les plus récents.
+        extra_context["cc_unread_preview"] = unread.order_by("-created_at")[:3]
 
     # Rangée de stats : quelques chiffres du site en un coup d'œil.
-    extra_context["cc_products_count"] = Product.objects.count()
-    # Produits en rupture (stock à 0) : à réapprovisionner, donc actionnable.
-    extra_context["cc_products_out_of_stock"] = Product.objects.filter(stock=0).count()
-    # Boissons actuellement proposées au menu.
-    extra_context["cc_drinks_count"] = MenuDrink.objects.filter(available=True).count()
-    extra_context["cc_gallery_count"] = GalleryPhoto.objects.count()
+    if "concept_store" in sections:
+        extra_context["cc_products_count"] = Product.objects.count()
+        # Produits en rupture (stock à 0) : à réapprovisionner, donc actionnable.
+        extra_context["cc_products_out_of_stock"] = Product.objects.filter(
+            stock=0
+        ).count()
+
+    if "coffee_shop" in sections:
+        # Boissons actuellement proposées au menu.
+        extra_context["cc_drinks_count"] = MenuDrink.objects.filter(
+            available=True
+        ).count()
+
+    if "accueil_site" in sections:
+        extra_context["cc_gallery_count"] = GalleryPhoto.objects.count()
 
     # Commandes payées mais pas encore expédiées ni retirées : c'est ce qui
     # demande une action de la propriétaire, donc ce qu'elle doit voir en
     # premier. Les commandes « en attente » n'y figurent pas : leur paiement
     # n'a pas abouti, il n'y a rien à préparer.
-    extra_context["cc_orders_to_handle"] = Order.objects.filter(
-        status=Order.Status.PAID
-    ).count()
+    if "commandes" in sections:
+        extra_context["cc_orders_to_handle"] = Order.objects.filter(
+            status=Order.Status.PAID
+        ).count()
 
     return _default_admin_index(request, extra_context)
 
@@ -875,3 +894,9 @@ class ShippingSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+# Les comptes du back-office (création, rubriques accessibles) : voir
+# admin_users.py, qui remplace les écrans natifs « Utilisateurs » et
+# « Groupes » par un formulaire en français, organisé par rubriques.
+from . import admin_users  # noqa: E402,F401  (import tardif : enregistre l'admin)

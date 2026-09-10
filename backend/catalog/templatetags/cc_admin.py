@@ -24,3 +24,19 @@ def exclude_app(app_list, app_label):
     barre latérale : ces écrans restent accessibles via le menu « Mon compte ».
     """
     return [app for app in app_list if app.get("app_label") != app_label]
+
+
+@register.simple_tag(takes_context=True)
+def sections_accordees(context):
+    """Les rubriques du BO visibles par l'utilisateur courant.
+
+    Sert à la barre latérale : une rubrique non accordée ne doit pas
+    apparaître, sinon le lien mène à une page « permission refusée ».
+    Renvoie un ensemble de clés (voir catalog/sections.py).
+    """
+    from catalog.sections import keys_for_user
+
+    request = context.get("request")
+    if request is None or not request.user.is_authenticated:
+        return set()
+    return keys_for_user(request.user)
