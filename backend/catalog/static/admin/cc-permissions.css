@@ -1,0 +1,221 @@
+/* L'écran des comptes du back-office.
+   Chargé uniquement sur cet écran (voir StaffAdmin.Media), il complète
+   cherie-cherry.css sans l'alourdir. */
+
+/* --- Les cases « ce que cette personne peut gérer » ---
+   Django rend un CheckboxSelectMultiple dans <fieldset><legend> puis un
+   .flex-container : sans intervention, les cases se retrouvent dans une
+   colonne étroite où les explications passent à la ligne tous les trois mots.
+   On leur rend la largeur de la fiche. */
+
+#content .field-sections .flex-container {
+  display: block;
+  width: 100%;
+}
+
+/* Le <label> de Django est contraint par la grille du formulaire admin ;
+   sans cela l'explication se replie sur quatre lignes dans une colonne
+   étroite alors que la carte, elle, est large. */
+#content .field-sections label,
+#content .field-sections #id_sections > div {
+  max-width: none;
+  width: auto;
+}
+
+#content .field-sections #id_sections {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  /* Deux colonnes dès qu'il y a la place : les huit rubriques tiennent
+     alors sans faire défiler. */
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1100px) {
+  #content .field-sections #id_sections {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.2rem;
+  }
+}
+
+#content .field-sections #id_sections > div {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(64, 100, 64, 0.14);
+  border-radius: 0.7rem;
+  background: #fff;
+  transition: border-color 0.15s ease;
+}
+
+#content .field-sections #id_sections > div:hover {
+  border-color: rgba(64, 100, 64, 0.4);
+}
+
+#content .field-sections label {
+  display: block;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.55;
+  color: #335033;
+}
+
+#content .field-sections input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* La légende du bloc fait doublon avec le titre de section « Ce qu'elle
+   peut gérer » juste au-dessus. */
+#content .field-sections legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* L'explication de la rubrique : elle éclaire sans concurrencer le nom. */
+.cc-perm-help {
+  font-weight: 400;
+  color: rgba(64, 100, 64, 0.62);
+  font-size: 0.86em;
+}
+
+/* Les rubriques sensibles (commandes, réglages) : même explication, en rose.
+   Un repère visuel, pas un interdit. */
+.cc-perm-warn {
+  font-weight: 400;
+  color: #d9709c;
+  font-size: 0.86em;
+}
+
+/* --- La colonne « Accès » de la liste des comptes --- */
+
+.cc-badge-all,
+.cc-badge-none {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.cc-badge-all {
+  background: #406440;
+  color: #faf6f1;
+}
+
+.cc-badge-none {
+  background: rgba(64, 100, 64, 0.08);
+  color: rgba(64, 100, 64, 0.55);
+}
+
+/* --- Le mot de passe généré ---
+   Affiché en clair et en monospace : il est fait pour être lu et recopié,
+   pas retenu. Les chiffres et les lettres doivent se distinguer sans doute
+   possible quand on le dicte au téléphone. */
+
+#content .cc-password-field {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  min-width: 18rem;
+}
+
+#content .cc-password-tools {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-left: 0.6rem;
+  vertical-align: middle;
+}
+
+#content .cc-password-btn {
+  border: 1px solid rgba(64, 100, 64, 0.3);
+  background: #fff;
+  color: #406440;
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+#content .cc-password-btn:hover {
+  background: #406440;
+  border-color: #406440;
+  color: #faf6f1;
+}
+
+/* --- La case « demander un nouveau mot de passe » ---
+   L'admin réserve une colonne étroite aux libellés : la question tenait sur
+   trois lignes à côté d'une case minuscule. Ici le libellé EST le contenu,
+   il prend donc toute la largeur. Django rend cette ligne en
+   .flex-container.checkbox-row, avec un label .vCheckboxLabel. */
+
+#content .field-must_change_password .checkbox-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+#content .field-must_change_password .vCheckboxLabel {
+  display: inline;
+  width: auto;
+  max-width: none;
+  float: none;
+  padding: 0;
+  font-weight: 600;
+  color: #335033;
+  line-height: 1.5;
+}
+
+#content .field-must_change_password input[type="checkbox"] {
+  flex-shrink: 0;
+  transform: translateY(2px);
+}
+
+/* L'explication passe sous la question, alignée sur elle plutôt que sur
+   la case. */
+#content .field-must_change_password .help {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 0.35rem 0 0 1.7rem;
+  padding: 0;
+}
+
+/* --- La liste des comptes en mobile ---
+   Le tableau des listes passe en `table-layout: fixed` sous 640 px : sans
+   consigne, les quatre colonnes se partagent l'espace à parts égales et
+   « Nom d'utilisateur » chevauche la colonne voisine.
+   On garde l'essentiel — qui est-ce, et à quoi a-t-il accès. Le nom complet
+   et la pastille d'état se lisent dans la fiche. */
+
+@media (max-width: 640px) {
+  #result_list th.column-nom_complet,
+  #result_list td.field-nom_complet,
+  #result_list th.column-etat,
+  #result_list td.field-etat {
+    display: none;
+  }
+
+  #result_list th.column-identifiant,
+  #result_list td.field-identifiant {
+    width: 38%;
+  }
+
+  #result_list th.column-rubriques,
+  #result_list td.field-rubriques {
+    width: auto;
+  }
+
+  /* Le badge « Tout le back-office » ne doit pas s'étirer au point de
+     recouvrir la colonne suivante. */
+  #result_list .cc-badge-all,
+  #result_list .cc-badge-none {
+    white-space: normal;
+    display: inline-block;
+    line-height: 1.4;
+  }
+}

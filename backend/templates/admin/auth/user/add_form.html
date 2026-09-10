@@ -1,0 +1,9 @@
+{% extends "admin/change_form.html" %}
+{% comment %}
+Le gabarit natif affiche « Après avoir créé un utilisateur, vous pourrez
+modifier davantage de ses options. » — vocabulaire Django, et promesse
+inexacte ici : tout se règle sur ce seul écran.
+{% endcomment %}
+{% block form_top %}
+  <p>Renseignez la personne, ses identifiants, et cochez ce qu'elle pourra gérer.</p>
+{% endblock %}

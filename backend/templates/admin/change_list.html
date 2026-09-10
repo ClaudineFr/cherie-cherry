@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+{% comment %}
+Django titre ses listes « Sélectionnez l'objet <modèle> à changer » — la
+formulation d'un framework, pas celle d'un outil de gestion. On garde le
+simple nom de la rubrique, au pluriel : « Les produits », « Les commandes ».
+
+Surcharge globale : toute rubrique ajoutée plus tard en bénéficie sans
+gabarit supplémentaire.
+{% endcomment %}
+{% block content_title %}
+  <h1 class="cc-list-title">{{ cl.opts.verbose_name_plural }}</h1>
+{% endblock %}

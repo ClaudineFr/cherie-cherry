@@ -16,24 +16,34 @@ récentes » reste dans la colonne de droite.
 {% endcomment %}
 {% block content %}
 <div id="content-main" class="cc-welcome">
+  {% comment %}
+  Raccourcis, chiffres et carte « Messages » ne s'affichent que pour les
+  rubriques auxquelles le compte a accès : chacun est un lien, et un lien vers
+  une page interdite serait un cul-de-sac. `cc_sections` vient de la vue
+  (voir _dashboard_index dans catalog/admin.py).
+  {% endcomment %}
+
   {# Raccourcis : accès direct aux tâches les plus fréquentes. #}
   <section class="cc-shortcuts">
     <h2 class="cc-shortcuts-title">Actions rapides</h2>
     <div class="cc-shortcuts-grid">
-      <a class="cc-shortcut" href="{% url 'admin:catalog_product_add' %}">+ Ajouter un produit</a>
-      <a class="cc-shortcut" href="{% url 'admin:catalog_galleryphoto_add' %}">+ Ajouter une photo</a>
-      <a class="cc-shortcut" href="{% url 'admin:catalog_menudrink_add' %}">+ Ajouter une boisson</a>
-      <a class="cc-shortcut" href="{% url 'admin:catalog_openinghours_changelist' %}">Modifier les horaires</a>
+      {% if "concept_store" in cc_sections %}<a class="cc-shortcut" href="{% url 'admin:catalog_product_add' %}">+ Ajouter un produit</a>{% endif %}
+      {% if "accueil_site" in cc_sections %}<a class="cc-shortcut" href="{% url 'admin:catalog_galleryphoto_add' %}">+ Ajouter une photo</a>{% endif %}
+      {% if "coffee_shop" in cc_sections %}<a class="cc-shortcut" href="{% url 'admin:catalog_menudrink_add' %}">+ Ajouter une boisson</a>{% endif %}
+      {% if "infos_pratiques" in cc_sections %}<a class="cc-shortcut" href="{% url 'admin:catalog_openinghours_changelist' %}">Modifier les horaires</a>{% endif %}
     </div>
   </section>
 
   {# Rangée de stats : quelques chiffres du site en un coup d'œil. #}
   <div class="cc-stats">
     {# Les commandes à préparer viennent en premier : c'est ce qui attend une action. #}
+    {% if "commandes" in cc_sections %}
     <a class="cc-stat" href="{% url 'admin:catalog_order_changelist' %}">
       <span class="cc-stat-num">{{ cc_orders_to_handle }}</span>
       <span class="cc-stat-label">Commandes à préparer</span>
     </a>
+    {% endif %}
+    {% if "concept_store" in cc_sections %}
     <a class="cc-stat" href="{% url 'admin:catalog_product_changelist' %}">
       <span class="cc-stat-num">{{ cc_products_count }}</span>
       <span class="cc-stat-label">Produits en boutique</span>
@@ -41,17 +51,23 @@ récentes » reste dans la colonne de droite.
       <span class="cc-stat-sub cc-stat-warn">{{ cc_products_out_of_stock }} en rupture</span>
       {% endif %}
     </a>
+    {% endif %}
+    {% if "coffee_shop" in cc_sections %}
     <a class="cc-stat" href="{% url 'admin:catalog_menudrink_changelist' %}">
       <span class="cc-stat-num">{{ cc_drinks_count }}</span>
       <span class="cc-stat-label">Boissons au menu</span>
     </a>
+    {% endif %}
+    {% if "accueil_site" in cc_sections %}
     <a class="cc-stat" href="{% url 'admin:catalog_galleryphoto_changelist' %}">
       <span class="cc-stat-num">{{ cc_gallery_count }}</span>
       <span class="cc-stat-label">Photos dans la galerie</span>
     </a>
+    {% endif %}
   </div>
 
   {# Carte « Messages » : ce qui demande une action de la proprio en priorité. #}
+  {% if "messages" in cc_sections %}
   <section class="cc-card cc-messages-card">
     <div class="cc-messages-head">
       <h2 class="cc-card-title">Messages de contact</h2>
@@ -84,6 +100,7 @@ récentes » reste dans la colonne de droite.
     </a>
     {% endif %}
   </section>
+  {% endif %}
 </div>
 {% endblock %}
 

@@ -529,12 +529,24 @@ nav[aria-label="Breadcrumbs"] {
   background: var(--cc-white);
   border: 1px solid var(--hairline-color);
 }
-/* Desktop : Django met margin-bottom: 30px sur .module, ce qui laisse un vide
-   sous le panneau (ex. « Actions récentes »). On le retire hors mobile. */
+/* Desktop : le margin-bottom de Django laissait un vide sous le panneau
+   « Actions récentes ». On le retire là seulement — l'appliquer à tous les
+   modules collait les blocs des formulaires les uns aux autres. */
 @media (min-width: 641px) {
-  .module,
+  #content-related .module,
   .dashboard .module {
     margin-bottom: 0;
+  }
+
+  /* Les blocs d'un formulaire (« La personne », « Ses identifiants », …)
+     respirent : sans cet écart ils se touchent et se lisent comme un seul
+     bloc. */
+  #content-main .module + .module,
+  #content-main fieldset.module + fieldset.module,
+  #content-main .inline-group,
+  #content-main .module + .inline-group,
+  #content-main .inline-group + .module {
+    margin-top: 22px;
   }
 }
 .module caption,
@@ -1742,4 +1754,12 @@ a.button:hover {
 
 .cc-confirm-submit:hover {
   background: #c25c88;
+}
+
+/* Titre des listes : le nom de la rubrique au pluriel (voir
+   templates/admin/change_list.html). La majuscule est posée en CSS et non
+   par le filtre `capfirst`, qui ressortait les apostrophes échappées
+   (« Horaires d&#x27;ouverture »). */
+#content h1.cc-list-title::first-letter {
+  text-transform: uppercase;
 }
