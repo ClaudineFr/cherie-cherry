@@ -23,6 +23,31 @@ récentes » reste dans la colonne de droite.
   (voir _dashboard_index dans catalog/admin.py).
   {% endcomment %}
 
+  {% comment %}
+  « Vos rubriques » : une carte par rubrique accordée, dans l'ordre du menu.
+  C'est la porte d'entrée d'un compte d'alternante — elle remplace ce que la
+  propriétaire voit à la place (ses chiffres, ses messages), et son
+  « Bonjour Léa » est le titre de la page. La propriétaire, elle, n'a ni titre
+  ni cartes : son accueil reste celui qu'elle connaît. Les URL sont résolues
+  dans la vue (_dashboard_index), donc toutes pointent vers une page autorisée.
+  {% endcomment %}
+  {% if cc_mes_rubriques %}
+  <section class="cc-sections">
+    <h2 class="cc-shortcuts-title">Vos rubriques</h2>
+    <div class="cc-sections-grid">
+      {% for rubrique in cc_mes_rubriques %}
+      <a class="cc-section-card" href="{{ rubrique.url }}">
+        <span class="cc-section-icon" aria-hidden="true"><svg class="cc-icon"><use href="#{{ rubrique.icon }}"></use></svg></span>
+        <span class="cc-section-text">
+          <span class="cc-section-label">{{ rubrique.label }}</span>
+          <span class="cc-section-help">{{ rubrique.help }}</span>
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   {# Raccourcis : accès direct aux tâches les plus fréquentes. #}
   <section class="cc-shortcuts">
     <h2 class="cc-shortcuts-title">Actions rapides</h2>

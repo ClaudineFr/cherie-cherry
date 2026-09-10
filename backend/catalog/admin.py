@@ -299,16 +299,39 @@ _default_admin_index = admin.site.index
 def _dashboard_index(request, extra_context=None):
     extra_context = extra_context or {}
 
-    # Titre (h1) de la home : « Page d'accueil » au lieu de « Site administration ».
-    extra_context["title"] = "Page d'accueil"
+    # Pas de titre sur l'accueil : « Page d'accueil » ne disait rien de plus que
+    # l'onglet déjà surligné dans le menu. Titre vide et non absent, sinon
+    # Django retomberait sur son « Site administration » par défaut. Un compte
+    # d'alternante reçoit à la place un mot d'accueil (voir plus bas).
+    extra_context["title"] = ""
 
     # Chaque chiffre est cliquable : n'afficher que ceux dont la rubrique est
     # accordée, sinon le raccourci mène à une page « permission refusée ».
     # Les clés sont celles de catalog/sections.py.
-    from .sections import keys_for_user
+    from .sections import keys_for_user, sections_for_user
 
     sections = keys_for_user(request.user)
     extra_context["cc_sections"] = sections
+
+    # Un compte d'alternante n'a que quelques rubriques : sans ces cartes, son
+    # accueil serait surtout du vide (les chiffres et la carte « Messages »
+    # qu'elle ne voit pas). On lui montre donc où aller. La propriétaire, qui a
+    # tout, garde son accueil habituel : le rail de navigation lui suffit.
+    if not request.user.is_superuser:
+        extra_context["cc_mes_rubriques"] = [
+            {
+                "label": section["label"],
+                "help": section["help"],
+                "icon": section["icon"],
+                "url": reverse(section["url_name"]),
+            }
+            for section in sections_for_user(request.user)
+        ]
+        # Le mot d'accueil sert de titre à la page. Le prénom si on l'a, sinon
+        # l'identifiant : « Bonjour lea_b » reste plus accueillant qu'un
+        # « Bonjour » orphelin.
+        prenom = request.user.first_name or request.user.get_username()
+        extra_context["title"] = f"Bonjour {prenom}"
 
     if "messages" in sections:
         unread = ContactMessage.objects.filter(is_read=False)

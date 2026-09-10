@@ -14,18 +14,25 @@ permissions suivent.
 """
 
 # Chaque rubrique liste les modèles qu'elle recouvre (en minuscules, comme
-# Django les nomme dans ses permissions).
+# Django les nomme dans ses permissions). `icon` et `url_name` servent aux
+# cartes « Vos rubriques » de l'accueil : l'icône vient du sprite
+# templates/admin/cc_icons.html, l'URL est la même page que celle du rail de
+# navigation (la première de la rubrique).
 SECTIONS = [
     {
         "key": "accueil_site",
         "label": "Accueil du site",
         "help": "Les stories, les posts Instagram et les photos d'ambiance.",
+        "icon": "icon-camera",
+        "url_name": "admin:catalog_instagramstory_changelist",
         "models": ["instagramstory", "instagrampost", "galleryphoto"],
     },
     {
         "key": "coffee_shop",
         "label": "Coffee shop",
         "help": "La carte des boissons, la boisson du mois et les suppléments.",
+        "icon": "icon-coffee",
+        "url_name": "admin:catalog_menudrink_changelist",
         "models": [
             "menudrink",
             "drinkofmonth",
@@ -37,12 +44,16 @@ SECTIONS = [
         "key": "a_propos",
         "label": "À propos",
         "help": "Le texte de la page « À propos » et les trois valeurs.",
+        "icon": "icon-user",
+        "url_name": "admin:catalog_aboutpage_changelist",
         "models": ["aboutpage", "aboutvalue"],
     },
     {
         "key": "concept_store",
         "label": "Concept store",
         "help": "Les produits de la boutique, leurs photos, prix et stock.",
+        "icon": "icon-shopping-bag",
+        "url_name": "admin:catalog_product_changelist",
         "models": ["product", "productimage"],
     },
     {
@@ -52,18 +63,24 @@ SECTIONS = [
             "Les commandes des clientes, avec leurs coordonnées et les "
             "montants payés. Donne aussi le droit d'annuler et rembourser."
         ),
+        "icon": "icon-receipt",
+        "url_name": "admin:catalog_order_changelist",
         "models": ["order", "orderitem"],
     },
     {
         "key": "infos_pratiques",
         "label": "Infos pratiques",
         "help": "Les horaires d'ouverture.",
+        "icon": "icon-map-pin",
+        "url_name": "admin:catalog_openinghours_changelist",
         "models": ["openinghours"],
     },
     {
         "key": "messages",
         "label": "Messages",
         "help": "Les messages reçus par le formulaire de contact.",
+        "icon": "icon-mail",
+        "url_name": "admin:catalog_contactmessage_changelist",
         "models": ["contactmessage"],
     },
     {
@@ -73,6 +90,8 @@ SECTIONS = [
             "Les coordonnées, la livraison et les informations légales. "
             "Ces réglages s'appliquent à tout le site."
         ),
+        "icon": "icon-settings",
+        "url_name": "admin:catalog_sitesettings_changelist",
         "models": ["sitesettings", "shippingsettings", "legalsettings"],
     },
 ]
@@ -129,3 +148,14 @@ def keys_for_user(user):
                 granted.add(section["key"])
                 break
     return granted
+
+
+def sections_for_user(user):
+    """Les rubriques accordées, en entier (label, icône, URL), dans l'ordre.
+
+    `keys_for_user` suffit pour masquer un élément de menu ; ici on a besoin
+    du contenu des rubriques, pour construire les cartes « Vos rubriques » de
+    l'accueil. L'ordre est celui de SECTIONS, le même que dans le menu.
+    """
+    keys = keys_for_user(user)
+    return [section for section in SECTIONS if section["key"] in keys]

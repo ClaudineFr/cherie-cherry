@@ -233,17 +233,10 @@ fieldset h2,
 .cc-welcome {
   padding: 8px 0 0;
 }
-.cc-welcome-lead {
-  font-family: inherit;
-  font-size: 1.4rem;
-  color: var(--cc-title);
-  margin: 0 0 12px;
-}
-.cc-welcome-help {
-  color: var(--body-fg);
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 0;
+/* La première section de l'accueil suit le titre (ou le haut de la page) :
+   sa marge haute ferait doublon avec celle du <h1>. */
+#content-main.cc-welcome > section:first-of-type {
+  margin-top: 0;
 }
 
 /* Rangée de stats (accueil) */
@@ -339,6 +332,68 @@ fieldset h2,
 .cc-shortcut:hover {
   background: var(--cc-green-deep);
   transform: translateY(-2px);
+}
+
+/* « Vos rubriques » (accueil d'un compte qui n'a qu'une partie du BO).
+   Des cartes larges plutôt que les pastilles des raccourcis : ici on décrit
+   une destination, pas une action, et la phrase d'aide a besoin de place. */
+.cc-sections {
+  margin-top: 28px;
+}
+.cc-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+.cc-section-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--cc-white);
+  border: 1px solid var(--cc-pink);
+  border-radius: var(--cc-radius);
+  box-shadow: var(--cc-shadow);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.cc-section-card,
+.cc-section-card:link,
+.cc-section-card:visited,
+.cc-section-card:hover,
+.cc-section-card:focus {
+  text-decoration: none !important;
+}
+.cc-section-card:hover {
+  box-shadow: var(--cc-shadow-hover);
+  transform: translateY(-2px);
+}
+.cc-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--cc-pink-soft);
+  color: var(--cc-green-deep);
+}
+.cc-section-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cc-section-label {
+  font-family: var(--cc-serif);
+  font-size: 1.1rem;
+  color: var(--cc-title);
+}
+.cc-section-help {
+  color: var(--body-fg);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 /* Cartes du tableau de bord (accueil) */
@@ -458,6 +513,15 @@ fieldset h2,
 /* Panneau « Actions récentes » */
 #content-related {
   margin-top: 0;
+}
+/* Sous 767px, Django empile la colonne de droite sous le contenu et lui met
+   `margin: 0` (responsive.css) : le panneau vert se collerait donc aux cartes
+   qui le précèdent. On lui rend une marge haute — en #content pour passer
+   devant responsive.css, chargé après notre feuille. */
+@media (max-width: 767px) {
+  #content #content-related {
+    margin-top: 24px;
+  }
 }
 #content-related .module#recent-actions-module {
   border-radius: var(--cc-radius);
