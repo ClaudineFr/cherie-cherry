@@ -538,16 +538,19 @@ nav[aria-label="Breadcrumbs"] {
     margin-bottom: 0;
   }
 
-  /* Les blocs d'un formulaire (« La personne », « Ses identifiants », …)
-     respirent : sans cet écart ils se touchent et se lisent comme un seul
-     bloc. */
-  #content-main .module + .module,
-  #content-main fieldset.module + fieldset.module,
-  #content-main .inline-group,
-  #content-main .module + .inline-group,
-  #content-main .inline-group + .module {
-    margin-top: 22px;
-  }
+}
+
+/* Les blocs d'un formulaire (« La personne », « Ses identifiants », …)
+   respirent : sans cet écart ils se touchent et se lisent comme un seul
+   bloc. Hors media query : c'est vrai sur mobile comme sur desktop. */
+#content-main .module + .module,
+#content-main fieldset.module + fieldset.module,
+#content-main .inline-group,
+#content-main .module + .inline-group,
+#content-main .inline-group + .module,
+#content-main .module + .submit-row,
+#content-main .inline-group + .submit-row {
+  margin-top: 22px;
 }
 .module caption,
 .module h2,
@@ -1762,4 +1765,40 @@ a.button:hover {
    (« Horaires d&#x27;ouverture »). */
 #content h1.cc-list-title::first-letter {
   text-transform: uppercase;
+}
+
+/* Retour à la liste, en haut de chaque fiche (voir
+   templates/admin/change_form.html). Le fil d'Ariane de Django étant masqué,
+   c'est le seul chemin de retour depuis une fiche sans repasser par le menu. */
+#content .cc-back-link {
+  display: inline-flex;
+  /* Le bouton se suffit : le soulignement des liens de l'admin ferait
+     doublon. !important car base.css de Django souligne les liens de #content
+     (même motif que les autres !important de ce fichier). */
+  text-decoration: none !important;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  color: var(--cc-green);
+  text-decoration: none;
+  padding: 5px 12px 5px 9px;
+  border: 1px solid var(--cc-green-10, rgba(64, 100, 64, 0.18));
+  border-radius: 999px;
+  background: var(--cc-white);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+#content .cc-back-link:hover {
+  background: var(--cc-green);
+  border-color: var(--cc-green);
+  color: var(--cc-cream, #faf6f1);
+}
+#content .cc-back-link .cc-icon {
+  width: 14px;
+  height: 14px;
+  /* La flèche suit la couleur du texte au survol. */
+  stroke: currentColor;
 }

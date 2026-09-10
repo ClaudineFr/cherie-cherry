@@ -31,6 +31,14 @@ class SingletonAdminMixin:
     classe (ajout interdit s'il existe déjà une ligne, suppression interdite).
     """
 
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        # Signale au gabarit qu'il n'y a pas de liste où revenir : la vue
+        # liste de ces rubriques redirige vers cette fiche (voir
+        # templates/admin/change_form.html).
+        extra_context = extra_context or {}
+        extra_context["cc_is_singleton"] = True
+        return super().change_view(request, object_id, form_url, extra_context)
+
     def changelist_view(self, request, extra_context=None):
         # get_or_create sur pk=None ? Non : on prend la 1re ligne, ou on en
         # crée une vierge. Les champs sont tous optionnels/à défaut, donc une
