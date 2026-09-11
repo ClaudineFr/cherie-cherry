@@ -296,6 +296,56 @@ class SiteSettingsAdmin(SingletonAdminMixin, admin.ModelAdmin):
 _default_admin_index = admin.site.index
 
 
+def _chiffre_rubrique(key):
+    """Le chiffre à afficher sur la carte d'une rubrique, et son libellé.
+
+    Renvoie (nombre, libellé, alerte) ou None quand la rubrique n'a pas de
+    chiffre parlant — « 3 pages À propos » n'apprendrait rien à personne.
+    L'alerte est le petit texte rose sous le chiffre (une rupture de stock,
+    des messages non lus) : ce qui demande une action.
+    """
+    if key == "commandes":
+        n = Order.objects.filter(status=Order.Status.PAID).count()
+        return n, "commande à préparer" if n == 1 else "commandes à préparer", None
+    if key == "concept_store":
+        n = Product.objects.count()
+        rupture = Product.objects.filter(stock=0).count()
+        alerte = None
+        if rupture:
+            alerte = f"{rupture} en rupture"
+        return n, "produit en boutique" if n == 1 else "produits en boutique", alerte
+    if key == "coffee_shop":
+        n = MenuDrink.objects.filter(available=True).count()
+        return n, "boisson au menu" if n == 1 else "boissons au menu", None
+    if key == "accueil_site":
+        n = GalleryPhoto.objects.count()
+        return n, "photo dans la galerie" if n == 1 else "photos dans la galerie", None
+    if key == "messages":
+        n = ContactMessage.objects.filter(is_read=False).count()
+        if not n:
+            return 0, "message non lu", None
+        return n, "message non lu" if n == 1 else "messages non lus", "à lire"
+    return None
+
+
+def _carte_rubrique(section):
+    """Une rubrique telle que l'accueil l'affiche : où aller, où en est-on,
+    et quoi créer."""
+    carte = {
+        "label": section["label"],
+        "help": section["help"],
+        "icon": section["icon"],
+        "url": reverse(section["url_name"]),
+    }
+    chiffre = _chiffre_rubrique(section["key"])
+    if chiffre:
+        carte["nombre"], carte["unite"], carte["alerte"] = chiffre
+    if section.get("add_url_name"):
+        carte["add_url"] = reverse(section["add_url_name"])
+        carte["add_label"] = section["add_label"]
+    return carte
+
+
 def _dashboard_index(request, extra_context=None):
     extra_context = extra_context or {}
 
@@ -317,15 +367,13 @@ def _dashboard_index(request, extra_context=None):
     # accueil serait surtout du vide (les chiffres et la carte « Messages »
     # qu'elle ne voit pas). On lui montre donc où aller. La propriétaire, qui a
     # tout, garde son accueil habituel : le rail de navigation lui suffit.
+    #
+    # Chaque carte porte le chiffre et le bouton d'ajout de sa rubrique. Les
+    # présenter à part — une rangée de chiffres, une rangée de raccourcis —
+    # revenait à énumérer trois fois les deux mêmes rubriques.
     if not request.user.is_superuser:
         extra_context["cc_mes_rubriques"] = [
-            {
-                "label": section["label"],
-                "help": section["help"],
-                "icon": section["icon"],
-                "url": reverse(section["url_name"]),
-            }
-            for section in sections_for_user(request.user)
+            _carte_rubrique(section) for section in sections_for_user(request.user)
         ]
         # Le mot d'accueil sert de titre à la page. Le prénom si on l'a, sinon
         # l'identifiant : « Bonjour lea_b » reste plus accueillant qu'un
