@@ -17,7 +17,9 @@ permissions suivent.
 # Django les nomme dans ses permissions). `icon` et `url_name` servent aux
 # cartes « Vos rubriques » de l'accueil : l'icône vient du sprite
 # templates/admin/cc_icons.html, l'URL est la même page que celle du rail de
-# navigation (la première de la rubrique).
+# navigation (la première de la rubrique). `add_url_name` / `add_label`
+# ajoutent un bouton de création sur la carte, pour les rubriques où l'on
+# crée souvent quelque chose ; les autres s'en passent.
 SECTIONS = [
     {
         "key": "accueil_site",
@@ -25,6 +27,8 @@ SECTIONS = [
         "help": "Les stories, les posts Instagram et les photos d'ambiance.",
         "icon": "icon-camera",
         "url_name": "admin:catalog_instagramstory_changelist",
+        "add_url_name": "admin:catalog_galleryphoto_add",
+        "add_label": "Ajouter une photo",
         "models": ["instagramstory", "instagrampost", "galleryphoto"],
     },
     {
@@ -33,6 +37,8 @@ SECTIONS = [
         "help": "La carte des boissons, la boisson du mois et les suppléments.",
         "icon": "icon-coffee",
         "url_name": "admin:catalog_menudrink_changelist",
+        "add_url_name": "admin:catalog_menudrink_add",
+        "add_label": "Ajouter une boisson",
         "models": [
             "menudrink",
             "drinkofmonth",
@@ -54,6 +60,8 @@ SECTIONS = [
         "help": "Les produits de la boutique, leurs photos, prix et stock.",
         "icon": "icon-shopping-bag",
         "url_name": "admin:catalog_product_changelist",
+        "add_url_name": "admin:catalog_product_add",
+        "add_label": "Ajouter un produit",
         "models": ["product", "productimage"],
     },
     {

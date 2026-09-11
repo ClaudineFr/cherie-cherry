@@ -346,6 +346,7 @@ fieldset h2,
   gap: 14px;
 }
 .cc-section-card {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -357,13 +358,6 @@ fieldset h2,
   transition:
     box-shadow 0.15s ease,
     transform 0.15s ease;
-}
-.cc-section-card,
-.cc-section-card:link,
-.cc-section-card:visited,
-.cc-section-card:hover,
-.cc-section-card:focus {
-  text-decoration: none !important;
 }
 .cc-section-card:hover {
   box-shadow: var(--cc-shadow-hover);
@@ -383,6 +377,7 @@ fieldset h2,
 .cc-section-text {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 3px;
 }
 .cc-section-label {
@@ -390,10 +385,67 @@ fieldset h2,
   font-size: 1.1rem;
   color: var(--cc-title);
 }
+/* Le titre porte le lien, mais toute la carte doit être cliquable : on étire
+   sa zone de clic par-dessus la carte. Le bouton d'ajout, positionné au-
+   dessus, reste cliquable pour lui-même (voir .cc-section-add). */
+.cc-section-label::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--cc-radius);
+}
+.cc-section-label,
+.cc-section-label:link,
+.cc-section-label:visited,
+.cc-section-label:hover,
+.cc-section-label:focus {
+  text-decoration: none !important;
+  color: var(--cc-title);
+}
 .cc-section-help {
   color: var(--body-fg);
   font-size: 0.85rem;
   line-height: 1.5;
+}
+/* Le chiffre de la rubrique : où elle en est, en un coup d'œil. */
+.cc-section-chiffre {
+  color: var(--body-fg);
+  font-size: 0.85rem;
+}
+.cc-section-chiffre strong {
+  font-family: var(--cc-serif);
+  font-size: 1.15rem;
+  color: var(--cc-green-deep);
+  font-weight: 400;
+}
+.cc-section-alerte {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--cc-pink-deep);
+  font-weight: 600;
+}
+/* Le bouton d'ajout, au-dessus de la zone de clic du titre. */
+.cc-section-add {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: var(--cc-green);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+.cc-section-add,
+.cc-section-add:link,
+.cc-section-add:visited,
+.cc-section-add:hover,
+.cc-section-add:focus {
+  text-decoration: none !important;
+  color: var(--cc-white);
+}
+.cc-section-add:hover {
+  background: var(--cc-green-deep);
 }
 
 /* Cartes du tableau de bord (accueil) */
