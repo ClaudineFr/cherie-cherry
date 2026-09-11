@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
+
+from .images import reduire_champ
 from django.db import models
 from django.utils.text import slugify
 from decimal import Decimal
@@ -47,7 +49,16 @@ class Product(models.Model):
 
     # DecimalField = idéal pour de l'argent (pas d'erreur d'arrondi).
     # max_digits = nombre total de chiffres, decimal_places = chiffres après la virgule.
-    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+    # Le validateur refuse un prix négatif : saisi par erreur, le produit
+    # partirait en boutique et le paiement échouerait chez Stripe, sans que
+    # la cause soit visible depuis le BO. Le stock, lui, est déjà protégé
+    # par PositiveIntegerField.
+    price = models.DecimalField(
+        "prix (€)",
+        max_digits=7,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
 
     stock = models.PositiveIntegerField(
         "stock",
@@ -107,6 +118,12 @@ class Product(models.Model):
                 candidate = f"{base}-{counter}"
                 counter += 1
             self.slug = candidate
+
+        # Une photo de téléphone fait 5 à 8 Mo : on la réduit avant de la
+        # stocker (voir catalog/images.py). 1600 px suffisent largement pour
+        # la plus grande vignette de la boutique.
+        reduire_champ(self, "image", 1600, 1600)
+
         super().save(*args, **kwargs)
 
 class ProductImage(models.Model):
@@ -162,6 +179,15 @@ class ProductImage(models.Model):
 
 
 
+    def save(self, *args, **kwargs):
+        """Réduit la photo téléversée avant de l'enregistrer.
+
+        Même réduction que la photo principale du produit : ce sont les mêmes
+        vignettes de boutique.
+        """
+        reduire_champ(self, "image", 1600, 1600)
+        super().save(*args, **kwargs)
+
 class GalleryPhoto(models.Model):
     """Une photo d'ambiance affichée dans la galerie de la page d'accueil.
 
@@ -186,6 +212,15 @@ class GalleryPhoto(models.Model):
 
     def __str__(self):
         return self.alt
+
+    def save(self, *args, **kwargs):
+        """Réduit la photo téléversée avant de l'enregistrer.
+
+        La galerie d'ambiance de l'accueil s'affiche en grand : on garde de la
+        définition, sans conserver les 4000 px de l'appareil.
+        """
+        reduire_champ(self, "image", 1600, 1600)
+        super().save(*args, **kwargs)
 
 class OpeningHours(models.Model):
     """Les horaires d'ouverture pour un jour de la semaine.
@@ -293,6 +328,15 @@ class InstagramStory(models.Model):
     def __str__(self):
         return self.handle
 
+    def save(self, *args, **kwargs):
+        """Réduit la photo téléversée avant de l'enregistrer.
+
+        Les stories sont de petites vignettes rectangulaires : 800 px suffisent,
+        et allègent d'autant l'accueil, où elles sont plusieurs.
+        """
+        reduire_champ(self, "image", 800, 800)
+        super().save(*args, **kwargs)
+
 class InstagramPost(models.Model):
     """Une publication Instagram de la marque, affichée dans le feed de la home.
 
@@ -333,6 +377,15 @@ class InstagramPost(models.Model):
         return self.caption or f"Post #{self.pk}"
 
 
+    def save(self, *args, **kwargs):
+        """Réduit la photo téléversée avant de l'enregistrer.
+
+        Les posts du feed sont plus grands que les stories, mais restent des
+        vignettes cliquables vers Instagram.
+        """
+        reduire_champ(self, "image", 1200, 1200)
+        super().save(*args, **kwargs)
+
 class MenuDrink(models.Model):
     """Une boisson de la carte permanente du coffee shop.
 
@@ -348,8 +401,13 @@ class MenuDrink(models.Model):
     description = models.CharField("description", max_length=200, blank=True)
 
     # DecimalField. Le « € » sera
-    # ajouté côté front à l'affichage.
-    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+    # ajouté côté front à l'affichage. Pas de prix négatif (voir Product.price).
+    price = models.DecimalField(
+        "prix (€)",
+        max_digits=7,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
 
     category = models.CharField(
         "catégorie",
@@ -386,7 +444,13 @@ class DrinkOfMonth(models.Model):
 
     description = models.CharField("description", max_length=200, blank=True)
 
-    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+    # Pas de prix négatif (voir Product.price).
+    price = models.DecimalField(
+        "prix (€)",
+        max_digits=7,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
 
     # Pour ranger les boissons du mois dans l'ordre voulu (comme les stories).
     order = models.PositiveIntegerField(
@@ -449,7 +513,13 @@ class Supplement(models.Model):
     label = models.CharField("libellé", max_length=200)
 
     # Le prix du supplément (le « + » et le « € » sont ajoutés à l'affichage).
-    price = models.DecimalField("prix (€)", max_digits=7, decimal_places=2)
+    # Pas de prix négatif (voir Product.price).
+    price = models.DecimalField(
+        "prix (€)",
+        max_digits=7,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
 
     # Pour ranger les suppléments dans l'ordre voulu (comme le menu).
     order = models.PositiveIntegerField(

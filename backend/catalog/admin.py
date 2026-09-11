@@ -229,6 +229,14 @@ class ContactMessageAdmin(admin.ModelAdmin):
     # Navigation par date au-dessus de la liste.
     date_hierarchy = "created_at"
 
+    # Un message est ce qu'une visiteuse a écrit : on le lit, on ne l'efface
+    # pas. Django n'a pas de corbeille, et une demande supprimée par erreur
+    # est perdue avec les coordonnées de la personne. Pour faire le ménage,
+    # le filtre « lu / non lu » suffit. Les alternantes n'y avaient déjà pas
+    # droit (catalog/sections.py) : c'est la propriétaire qui pouvait le faire.
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     # Actions groupées : cocher plusieurs messages puis les marquer d'un coup.
     actions = ["mark_as_read", "mark_as_unread"]
 
@@ -464,6 +472,14 @@ class OrderAdmin(admin.ModelAdmin):
     # atteindre le bouton d'enregistrement. Le doublon en haut évite l'aller-
     # retour quand on ne change qu'un statut ou un numéro de suivi.
     save_on_top = True
+
+    # Une commande payée est une pièce comptable : elle ne se supprime pas.
+    # Sans ça, la propriétaire avait deux boutons « Supprimer » sur chaque
+    # fiche et pouvait en effacer plusieurs d'un coup depuis la liste — sans
+    # corbeille pour revenir en arrière. Pour une commande qui n'aboutit pas,
+    # le bon geste est « Annuler et rembourser », qui laisse une trace.
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     list_display = [
         "__str__",
